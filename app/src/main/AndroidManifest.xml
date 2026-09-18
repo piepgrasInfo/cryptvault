@@ -26,6 +26,7 @@
     <application
         android:name=".CryptVaultApp"
         android:allowBackup="false"
+        android:fullBackupContent="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:resizeableActivity="true"
         android:icon="@mipmap/ic_launcher"
