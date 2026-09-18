@@ -22,7 +22,7 @@ class StorageRemoteStore(private val storage: VaultStorage) : RemoteStore {
 
     override fun stat(path: String): RemoteEntry? = storage.stat(path)?.let { RemoteEntry(it.name, it.isDirectory, it.size) }
 
-    override fun mkdirs(dir: String) { if (dir.isNotEmpty()) storage.createDirectory(dir) }
+    override fun mkdirs(dir: String) { storage.createDirectory(dir) } // "" creates the vault folder itself
 
     override fun upload(path: String, size: Long, ifMatch: String?, source: () -> InputStream): RemoteEntry {
         val parent = RemotePaths.parent(path)

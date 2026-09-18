@@ -63,13 +63,14 @@ class RestoreRunner(
             val candidates = listOf(Locate.remotePath(file, index), RemoteLayout.versionPath(file.sha256), file.path).distinct()
             val source = candidates.firstOrNull { remote.stat(it)?.isDirectory == false }
                 ?: throw IOException("bytes of ${file.path} are missing on the remote")
-            download(source, file.path, file.sha256)
+            val base = done
+            download(source, file.path, file.sha256) { got -> onProgress(BackupProgress(i, snapshot.files.size, base + got, total, file.path)) }
             done += file.size
         }
         onProgress(BackupProgress(snapshot.files.size, snapshot.files.size, done, total))
     }
 
-    private fun download(remotePath: String, localPath: String, expectedSha: String?) {
+    private fun download(remotePath: String, localPath: String, expectedSha: String?, onReceived: (Long) -> Unit = {}) {
         val parent = localPath.substringBeforeLast('/', "")
         if (parent.isNotEmpty()) target.createDirectory(parent)
         val tmp = localPath + CryptomatorVault.TEMP_SUFFIX
@@ -77,12 +78,16 @@ class RestoreRunner(
         remote.download(remotePath).use { input ->
             target.writeChannel(tmp).use { out ->
                 val buf = ByteArray(256 * 1024)
+                var received = 0L
+                var reported = 0L
                 while (true) {
                     val n = input.read(buf)
                     if (n < 0) break
                     md.update(buf, 0, n)
                     val bb = ByteBuffer.wrap(buf, 0, n)
                     while (bb.hasRemaining()) out.write(bb)
+                    received += n
+                    if (received - reported >= 1L shl 20) { reported = received; onReceived(received) }
                 }
             }
         }

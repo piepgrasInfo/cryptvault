@@ -21,6 +21,26 @@ sealed class VaultLocation {
     data class Saf(val treeUri: String) : VaultLocation()
 }
 
+/** A vault's backup setting (BUILD_BRIEF.md §6): where it goes and what the last run said. */
+@Serializable
+data class BackupConfig(
+    /** The connected target (`BackupTargetStore`). */
+    val targetId: String,
+    /** The vault folder inside the target's CryptVault area, `<slug>-<id8>`. */
+    val folder: String,
+    val keep: Int = 5,
+    val unmeteredOnly: Boolean = true,
+    val enabledAt: String,
+    // status, copied from the index after every run so the list can show it without I/O
+    val lastSeq: Long = 0,
+    val lastSnapshotAt: String? = null,
+    val lastRunAt: String? = null,
+    val lastError: String? = null,
+    /** Another installation wrote the remote last; the user must choose (restore / take over). */
+    val foreignSeq: Long? = null,
+    val failures: Int = 0,
+)
+
 /** One vault as the app knows it before unlocking (docs/VAULT_LAYOUT.md §4). */
 @Serializable
 data class VaultRecord(
@@ -32,6 +52,7 @@ data class VaultRecord(
     /** Seconds in the background before the vault locks; 0 = immediately. */
     val autoLockSeconds: Int = DEFAULT_AUTO_LOCK_SECONDS,
     val lastUnlockedAt: String? = null,
+    val backup: BackupConfig? = null,
 ) {
     companion object {
         const val DEFAULT_AUTO_LOCK_SECONDS = 60

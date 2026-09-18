@@ -253,6 +253,10 @@
     <string name="perm_overlay_body">Позволяет приложению скрывать плавающие окна других приложений над своими экранами, чтобы ничто не могло быть нарисовано поверх поля пароля. Предоставляется автоматически, без запроса.</string>
     <string name="perm_biometric_title">Биометрия</string>
     <string name="perm_biometric_body">Позволяет приложению показывать системный запрос отпечатка пальца, лица или блокировки экрана, если для хранилища включена биометрическая разблокировка. Приложение не хранит ничего биометрического: шаблоны хранит система, и она выдаёт ключ только после проверки. Предоставляется автоматически, без запроса.</string>
+    <string name="perm_foreground_title">Фоновая работа</string>
+    <string name="perm_foreground_body">Позволяет запущенному вами резервному копированию или восстановлению продолжаться с уведомлением о ходе, когда вы выходите из приложения. Больше ни для чего не используется; автоматические копии после изменений выполняются тихо и без этого.</string>
+    <string name="perm_local_network_title">Локальная сеть</string>
+    <string name="perm_local_network_body">Запрашивается только при подключении WebDAV-сервера в вашей собственной сети, например Nextcloud на домашнем NAS, и только на Android 17 и новее, где система иначе не пускает приложения к локальным адресам. Используется только для этого сервера; CryptVault никогда не сканирует сеть.</string>
     <string name="perm_documents_title">Хранилище для других приложений</string>
     <string name="perm_documents_body">Разблокированные хранилища появляются как место хранения в системном выборе файлов и в приложении «Файлы», чтобы другие приложения могли открывать и сохранять в них файлы. С этой частью CryptVault могут общаться только собственные файловые инструменты системы; файлы расшифровываются на лету, и ничего не записывается на диск в открытом виде. Блокировка убирает хранилище из выбора.</string>
     <string name="permissions_not_requested_title">Чего приложение не запрашивает</string>
@@ -295,4 +299,80 @@
     </plurals>
     <string name="action_copy">Копировать</string>
     <string name="msg_copied">Скопировано. Буфер обмена очищается через 60 секунд.</string>
+    <!-- Backup: notifications and names -->
+    <string name="backup_channel_progress">Ход резервного копирования</string>
+    <string name="backup_channel_alerts">Уведомления о резервном копировании</string>
+    <string name="backup_notice_running">Резервное копирование: %1$s</string>
+    <string name="restore_notice_running">Восстановление: %1$s</string>
+    <string name="backup_notice_progress">%1$s из %2$s</string>
+    <string name="backup_notice_foreign">%1$s: эту резервную копию записало другое устройство. Откройте настройки резервного копирования хранилища, чтобы выбрать действие.</string>
+    <string name="backup_notice_failed">Резервное копирование %1$s постоянно завершается ошибкой: %2$s</string>
+    <string name="restore_vault_name">%1$s (восстановлено %2$s)</string>
+    <string name="action_unlock">Разблокировать</string>
+    <!-- Backup screen -->
+    <string name="backup_title">Резервное копирование</string>
+    <string name="backup_off_help">Резервное копирование копирует это хранилище — по-прежнему зашифрованным — в выбранное вами место: на WebDAV-сервер, например Nextcloud, или в папку на этом устройстве либо в облачном приложении. Оно запускается через несколько минут после изменений и по вашему запросу. Пароль никогда не покидает устройство; владелец сервера видит только зашифрованные файлы.</string>
+    <string name="backup_targets_title">Места резервного копирования</string>
+    <string name="backup_targets_none">Ни одно место ещё не подключено.</string>
+    <string name="backup_target_add_webdav">WebDAV-сервер…</string>
+    <string name="backup_target_add_folder">Папка…</string>
+    <string name="backup_target_folder">Папка на этом устройстве или в облачном приложении</string>
+    <string name="backup_target_forget">Забыть</string>
+    <string name="backup_target_forget_confirm">Забыть «%1$s»? Хранилища, копируемые туда, перестанут копироваться. Файлы на сервере останутся на месте.</string>
+    <string name="backup_target_label">Название (необязательно)</string>
+    <string name="backup_target_missing">Место больше не подключено</string>
+    <string name="backup_turn_on">Включить резервное копирование</string>
+    <string name="backup_now">Скопировать сейчас</string>
+    <string name="backup_keep">Хранить снимков</string>
+    <plurals name="backup_keep_n">
+        <item quantity="one">%d снимок</item>
+        <item quantity="few">%d снимка</item>
+        <item quantity="many">%d снимков</item>
+        <item quantity="other">%d снимка</item>
+    </plurals>
+    <string name="backup_unmetered">Только по Wi-Fi</string>
+    <string name="backup_unmetered_help">Автоматические копии ждут безлимитной сети. «Скопировать сейчас» выполняется всегда.</string>
+    <string name="backup_switch_off">Выключить резервное копирование</string>
+    <string name="backup_switch_off_help">Прекращает копирование этого хранилища. Уже скопированные файлы остаются на сервере.</string>
+    <string name="backup_switch_off_confirm">Выключить резервное копирование этого хранилища? На сервере ничего не удаляется.</string>
+    <string name="backup_folder">Папка: %1$s</string>
+    <string name="backup_status_ok">Последняя копия %1$s (снимок %2$d)</string>
+    <string name="backup_status_never">Копий ещё нет</string>
+    <string name="backup_status_failed">Последний запуск не удался: %1$s</string>
+    <string name="backup_status_foreign">Последним эту копию записало другое устройство. Восстановитесь из неё или возьмите управление, чтобы с этого момента записывало это устройство.</string>
+    <string name="backup_foreign_restore">Восстановить из неё</string>
+    <string name="backup_foreign_take_over">Взять управление</string>
+    <string name="backup_msg_enabled">Резервное копирование включено. Первый запуск начался.</string>
+    <string name="backup_webdav_title">Подключить WebDAV-сервер</string>
+    <string name="backup_webdav_help">Nextcloud: создайте пароль приложения в Настройки → Безопасность; адрес заканчивается на /remote.php/dav/files/&lt;пользователь&gt;/. CryptVault создаст там папку «CryptVault».</string>
+    <string name="backup_webdav_url">Адрес сервера</string>
+    <string name="backup_webdav_user">Имя пользователя</string>
+    <string name="backup_webdav_password">Пароль приложения</string>
+    <string name="backup_webdav_cleartext">http:// передаёт пароль и файлы без шифрования. Используйте https://, если это не тестовый сервер на вашем компьютере.</string>
+    <string name="backup_webdav_test">Проверить соединение</string>
+    <string name="backup_webdav_testing">Проверка…</string>
+    <string name="backup_webdav_test_ok">Подключено.</string>
+    <!-- Restore wizard -->
+    <string name="restore_title">Восстановить из копии</string>
+    <string name="restore_help">Восстановление создаёт новое хранилище на этом устройстве; существующее не затрагивается. Открыть его можно только паролем самого хранилища.</string>
+    <string name="restore_step_target">Где находится копия?</string>
+    <string name="restore_step_folder">Какое хранилище?</string>
+    <string name="restore_folders_none">В этом месте копии CryptVault не найдены.</string>
+    <string name="restore_step_password">Пароль этого хранилища</string>
+    <string name="restore_step_snapshot">Какой снимок?</string>
+    <plurals name="restore_snapshot_line">
+        <item quantity="one">%1$d файл · %2$s · снимок %3$d</item>
+        <item quantity="few">%1$d файла · %2$s · снимок %3$d</item>
+        <item quantity="many">%1$d файлов · %2$s · снимок %3$d</item>
+        <item quantity="other">%1$d файла · %2$s · снимок %3$d</item>
+    </plurals>
+    <string name="restore_running">Восстановление…</string>
+    <string name="restore_done">Восстановлено как «%1$s».</string>
+    <string name="restore_adopt">Впредь копировать это хранилище в то же место (это устройство станет записывающим)</string>
+    <string name="restore_finish">Готово</string>
+    <string name="vaults_restore">Восстановить из копии…</string>
+    <string name="vault_settings_backup">Резервное копирование</string>
+    <string name="vault_settings_backup_off">Выключено</string>
+    <string name="vault_settings_backup_on">Включено — %1$s</string>
+    <string name="backup_webdav_local_denied">Этот сервер находится в вашей локальной сети. Android требует на это разрешения; разрешите CryptVault «Локальная сеть» в настройках системы.</string>
 </resources>

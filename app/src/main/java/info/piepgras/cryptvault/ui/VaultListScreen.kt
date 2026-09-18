@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
@@ -84,6 +85,7 @@ fun VaultListScreen(
     onOpen: (String) -> Unit,
     onVaultSettings: (String) -> Unit,
     onSettings: () -> Unit,
+    onRestore: () -> Unit,
 ) {
     val context = LocalContext.current
     val container = CryptVaultApp.container(context)
@@ -124,6 +126,11 @@ fun VaultListScreen(
                             text = { Text(stringResource(R.string.vaults_add_existing)) },
                             leadingIcon = { Icon(Icons.Filled.FolderOpen, null) },
                             onClick = { menu = false; pickExisting.launch(null) },
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.vaults_restore)) },
+                            leadingIcon = { Icon(Icons.Filled.CloudDownload, null) },
+                            onClick = { menu = false; onRestore() },
                         )
                         if (open.isNotEmpty()) {
                             DropdownMenuItem(
@@ -201,6 +208,10 @@ private fun VaultRow(record: VaultRecord, unlocked: Boolean, available: Boolean,
                     else -> stringResource(R.string.vault_state_locked)
                 }
                 Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                record.backup?.let { b ->
+                    val (line, color) = backupStatusLine(context, b)
+                    Text(line, style = MaterialTheme.typography.bodySmall, color = color)
+                }
             }
             if (unlocked) {
                 IconButton(onClick = onLock) { Icon(Icons.Filled.Lock, stringResource(R.string.action_lock)) }

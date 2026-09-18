@@ -63,7 +63,7 @@ private sealed class SettingsDialog {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VaultSettingsScreen(vaultId: String, onBack: () -> Unit, onDeleted: () -> Unit, onShowRecoveryKey: () -> Unit) {
+fun VaultSettingsScreen(vaultId: String, onBack: () -> Unit, onDeleted: () -> Unit, onShowRecoveryKey: () -> Unit, onBackup: () -> Unit) {
     val context = LocalContext.current
     val resources = LocalResources.current
     val container = CryptVaultApp.container(context)
@@ -179,6 +179,14 @@ fun VaultSettingsScreen(vaultId: String, onBack: () -> Unit, onDeleted: () -> Un
                         },
                     )
                 },
+            )
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.vault_settings_backup)) },
+                supportingContent = {
+                    val b = record.backup
+                    Text(if (b == null) stringResource(R.string.vault_settings_backup_off) else stringResource(R.string.vault_settings_backup_on, container.backupTargets.get(b.targetId)?.label ?: b.targetId))
+                },
+                modifier = Modifier.clickable { onBackup() },
             )
             ListItem(
                 headlineContent = { Text(stringResource(R.string.vault_settings_recovery_key)) },

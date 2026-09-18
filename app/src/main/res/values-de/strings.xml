@@ -221,6 +221,10 @@
     <string name="perm_overlay_body">Erlaubt der App, schwebende Fenster anderer Apps über ihren eigenen Bildschirmen auszublenden, damit nichts über das Passwortfeld gezeichnet werden kann. Wird automatisch gewährt; keine Nachfrage.</string>
     <string name="perm_biometric_title">Biometrie</string>
     <string name="perm_biometric_body">Erlaubt der App, die Fingerabdruck-, Gesichts- oder Bildschirmsperre-Abfrage des Systems anzuzeigen, wenn ein Tresor die biometrische Entsperrung eingeschaltet hat. Die App speichert nichts Biometrisches: Das System verwahrt die Vorlagen und gibt einen Schlüssel erst frei, nachdem es Sie geprüft hat. Wird automatisch gewährt; keine Nachfrage.</string>
+    <string name="perm_foreground_title">Hintergrundarbeit</string>
+    <string name="perm_foreground_body">Erlaubt einem von Ihnen gestarteten Backup oder einer Wiederherstellung, mit einer Fortschrittsbenachrichtigung weiterzulaufen, wenn Sie die App verlassen. Für nichts anderes verwendet; automatische Backups nach Änderungen laufen still auch ohne.</string>
+    <string name="perm_local_network_title">Lokales Netzwerk</string>
+    <string name="perm_local_network_body">Wird nur erfragt, wenn Sie einen WebDAV-Server im eigenen Netz verbinden, etwa eine Nextcloud auf einem NAS zu Hause, und nur ab Android 17, wo das System Apps sonst von lokalen Adressen fernhält. Nur für diesen Server verwendet; CryptVault durchsucht das Netzwerk nie.</string>
     <string name="perm_documents_title">Speicherort für andere Apps</string>
     <string name="perm_documents_body">Entsperrte Tresore erscheinen als Speicherort in der Systemdateiauswahl und in der Files-App, sodass andere Apps Dateien darin öffnen und speichern können. Nur die eigenen Dateiwerkzeuge des Systems dürfen mit diesem Teil von CryptVault sprechen; Dateien werden im Fluss entschlüsselt, nichts landet im Klartext auf der Platte. Sperren entfernt den Tresor aus der Auswahl.</string>
     <string name="permissions_not_requested_title">Was die App nicht verlangt</string>
@@ -261,4 +265,76 @@
     </plurals>
     <string name="action_copy">Kopieren</string>
     <string name="msg_copied">Kopiert. Die Zwischenablage wird nach 60 Sekunden geleert.</string>
+    <!-- Backup: notifications and names -->
+    <string name="backup_channel_progress">Backup-Fortschritt</string>
+    <string name="backup_channel_alerts">Backup-Hinweise</string>
+    <string name="backup_notice_running">%1$s wird gesichert</string>
+    <string name="restore_notice_running">%1$s wird wiederhergestellt</string>
+    <string name="backup_notice_progress">%1$s von %2$s</string>
+    <string name="backup_notice_foreign">%1$s: Ein anderes Gerät hat dieses Backup geschrieben. Öffnen Sie die Backup-Einstellungen des Tresors, um zu entscheiden.</string>
+    <string name="backup_notice_failed">Backup von %1$s schlägt wiederholt fehl: %2$s</string>
+    <string name="restore_vault_name">%1$s (wiederhergestellt %2$s)</string>
+    <string name="action_unlock">Entsperren</string>
+    <!-- Backup screen -->
+    <string name="backup_title">Backup</string>
+    <string name="backup_off_help">Das Backup kopiert diesen Tresor – weiterhin verschlüsselt – an einen Ort Ihrer Wahl: einen WebDAV-Server wie Nextcloud oder einen Ordner auf diesem Gerät oder in einer Cloud-App. Es läuft einige Minuten nach jeder Änderung und wann immer Sie es anstoßen. Das Passwort verlässt das Gerät nie; wer das Ziel betreibt, sieht nur verschlüsselte Dateien.</string>
+    <string name="backup_targets_title">Backup-Ziele</string>
+    <string name="backup_targets_none">Noch kein Ziel verbunden.</string>
+    <string name="backup_target_add_webdav">WebDAV-Server …</string>
+    <string name="backup_target_add_folder">Ordner …</string>
+    <string name="backup_target_folder">Ein Ordner auf diesem Gerät oder in einer Cloud-App</string>
+    <string name="backup_target_forget">Vergessen</string>
+    <string name="backup_target_forget_confirm">„%1$s“ vergessen? Dorthin gesicherte Tresore werden nicht mehr gesichert. Die Dateien auf dem Ziel bleiben, wo sie sind.</string>
+    <string name="backup_target_label">Name (optional)</string>
+    <string name="backup_target_missing">Das Ziel ist nicht mehr verbunden</string>
+    <string name="backup_turn_on">Backup einschalten</string>
+    <string name="backup_now">Jetzt sichern</string>
+    <string name="backup_keep">Aufbewahrte Snapshots</string>
+    <plurals name="backup_keep_n">
+        <item quantity="one">%d Snapshot</item>
+        <item quantity="other">%d Snapshots</item>
+    </plurals>
+    <string name="backup_unmetered">Nur über WLAN</string>
+    <string name="backup_unmetered_help">Automatische Backups warten auf ein nicht getaktetes Netz. „Jetzt sichern“ läuft immer.</string>
+    <string name="backup_switch_off">Backup ausschalten</string>
+    <string name="backup_switch_off_help">Beendet die Sicherung dieses Tresors. Bereits gesicherte Dateien bleiben auf dem Ziel.</string>
+    <string name="backup_switch_off_confirm">Backup für diesen Tresor ausschalten? Auf dem Ziel wird nichts gelöscht.</string>
+    <string name="backup_folder">Ordner: %1$s</string>
+    <string name="backup_status_ok">Letztes Backup %1$s (Snapshot %2$d)</string>
+    <string name="backup_status_never">Noch nicht gesichert</string>
+    <string name="backup_status_failed">Letzter Lauf fehlgeschlagen: %1$s</string>
+    <string name="backup_status_foreign">Ein anderes Gerät hat dieses Backup zuletzt geschrieben. Stellen Sie daraus wieder her, oder übernehmen Sie, damit ab jetzt dieses Gerät schreibt.</string>
+    <string name="backup_foreign_restore">Daraus wiederherstellen</string>
+    <string name="backup_foreign_take_over">Übernehmen</string>
+    <string name="backup_msg_enabled">Backup ist eingeschaltet. Der erste Lauf hat begonnen.</string>
+    <string name="backup_webdav_title">WebDAV-Server verbinden</string>
+    <string name="backup_webdav_help">Nextcloud: Unter Einstellungen → Sicherheit ein App-Passwort anlegen; die URL endet auf /remote.php/dav/files/&lt;Benutzer&gt;/. CryptVault legt dort einen Ordner „CryptVault“ an.</string>
+    <string name="backup_webdav_url">Server-URL</string>
+    <string name="backup_webdav_user">Benutzername</string>
+    <string name="backup_webdav_password">App-Passwort</string>
+    <string name="backup_webdav_cleartext">http:// überträgt Passwort und Dateien unverschlüsselt. Verwenden Sie https://, außer für einen Testserver auf dem eigenen Rechner.</string>
+    <string name="backup_webdav_test">Verbindung testen</string>
+    <string name="backup_webdav_testing">Wird getestet …</string>
+    <string name="backup_webdav_test_ok">Verbunden.</string>
+    <!-- Restore wizard -->
+    <string name="restore_title">Aus Backup wiederherstellen</string>
+    <string name="restore_help">Eine Wiederherstellung legt einen neuen Tresor auf diesem Gerät an; Vorhandenes bleibt unberührt. Nur das Passwort des Tresors kann ihn öffnen.</string>
+    <string name="restore_step_target">Wo liegt das Backup?</string>
+    <string name="restore_step_folder">Welcher Tresor?</string>
+    <string name="restore_folders_none">Auf diesem Ziel wurden keine CryptVault-Backups gefunden.</string>
+    <string name="restore_step_password">Passwort dieses Tresors</string>
+    <string name="restore_step_snapshot">Welcher Snapshot?</string>
+    <plurals name="restore_snapshot_line">
+        <item quantity="one">%1$d Datei · %2$s · Snapshot %3$d</item>
+        <item quantity="other">%1$d Dateien · %2$s · Snapshot %3$d</item>
+    </plurals>
+    <string name="restore_running">Wird wiederhergestellt …</string>
+    <string name="restore_done">Wiederhergestellt als „%1$s“.</string>
+    <string name="restore_adopt">Diesen Tresor ab jetzt an denselben Ort sichern (dieses Gerät wird zum Schreiber)</string>
+    <string name="restore_finish">Fertig</string>
+    <string name="vaults_restore">Aus Backup wiederherstellen …</string>
+    <string name="vault_settings_backup">Backup</string>
+    <string name="vault_settings_backup_off">Aus</string>
+    <string name="vault_settings_backup_on">An – %1$s</string>
+    <string name="backup_webdav_local_denied">Dieser Server liegt in Ihrem lokalen Netzwerk. Android braucht dafür Ihre Erlaubnis; gestatten Sie CryptVault „Lokales Netzwerk“ in den Systemeinstellungen.</string>
 </resources>

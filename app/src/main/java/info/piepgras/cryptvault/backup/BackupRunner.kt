@@ -110,11 +110,13 @@ class BackupRunner(
                 if (step is Step.Upload) bytes += step.size
                 continue
             }
+            val base = bytes
+            val tick: (Long) -> Unit = { sent -> onProgress(BackupProgress(i, plan.steps.size, base + sent, total, (step as? Step.Upload)?.path)) }
             when (step) {
                 is Step.Retire -> retire(step)
-                is Step.Upload -> { uploadVerified(step.path, step.size, step.sha256); bytes += step.size; uploaded += step.size }
+                is Step.Upload -> { uploadVerified(step.path, step.size, step.sha256, tick); bytes += step.size; uploaded += step.size }
                 is Step.Revive -> revive(step)
-                is Step.UploadMeta -> { uploadVerified(step.name, step.size, step.sha256); bytes += step.size; uploaded += step.size }
+                is Step.UploadMeta -> { uploadVerified(step.name, step.size, step.sha256, tick); bytes += step.size; uploaded += step.size }
             }
             done += step.key
             index.saveJournal(BackupIndex.Journal(plan.seq, done))
@@ -173,12 +175,12 @@ class BackupRunner(
         }
     }
 
-    /** Streams the local file up, hashing on the way; a hash mismatch means it changed under us. */
-    private fun uploadVerified(path: String, size: Long, sha256: String) {
+    /** Streams the local file up, hashing on the way; a hash mismatch means it changed under us. [onSent] reports bytes every megabyte. */
+    private fun uploadVerified(path: String, size: Long, sha256: String, onSent: (Long) -> Unit = {}) {
         val md = MessageDigest.getInstance("SHA-256")
         val entry = remote.upload(path, size) {
             md.reset()
-            DigestInputStream(Channels.newInputStream(storage.readChannel(path)), md)
+            CountingInputStream(DigestInputStream(Channels.newInputStream(storage.readChannel(path)), md), onSent)
         }
         val actual = md.digest().toHex()
         if (actual != sha256) throw IOException("file changed during upload: $path")
@@ -195,6 +197,21 @@ class BackupRunner(
         for (sha in gc.deleteVersions) remote.delete(RemoteLayout.versionPath(sha))
         index.pruneSnapshots(keepSeqs.toSet())
     }
+}
+
+/** Reports the running byte count to [onCount] about once per megabyte. */
+private class CountingInputStream(private val inner: InputStream, private val onCount: (Long) -> Unit) : InputStream() {
+    private var count = 0L
+    private var lastReport = 0L
+    private fun advance(n: Int) {
+        if (n > 0) {
+            count += n
+            if (count - lastReport >= 1L shl 20) { lastReport = count; onCount(count) }
+        }
+    }
+    override fun read(): Int = inner.read().also { if (it >= 0) advance(1) }
+    override fun read(b: ByteArray, off: Int, len: Int): Int = inner.read(b, off, len).also { advance(it) }
+    override fun close() = inner.close()
 }
 
 /** Reads a whole remote file into memory; for the small sidecar files only. */

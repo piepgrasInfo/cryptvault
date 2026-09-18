@@ -21,8 +21,10 @@ Two Gradle modules:
   goes here (BUILD_BRIEF.md §8).
 
 `BUILD_BRIEF.md` is the design target (2026-09-17): what the app becomes, phase by phase, and
-which decisions are settled. **Phases 0 (foundation), 1 (vault core), 2 (security) and 3
-(DocumentsProvider) are done; Phase 4 (backup and restore) is next.** This file describes what exists;
+which decisions are settled. **Phases 0 (foundation), 1 (vault core), 2 (security), 3
+(DocumentsProvider) and 4 (backup and restore — WebDAV and folder targets; Dropbox, OneDrive
+and Google Drive await their developer registrations) are done; Phase 5 (mail and sharing)
+is next.** This file describes what exists;
 the brief describes what comes next and wins where the two disagree about the target. Its
 companions: `docs/VAULT_LAYOUT.md` (normative on-disk and remote layout), `docs/THREAT_MODEL.md`
 (requirements checked at each phase gate), `docs/PROVIDER_SETUP.md` (developer registrations).
@@ -105,6 +107,23 @@ let it drift:
   `LockManager` closes them on lock, so a descriptor another app still holds gets EIO on its
   next read, and the roots change notification empties the pickers (docs/THREAT_MODEL.md S8).
   An empty "Copy to…"/"Save to" picker therefore means "locked", not a DocumentsUI filter.
+- **Backup and restore** (`backup/`, rules in `:shared`'s `backup/`): a run mirrors the
+  vault's **ciphertext** (`d/**` plus the two meta files) into `<target>/CryptVault/<slug>-<id8>/`
+  and commits a snapshot manifest (docs/VAULT_LAYOUT.md §6). `LocalScan` lists and hashes with
+  the mtime-keyed `HashCache`; the pure `plan()` diffs against the last snapshot into
+  content-addressed idempotent steps (retire to `versions/`, revive, upload, meta);
+  `BackupRunner` executes them with a journal (`BackupIndex`: state, journal, local manifest
+  copies under `index/<vaultId>/`), hashes while uploading, writes `latest` conditionally on the
+  ETag read at the start, then `Retention.gc`. Snapshot manifests are AES-GCM under an
+  HKDF-derived key kept Keystore-wrapped (`SnapshotKeyStore`), so a **locked** vault backs up.
+  Targets: `WebDavStore` (OkHttp) and `StorageRemoteStore` over a SAF tree; `BackupTargetStore`
+  keeps credentials in `secrets/providers.enc` under `AppKeystore`. `BackupService` owns
+  configuration, runs, the 3-minute debounced job after manifest changes (`CryptVaultApp`
+  watches every open vault's manifest generation) and the notifications; `BackupWorker` is the
+  WorkManager entry (manual runs hold a `dataSync` foreground service). `RestoreService` +
+  `RestoreRunner` build a **new** private vault from a remote folder: meta files, password check,
+  snapshot list, hash-verified downloads; "adopt as writer" re-points backup at that folder
+  with a take-over. Dropbox, OneDrive and Google Drive are not built yet (registrations pending).
 - **Locking and unlocking** (`unlock/`): `LockManager` — per-vault background timeout,
   screen-off locks all, every lock wipes that vault's hand-offs. `BiometricWrap` holds the
   Keystore-wrapped masterkey copy (AES-GCM, auth window 300 s, BIOMETRIC_STRONG or, on API 30+,
@@ -135,7 +154,10 @@ let it drift:
   says which vaults are unlocked, `…/document/<vaultId>%3A/children` lists the root and
   `content read --uri …/document/<vaultId>%3A<path>` streams a file; `input keyevent 26`
   (screen off) locks every vault. Shell-granted URIs (`am start --grant-read-uri-permission`)
-  are not honoured, so share-in cannot be driven from the shell.
+  are not honoured, so share-in cannot be driven from the shell. The `sdk_gphone16k` image is
+  **Android 17 (API 37)** despite its name: apps targeting 37 cannot reach local addresses —
+  `10.0.2.2` included — without `ACCESS_LOCAL_NETWORK`; a connect just times out, and `run-as
+  <pkg> nc` reproduces it without the app.
 - **One ViewModel per coherent area of state**, exposing `StateFlow` collected with
   `collectAsState()`. Repositories are reached only from a ViewModel.
 - **JVM-testable logic belongs in a plain file, not in a Composable** — anything with rules
@@ -177,14 +199,15 @@ is BUILD_BRIEF.md §8; what is declared today:
 | Declared | For | Notes |
 | --- | --- | --- |
 | `INTERNET`, `ACCESS_NETWORK_STATE` | opt-in crash reporting today; backup providers and the mail link fallback from Phase 4 | Crash reporting defaults to off and the DSN is set in code, so the SDK cannot start before the user answers. No analytics. |
-| `POST_NOTIFICATIONS` | backup/restore progress and failure notices (Phase 4) | Request lazily at the first manual backup, never at startup. |
+| `POST_NOTIFICATIONS` | backup/restore progress and failure notices | Requested lazily at the first "Back up now", never at startup; automatic runs post nothing but the three-failures alert. |
+| `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_DATA_SYNC` | a backup or restore the user started keeps running with a progress notification (WorkManager `setForeground`, type `dataSync`) | The `SystemForegroundService` element in our manifest merges the `dataSync` type into WorkManager's. Automatic runs after changes are plain background work. The brief's user-initiated data-transfer job for API 34+ was **not** built (one code path instead of two); Android 15's 6-hour dataSync budget stops a run, which the next trigger resumes. |
 | `HIDE_OVERLAY_WINDOWS` | hiding other apps' overlays above the unlock screen | Normal permission, granted at install; `setHideOverlayWindows` throws a SecurityException without it. |
 | `USE_BIOMETRIC`, `USE_FINGERPRINT` | the system biometric prompt for vaults with biometric unlock switched on | Normal permissions, merged in by `androidx.biometric` (check the merged manifest, not ours). The app stores no biometric data; the Keystore releases the wrapped key only after the system has authenticated the user. |
+| `ACCESS_LOCAL_NETWORK` | a WebDAV server on the user's own network (home Nextcloud, NAS) on Android 17+, which blocks apps targeting API 37 from local addresses otherwise | Runtime permission that exists from API 37; `LocalNetwork` asks for it in the WebDAV form only when the host is a private, link-local, loopback or unqualified address, and a run refuses with a clear message when it is missing. The emulator's host `10.0.2.2` counts as local, which is how this was found. |
 | `MANAGE_DOCUMENTS` (on the provider element only) | guarding `VaultDocumentsProvider` so that only the system document picker and the Files app can call it | Signature-level permission the app never holds itself: the standard guard every DocumentsProvider must declare; nothing to request, nothing to show the user beyond the Permissions screen's "Documents" line. |
 
-Still to come, each with its four places in the commit that adds it:
-`FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_DATA_SYNC` and `RUN_USER_INITIATED_JOBS` (Phase 4).
-Never: storage, `READ_MEDIA_*`,
+Nothing else is planned; `RUN_USER_INITIATED_JOBS` from the brief is not needed with the single
+WorkManager path. Never: storage, `READ_MEDIA_*`,
 `MANAGE_EXTERNAL_STORAGE`, `CAMERA`, `QUERY_ALL_PACKAGES`, `SCHEDULE_EXACT_ALARM`.
 
 Re-read the **merged** manifest after any dependency change (`app/build/intermediates/merged_manifest/`).
@@ -206,9 +229,10 @@ Re-read the **merged** manifest after any dependency change (`app/build/intermed
 - Unit tests use hand-written `Fake*` implementations plus `MainDispatcherRule` — no mocking
   library, no Robolectric. cryptolib runs on the plain JVM, so vault round trips are ordinary
   unit tests on a temp directory.
-- **Keep lint at 0 errors** and hold the warning count where it is: **16 warnings** after
-  Phase 1 — 15 version-currency notices (`AndroidGradlePluginVersion`, `GradleDependency`,
-  `NewerVersionAvailable`, drifting upward on their own as libraries move) and one
+- **Keep lint at 0 errors** and hold the warning count where it is: **18 warnings** after
+  Phase 4 — 17 version-currency notices (`AndroidGradlePluginVersion`, `GradleDependency`,
+  `NewerVersionAvailable`, drifting upward on their own as libraries move; two of them are
+  OkHttp 4.12 → 5.x, kept at 4.12 because that is what Ktor 3.0.3 pulls in) and one
   `UnusedResources` on `R.color.brand`, which exists for the launcher icon and store assets.
   Anything else in the report is a real finding. Categories cleared on the way and not to be
   reintroduced: `PluralsCandidate` (use `<plurals>`), `LocalContextGetResourceValueCall` (use

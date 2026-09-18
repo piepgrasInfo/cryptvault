@@ -90,6 +90,12 @@ Console: https://www.dropbox.com/developers/apps → Create app.
       **app password** (Settings → Security) and use `http://10.0.2.2:8081/remote.php/dav/files/<user>/`
       from the emulator (cleartext allowed only for that address in the debug network security
       config, as Existential Dread Runner does for its server).
+- [x] Docker is not installed on the development host (2026-09-18), so Phase 4 used
+      `tools/webdav_test_server.py` instead: a stdlib WebDAV server with ETags, conditional PUT,
+      Range, MOVE and `--fail-every N` for interrupted runs. `python3 tools/webdav_test_server.py
+      --root /tmp/dav --port 8081 --user test --password secret`, then
+      `http://10.0.2.2:8081/dav/` from the emulator. `WebDavEndToEndTest` starts the same script
+      as a subprocess. A real Nextcloud (chunking, TLS) remains a Phase 6 check.
 - [ ] Optional second target with real TLS and chunking limits (a Hetzner Storage Box or the
       house Nextcloud, if one exists) — `[OPEN: is there a house WebDAV server to test against?]`.
 

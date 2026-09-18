@@ -28,6 +28,10 @@ class CryptVaultApp : Application() {
         val lockManager = LockManager(app, repository, openWith)
         val clipboard = SensitiveClipboard(app)
         val biometricWrap = BiometricWrap(app)
+        val backupTargets = info.piepgras.cryptvault.backup.BackupTargetStore(app)
+        val snapshotKeys = info.piepgras.cryptvault.backup.SnapshotKeyStore(app)
+        val backup = info.piepgras.cryptvault.backup.BackupService(app, repository, registry, backupTargets, snapshotKeys)
+        val restore = info.piepgras.cryptvault.backup.RestoreService(app, registry, backup, File(app.filesDir, "vaults"))
         /** (vaultId, 44 words) waiting to be shown once by the recovery-key screen, then cleared. */
         val recoveryKeyToShow = kotlinx.coroutines.flow.MutableStateFlow<Pair<String, String>?>(null)
     }
@@ -44,6 +48,21 @@ class CryptVaultApp : Application() {
         container.lockManager.start()
         // Every unlock or lock changes the roots the DocumentsProvider offers.
         appScope.launch { container.repository.open.collect { container.lockManager.notifyRoots() } }
+        // Every change to an open vault's manifest (re)starts that vault's debounced backup.
+        appScope.launch {
+            val watchers = HashMap<String, kotlinx.coroutines.Job>()
+            container.repository.open.collect { open ->
+                (watchers.keys - open.keys).forEach { watchers.remove(it)?.cancel() }
+                for ((id, vault) in open) if (id !in watchers) {
+                    watchers[id] = launch {
+                        var last = vault.manifest.value.generation
+                        vault.manifest.collect { m ->
+                            if (m.generation != last) { last = m.generation; container.backup.scheduleAfterChange(id) }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     companion object {

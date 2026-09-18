@@ -224,6 +224,135 @@ Verified:
 
 Commit: the one this entry is part of (`git log -1 -- handoff.md`).
 
+### [2026-09-18] Phase 4 — Backup and restore (BUILD_BRIEF.md §12), WebDAV and folder targets
+
+What changed:
+
+- **Rules in `:shared/backup`**: `Snapshot` manifest (schema 1) and `Latest` commit point,
+  `RemoteLayout` names (`cryptvault/latest`, `snapshots/<seq>.json.enc`, `versions/<sha>.c9r`,
+  `<slug>-<id8>` vault folders), the planner `plan(local, last)` (retire → revive → upload →
+  meta, content-addressed idempotent steps), `checkWriter`, `Retention.gc` (newest N
+  snapshots; a version survives while any retained snapshot references its hash) and `Locate`
+  (a restore finds bytes in the mirror by hash via the newest snapshot, else in `versions/`).
+  15 tests.
+- **Executor in `:app/backup`**: `RemoteStore` (+ caps), `BackupIndex` (`index/<vaultId>/`:
+  state, run journal, local manifest copies, `HashCache` keyed by size+mtime), `LocalScan`
+  (`d/**` + meta files, `.tmp` skipped), `BackupRunner` (journaled idempotent steps, hash while
+  uploading and refuse a file that changed underneath, `latest` written last with `If-Match`,
+  GC only after the commit, take-over of a foreign commit point), `RestoreRunner` (meta files →
+  password check → snapshot list → hash-verified downloads, tolerant of an interrupted later
+  run). Snapshot manifests are AES-256-GCM under an HKDF key derived from the masterkey
+  (`SnapshotCrypto`), kept Keystore-wrapped per vault (`SnapshotKeyStore`) so a **locked** vault
+  backs up — a deviation from docs/VAULT_LAYOUT.md's "Cryptomator file format" wording, now
+  recorded there and in THREAT_MODEL S9.
+- **Targets**: `WebDavStore` (OkHttp: PROPFIND, PUT `If-Match`/`If-None-Match`, GET `Range`,
+  MKCOL incl. its own vault folder and `CryptVault/`, MOVE, DELETE, Basic auth, typed auth and
+  conflict errors, `probe()` for "Test connection"); `StorageRemoteStore` over any
+  `VaultStorage` (`PrefixedVaultStorage` roots a SAF tree at `CryptVault/<folder>`); no ETags
+  there, so the folder target has no concurrent-writer protection (as the brief accepts).
+  `BackupTargetStore` keeps credentials in `secrets/providers.enc` under the new non-auth
+  Keystore key `cryptvault.app` (`security/AppKeystore`). `StorageEntry` gained `lastModified`.
+- **Orchestration**: `BackupService` (enable/disable/update per vault, `runNow`, the 3-minute
+  debounced WorkManager job after manifest changes — `CryptVaultApp` watches every open vault's
+  manifest generation — the expedited manual run, notification channels, the "foreign writer"
+  and "three failures" alerts), `BackupWorker` (manual runs hold a `dataSync` foreground
+  service with a progress notification; automatic runs retry up to three times),
+  `RestoreService` (a remote folder becomes a **new** private vault named "<name> (restored
+  <date>)"; "adopt as writer" re-points backup at that folder with a take-over).
+  `VaultRecord.backup: BackupConfig` holds target, folder, retention, the Wi-Fi rule and a
+  status copy for the list.
+- **UI**: `BackupScreen` (from the vault settings: targets list with "WebDAV server…" —
+  URL/user/app password with a connection test — and "Folder…" via the system picker; turn on
+  (password check when the vault is locked), status card with progress, "Back up now" (asks
+  for `POST_NOTIFICATIONS` first on 33+), snapshots to keep, only on Wi-Fi, switch off, forget a
+  target; a foreign writer shows "Restore from it" / "Take over"), `RestoreScreen` (wizard:
+  target → vault folder → password → snapshot → progress → done with "back this vault up to the
+  same place from now on"), "Restore from backup…" in the vault list menu, a backup status line
+  on every backed-up vault's row (tertiary colour after 7 days, error after 30 or on failure).
+  Strings in en/de/ru.
+- **Permissions** (four places): `FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_DATA_SYNC` (the
+  merged `SystemForegroundService` element carries `dataSync`); `POST_NOTIFICATIONS` now has
+  its use. **Not built**: the brief's user-initiated data-transfer job for API 34+ and
+  `RUN_USER_INITIATED_JOBS` — one WorkManager path serves every API level; Android 15's 6-hour
+  dataSync budget stops a run, which the next trigger resumes (CLAUDE.md table says so).
+- **Test infrastructure**: `FakeRemoteStore` (failure injection), `tools/webdav_test_server.py`
+  (stdlib WebDAV with ETags, conditional PUT, Range, MOVE, `--fail-every`) because docker is
+  not installed on this host; `WebDavEndToEndTest` starts it as a subprocess. Debug builds
+  allow cleartext to 10.0.2.2/localhost only (`network_security_config`).
+- Dependencies: OkHttp 4.12.0 declared explicitly (was transitive via Ktor), MockWebServer
+  (test), WorkManager 2.11.2 (2.12.0 is not on Google's Maven yet). NOTICE updated.
+- **Not built in this phase**: Dropbox, OneDrive and Google Drive targets — each needs a
+  developer registration first (docs/PROVIDER_SETUP.md §2–4: Dropbox app key, Entra client id
+  with the `msauth://` redirect, GCP OAuth client per SHA-1) and the SDK dependencies (MSAL
+  brings a Maven repo and Lombok). The `RemoteStore` interface and the target picker are
+  ready for them; `BackupTarget.Kind` lists them.
+
+Verified:
+
+- `./gradlew :shared:jvmTest :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
+  :app:assembleRelease` — green, 44 + 45 tests, lint 0 errors / 18 warnings (17 version
+  notices incl. two for OkHttp 4.12 → 5.x, plus the known unused colour), release build with
+  R8 passes with OkHttp and WorkManager on board.
+- Unit level: first backup mirrors byte for byte; modify/delete/new/rename → retire, upload,
+  revive (a rename costs no upload); an interrupted run (failure injected mid-way) leaves
+  snapshot 1 restorable and the next run completes with the journal cleared; a second
+  installation is refused (`Foreign`) until it takes over, after which the first one is; the
+  sixth snapshot removes the first and exactly its unreferenced version; restore of the newest
+  snapshot is byte-identical and an older one reads its old content; the same sequence over
+  the real Python WebDAV server (`WebDavEndToEndTest`), including a 300 kB file streamed both
+  ways and the conditional-write refusal of a second installation.
+- Emulator (Android 17 / API 37 image, host WebDAV server `tools/webdav_test_server.py` on
+  port 8081, reached as `http://10.0.2.2:8081/dav/`):
+  - **First finding**: the app could not connect while the shell could — `run-as <pkg> nc`
+    timed out too. Android 17 enforces local-network protection for apps targeting 37: the
+    new runtime permission `ACCESS_LOCAL_NETWORK` is now declared, asked for in the WebDAV form
+    when the host is a local address, and shown on the Permissions screen and in CLAUDE.md
+    (a home Nextcloud or NAS is exactly this case). After granting it: connected.
+  - Vault settings → Backup → "WebDAV server…" → URL/user/app password → Test connection
+    (system prompt for the local network → Allow) → Connected → Save → Turn on backup. The
+    first run uploaded the Personal vault (16 files, 2.15 GB incl. the 2 GB video, ~2 MB/s
+    through the emulator's NAT into Python) and committed snapshot 1; the status card read
+    "Last backup 0 minutes ago (snapshot 1)". Host-side, `CryptVault/personal-67de1e46/`
+    holds `d/**`, the two meta files, `cryptvault/latest` (seq 1 + hash) and
+    `snapshots/00000001.json.enc`; SHA-256 of every mirrored file equals the vault's local
+    ciphertext (18 files compared).
+  - 200 MB written into `notes.txt` from the shell through the DocumentsProvider's write pipe
+    (`content write`, 3 s) → "Back up now" (the `POST_NOTIFICATIONS` prompt appears first) →
+    process killed by `am force-stop` at 108 MB uploaded: `latest` still says 1, the journal
+    holds the completed steps (among them a *revive* — the rewritten manifest's `.bak` is the
+    previous manifest's bytes, so the rename optimisation fires in real life) → next "Back up
+    now" completes: snapshot 2, mirror again byte-identical, the two superseded files are in
+    `versions/`.
+  - Restore wizard: vault list → More → "Restore from backup…" → the target → folder
+    `personal-67de1e46` → password → snapshot list "16 files · 2.2 GB · snapshot 2" /
+    "… 2.0 GB · snapshot 1" → snapshot 2 → progress → "Restored as “Personal (restored
+    2026-09-18)”" after about three minutes (downloads run faster than uploads here) → Done.
+    The new vault's directory is byte-identical to the original (18 files compared by hash),
+    and it unlocks with the same password and lists Documents, Notes, big-video.mp4, clip.mp4
+    and the 191 MB notes.txt.
+  - Progress inside one large file was invisible at first ("4.4 KB of 2.0 GB" for the whole
+    2 GB upload): both runners now report every megabyte within a file.
+  - Automatic run: a note created in the unlocked Personal vault scheduled the debounced job
+    (JobScheduler showed the 3-minute latency and the battery constraint); snapshot 3 was
+    committed three minutes later with no further interaction.
+  - Second installation: a second restore with "back this vault up to the same place" ticked
+    made the restored vault adopt the folder — its take-over run committed snapshot 4 within
+    20 s. "Back up now" on the original Personal then stopped with the status card "Another
+    device wrote this backup last …" and the two buttons; "Take over" ran and committed
+    snapshot 5, and the vault list shows both vaults' status lines. (Both live in one app
+    install, so the check runs on the per-vault index rather than the installation id — the
+    same code path a second phone hits.)
+  - Sixth snapshot: another note → "Back up now" → snapshot 6; host-side
+    `snapshots/` now holds 2–6, `versions/` went from five files to the three still referenced
+    by a retained snapshot, and the local manifest copies were pruned to 2–6.
+  - Not done from the acceptance list: "the mirror opens in Cryptomator desktop through the
+    Dropbox desktop client" — no Dropbox target yet and no desktop on this host; the mirror is a
+    byte-identical vault directory and `CryptofsInteropTest` opens what this app writes, so
+    the remaining risk is the provider's handling of file names, a Phase 6 check. "Restore on a
+    wiped emulator" was done as a restore into a new vault on the same emulator.
+
+Commit: the one this entry is part of (`git log -1 -- handoff.md`).
+
 **Open before first release** (see also `RELEASE_CHECKLIST.md` once generated by the
 `app-generate-checklist` skill):
 

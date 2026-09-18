@@ -231,6 +231,10 @@
     <string name="perm_overlay_body">Lets the app hide other apps\' floating windows above its own screens, so nothing can be drawn over the password field. Granted automatically; no prompt.</string>
     <string name="perm_biometric_title">Biometrics</string>
     <string name="perm_biometric_body">Lets the app show the system fingerprint, face or screen-lock prompt when a vault has biometric unlock switched on. Nothing biometric is stored by the app: the system keeps the templates and only releases a key after it has verified you. Granted automatically; no prompt.</string>
+    <string name="perm_foreground_title">Background work</string>
+    <string name="perm_foreground_body">Lets a backup or restore you started keep running with a progress notification when you leave the app. Used for nothing else; automatic backups after changes run quietly without it.</string>
+    <string name="perm_local_network_title">Local network</string>
+    <string name="perm_local_network_body">Asked for only when you connect a WebDAV server on your own network, such as a Nextcloud on a NAS at home, and only on Android 17 or newer, where the system otherwise blocks apps from local addresses. Used for that server and nothing else; CryptVault never scans the network.</string>
     <string name="perm_documents_title">Storage root for other apps</string>
     <string name="perm_documents_body">Unlocked vaults appear as a storage location in the system file picker and the Files app, so other apps can open and save files in them. Only the system\'s own file tools may talk to this part of CryptVault; files are decrypted on the fly and nothing is written to disk in the clear. Locking a vault removes it from the picker.</string>
     <string name="permissions_not_requested_title">What the app does not ask for</string>
@@ -271,4 +275,76 @@
     </plurals>
     <string name="action_copy">Copy</string>
     <string name="msg_copied">Copied. The clipboard is cleared after 60 seconds.</string>
+    <!-- Backup: notifications and names -->
+    <string name="backup_channel_progress">Backup progress</string>
+    <string name="backup_channel_alerts">Backup notices</string>
+    <string name="backup_notice_running">Backing up %1$s</string>
+    <string name="restore_notice_running">Restoring %1$s</string>
+    <string name="backup_notice_progress">%1$s of %2$s</string>
+    <string name="backup_notice_foreign">%1$s: another device wrote this backup. Open the vault\'s backup settings to choose.</string>
+    <string name="backup_notice_failed">Backup of %1$s keeps failing: %2$s</string>
+    <string name="restore_vault_name">%1$s (restored %2$s)</string>
+    <string name="action_unlock">Unlock</string>
+    <!-- Backup screen -->
+    <string name="backup_title">Backup</string>
+    <string name="backup_off_help">Backup copies this vault, still encrypted, to a place you choose: a WebDAV server such as Nextcloud, or a folder on this device or in a cloud app. It runs a few minutes after you change something and whenever you ask. The password never leaves the device; whoever runs the target sees only encrypted files.</string>
+    <string name="backup_targets_title">Backup targets</string>
+    <string name="backup_targets_none">No target connected yet.</string>
+    <string name="backup_target_add_webdav">WebDAV server…</string>
+    <string name="backup_target_add_folder">Folder…</string>
+    <string name="backup_target_folder">A folder on this device or in a cloud app</string>
+    <string name="backup_target_forget">Forget</string>
+    <string name="backup_target_forget_confirm">Forget “%1$s”? Vaults backed up there stop backing up. The files on the target stay where they are.</string>
+    <string name="backup_target_label">Name (optional)</string>
+    <string name="backup_target_missing">The target is no longer connected</string>
+    <string name="backup_turn_on">Turn on backup</string>
+    <string name="backup_now">Back up now</string>
+    <string name="backup_keep">Snapshots to keep</string>
+    <plurals name="backup_keep_n">
+        <item quantity="one">%d snapshot</item>
+        <item quantity="other">%d snapshots</item>
+    </plurals>
+    <string name="backup_unmetered">Only on Wi-Fi</string>
+    <string name="backup_unmetered_help">Automatic backups wait for an unmetered network. “Back up now” always runs.</string>
+    <string name="backup_switch_off">Switch off backup</string>
+    <string name="backup_switch_off_help">Stops backing up this vault. Files already on the target stay there.</string>
+    <string name="backup_switch_off_confirm">Switch off backup for this vault? Nothing is deleted from the target.</string>
+    <string name="backup_folder">Folder: %1$s</string>
+    <string name="backup_status_ok">Last backup %1$s (snapshot %2$d)</string>
+    <string name="backup_status_never">Not backed up yet</string>
+    <string name="backup_status_failed">Last run failed: %1$s</string>
+    <string name="backup_status_foreign">Another device wrote this backup last. Restore from it, or take over so that this device writes from now on.</string>
+    <string name="backup_foreign_restore">Restore from it</string>
+    <string name="backup_foreign_take_over">Take over</string>
+    <string name="backup_msg_enabled">Backup is on. The first run has started.</string>
+    <string name="backup_webdav_title">Connect a WebDAV server</string>
+    <string name="backup_webdav_help">Nextcloud: create an app password under Settings → Security; the URL ends in /remote.php/dav/files/&lt;user&gt;/. CryptVault creates a folder “CryptVault” there.</string>
+    <string name="backup_webdav_url">Server URL</string>
+    <string name="backup_webdav_user">User name</string>
+    <string name="backup_webdav_password">App password</string>
+    <string name="backup_webdav_cleartext">http:// sends the password and your files unencrypted over the network. Use https:// unless this is a test server on your own machine.</string>
+    <string name="backup_webdav_test">Test connection</string>
+    <string name="backup_webdav_testing">Testing…</string>
+    <string name="backup_webdav_test_ok">Connected.</string>
+    <!-- Restore wizard -->
+    <string name="restore_title">Restore from backup</string>
+    <string name="restore_help">A restore creates a new vault on this device; nothing existing is touched. Only the vault\'s own password can open it.</string>
+    <string name="restore_step_target">Where is the backup?</string>
+    <string name="restore_step_folder">Which vault?</string>
+    <string name="restore_folders_none">No CryptVault backups found at this target.</string>
+    <string name="restore_step_password">Password of that vault</string>
+    <string name="restore_step_snapshot">Which snapshot?</string>
+    <plurals name="restore_snapshot_line">
+        <item quantity="one">%1$d file · %2$s · snapshot %3$d</item>
+        <item quantity="other">%1$d files · %2$s · snapshot %3$d</item>
+    </plurals>
+    <string name="restore_running">Restoring…</string>
+    <string name="restore_done">Restored as “%1$s”.</string>
+    <string name="restore_adopt">Back this vault up to the same place from now on (this device becomes the writer)</string>
+    <string name="restore_finish">Done</string>
+    <string name="vaults_restore">Restore from backup…</string>
+    <string name="vault_settings_backup">Backup</string>
+    <string name="vault_settings_backup_off">Off</string>
+    <string name="vault_settings_backup_on">On — %1$s</string>
+    <string name="backup_webdav_local_denied">This server is on your local network. Android needs your permission for that; allow “Local network” for CryptVault in the system settings.</string>
 </resources>

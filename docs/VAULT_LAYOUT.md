@@ -182,8 +182,12 @@ d/…                          mirror of the local ciphertext tree = a valid Cry
 cryptvault/                  CryptVault sidecar; Cryptomator ignores it (verified in Phase 6, see §9)
   latest                     text: "<seq>\n<sha256 of snapshots/<seq>.json.enc>\n" — the commit point;
                              its rev/ETag is the concurrency token
-  snapshots/00000012.json.enc   snapshot manifest, encrypted as a Cryptomator file (header + chunks)
-                             with the vault's cryptor, so only the vault password can read it
+  snapshots/00000012.json.enc   snapshot manifest, AES-256-GCM under a key derived from the masterkey
+                             (HKDF-SHA256, info `cryptvault-snapshot-v1`; blob = `CVS1` ‖ IV ‖ ciphertext),
+                             so a restore recovers it from the password alone; the app keeps that
+                             derived key Keystore-wrapped so the worker can write snapshots while
+                             the vault is locked (built this way in Phase 4 instead of the
+                             Cryptomator file format, which needs the cryptor and hence an unlock)
   versions/<sha256>.c9r      superseded ciphertext files still referenced by a retained snapshot,
                              content-addressed by the SHA-256 of the ciphertext
 ```

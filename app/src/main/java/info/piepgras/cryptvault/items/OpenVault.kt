@@ -46,6 +46,9 @@ class OpenVault(
     val manifest: StateFlow<Manifest> get() = _manifest
     val vaultId: String get() = _manifest.value.vaultId
 
+    /** A copy of the raw masterkey (for deriving the backup snapshot key); zero it after use. */
+    fun rawKey(): ByteArray = vault.rawKey()
+
     /** Cleartext folder path → directory id; "" → root. Rebuilt by the tree walk. */
     private val dirIds = HashMap<String, String>().apply { put("", CryptomatorVault.ROOT_DIR_ID) }
     private var metaDirId: String? = null

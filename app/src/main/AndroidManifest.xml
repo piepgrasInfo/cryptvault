@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Used by nothing unless the user switches crash reporting on in Settings.
          See CrashReporting.kt for why the SDK cannot start on its own. -->
@@ -11,10 +12,16 @@
     <!-- Runtime permission on API 33+. Request it lazily, at the point the user
          first asks for something that needs a notification - not at startup. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Backup and restore runs the user starts (WorkManager setForeground, type dataSync). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <!-- Normal permission (no prompt): lets the app hide other apps' overlay windows above its
          own, so nothing can be drawn over the unlock screen (BUILD_BRIEF.md §4.4). -->
     <uses-permission android:name="android.permission.HIDE_OVERLAY_WINDOWS" />
+    <!-- Android 17+: reaching a WebDAV server on the local network (a home Nextcloud or NAS) needs
+         this runtime permission; asked for at the point of use, only when the host is local. -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
 
     <!-- Package visibility: a camera app for the Capture entry, and viewers/editors/share
          targets for the open-with and share flows (Android 11+ hides them otherwise). -->
@@ -89,6 +96,11 @@
         <!-- The unlocked vaults as storage roots for the system file picker and the Files app
              (BUILD_BRIEF.md §5.2). MANAGE_DOCUMENTS is a system-only permission on the provider
              element: only the platform's document UI and pickers can talk to it. -->
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
+
         <provider
             android:name=".provider.VaultDocumentsProvider"
             android:authorities="${applicationId}.documents"

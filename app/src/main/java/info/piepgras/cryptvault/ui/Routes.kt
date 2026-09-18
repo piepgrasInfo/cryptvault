@@ -10,6 +10,8 @@ import kotlinx.serialization.Serializable
 @Serializable data class ItemRoute(val vaultId: String, val itemId: String)
 @Serializable data class NoteRoute(val vaultId: String, val folder: String = "", val itemId: String? = null)
 @Serializable data class VaultSettingsRoute(val vaultId: String)
+@Serializable data class BackupRoute(val vaultId: String)
+@Serializable data class RestoreRoute(val targetId: String? = null, val folder: String? = null)
 /** Shows the words waiting in `Container.recoveryKeyToShow` for this vault; [thenUnlock] after creation. */
 @Serializable data class RecoveryKeyRoute(val vaultId: String, val thenUnlock: Boolean = false)
 /** "Forgot password": enter the 44 words and a new password. */

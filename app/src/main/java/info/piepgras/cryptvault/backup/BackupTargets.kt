@@ -94,6 +94,12 @@ class SnapshotKeyStore(context: Context) {
         }
     }
 
+    /** Stores an already-derived key (a restore has it before any masterkey is in memory). */
+    fun storeDerived(vaultId: String, derived: ByteArray) {
+        dir.mkdirs()
+        file(vaultId).writeBytes(AppKeystore.encrypt(derived))
+    }
+
     /** The 32-byte key, or null when backup was never set up for this vault. Zero it after use. */
     fun load(vaultId: String): ByteArray? {
         val f = file(vaultId)

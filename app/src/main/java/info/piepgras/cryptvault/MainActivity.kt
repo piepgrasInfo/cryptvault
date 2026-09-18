@@ -29,6 +29,8 @@ import info.piepgras.cryptvault.prefs.AppPrefs
 import info.piepgras.cryptvault.security.SecureWindow
 import info.piepgras.cryptvault.ui.AboutRoute
 import info.piepgras.cryptvault.ui.AboutScreen
+import info.piepgras.cryptvault.ui.BackupRoute
+import info.piepgras.cryptvault.ui.BackupScreen
 import info.piepgras.cryptvault.ui.BrowserRoute
 import info.piepgras.cryptvault.ui.BrowserScreen
 import info.piepgras.cryptvault.ui.CreateVaultRoute
@@ -40,6 +42,8 @@ import info.piepgras.cryptvault.ui.NoteRoute
 import info.piepgras.cryptvault.ui.PermissionsRoute
 import info.piepgras.cryptvault.ui.PermissionsScreen
 import info.piepgras.cryptvault.ui.RecoverRoute
+import info.piepgras.cryptvault.ui.RestoreRoute
+import info.piepgras.cryptvault.ui.RestoreScreen
 import info.piepgras.cryptvault.ui.RecoverScreen
 import info.piepgras.cryptvault.ui.RecoveryKeyRoute
 import info.piepgras.cryptvault.ui.RecoveryKeyScreen
@@ -144,6 +148,7 @@ class MainActivity : FragmentActivity() {
                     onOpen = { nav.navigate(BrowserRoute(it)) },
                     onVaultSettings = { nav.navigate(VaultSettingsRoute(it)) },
                     onSettings = { nav.navigate(SettingsRoute) },
+                    onRestore = { nav.navigate(RestoreRoute()) },
                 )
             }
             composable<CreateVaultRoute> {
@@ -222,6 +227,24 @@ class MainActivity : FragmentActivity() {
                     onBack = { nav.popBackStack() },
                     onDeleted = { nav.navigate(VaultsRoute) { popUpTo(VaultsRoute) { inclusive = true } } },
                     onShowRecoveryKey = { nav.navigate(RecoveryKeyRoute(route.vaultId)) },
+                    onBackup = { nav.navigate(BackupRoute(route.vaultId)) },
+                )
+            }
+            composable<BackupRoute> { entry ->
+                val route = entry.toRoute<BackupRoute>()
+                BackupScreen(
+                    vaultId = route.vaultId,
+                    onBack = { nav.popBackStack() },
+                    onRestoreFrom = { targetId, folder -> nav.navigate(RestoreRoute(targetId, folder)) },
+                )
+            }
+            composable<RestoreRoute> { entry ->
+                val route = entry.toRoute<RestoreRoute>()
+                RestoreScreen(
+                    preselectTargetId = route.targetId,
+                    preselectFolder = route.folder,
+                    onBack = { nav.popBackStack() },
+                    onDone = { nav.navigate(VaultsRoute) { popUpTo(VaultsRoute) { inclusive = true } } },
                 )
             }
             composable<SettingsRoute> {
