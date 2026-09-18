@@ -8,7 +8,6 @@ import org.cryptomator.cryptolib.api.FileHeader
 import org.cryptomator.cryptolib.api.InvalidPassphraseException
 import org.cryptomator.cryptolib.api.Masterkey
 import org.cryptomator.cryptolib.common.DecryptingReadableByteChannel
-import org.cryptomator.cryptolib.common.EncryptingWritableByteChannel
 import org.cryptomator.cryptolib.common.MasterkeyFileAccess
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -259,7 +258,7 @@ class CryptomatorVault private constructor(
     private fun initDirectory(dirId: String) {
         storage.createDirectory(dirPath(dirId))
         val backup = "${dirPath(dirId)}/$DIR_ID_BACKUP_FILE"
-        EncryptingWritableByteChannel(storage.writeChannel(backup), cryptor).use {
+        EncryptingChannel(storage.writeChannel(backup)).use {
             it.write(ByteBuffer.wrap(dirId.toByteArray(Charsets.UTF_8)))
         }
     }
@@ -304,14 +303,22 @@ class CryptomatorVault private constructor(
         return null
     }
 
-    /** Cleartext size for a ciphertext file length, or -1 if no cleartext could produce that length. */
+    /**
+     * Cleartext size for a ciphertext file length, or -1 if no cleartext could produce that
+     * length. A trailing empty chunk (28 bytes: what cryptolib's own writer emits after an
+     * exact multiple of 32 KiB) counts as valid here, unlike in cryptolib's `cleartextSize`,
+     * so a file another client wrote that way is listed rather than hidden.
+     */
     fun cleartextSize(ciphertextSize: Long): Long {
         val payload = ciphertextSize - headerSize
         if (payload < 0) return -1
-        return try {
-            cryptor.fileContentCryptor().cleartextSize(payload)
-        } catch (e: IllegalArgumentException) {
-            -1
+        val overhead = (ciphertextChunkSize - cleartextChunkSize).toLong()
+        val full = payload / ciphertextChunkSize
+        val rest = payload % ciphertextChunkSize
+        return when {
+            rest == 0L || rest == overhead -> full * cleartextChunkSize
+            rest < overhead -> -1
+            else -> full * cleartextChunkSize + (rest - overhead)
         }
     }
 
@@ -342,7 +349,67 @@ class CryptomatorVault private constructor(
         } else {
             loc.entryPath
         }
-        return EncryptingWritableByteChannel(storage.writeChannel(contentPath), cryptor)
+        return EncryptingChannel(storage.writeChannel(contentPath))
+    }
+
+    /**
+     * Encrypts as it writes: the header first, then one chunk per full 32 KiB and a final partial
+     * chunk if there is one. Unlike cryptolib's `EncryptingWritableByteChannel`, whose `close()`
+     * always encrypts the buffer, this never emits an empty trailing chunk — a file of exactly
+     * n × 32 KiB (or of 0 bytes) otherwise gets 28 surplus bytes that `cleartextSize` rejects,
+     * and Cryptomator desktop then shows it as empty.
+     */
+    private inner class EncryptingChannel(private val dest: WritableByteChannel) : WritableByteChannel {
+        private val header: FileHeader = cryptor.fileHeaderCryptor().create()
+        private val buffer: ByteBuffer = ByteBuffer.allocate(cleartextChunkSize)
+        private var chunkNumber = 0L
+        private var headerWritten = false
+        private var open = true
+
+        private fun writeHeaderOnce() {
+            if (headerWritten) return
+            headerWritten = true
+            val h = cryptor.fileHeaderCryptor().encryptHeader(header)
+            while (h.hasRemaining()) dest.write(h)
+        }
+
+        private fun flushChunk() {
+            buffer.flip()
+            if (buffer.hasRemaining()) {
+                val c = cryptor.fileContentCryptor().encryptChunk(buffer, chunkNumber++, header)
+                while (c.hasRemaining()) dest.write(c)
+            }
+            buffer.clear()
+        }
+
+        override fun write(src: ByteBuffer): Int {
+            if (!open) throw IOException("channel is closed")
+            writeHeaderOnce()
+            var written = 0
+            while (src.hasRemaining()) {
+                val n = minOf(src.remaining(), buffer.remaining())
+                val limit = src.limit()
+                src.limit(src.position() + n)
+                buffer.put(src)
+                src.limit(limit)
+                written += n
+                if (!buffer.hasRemaining()) flushChunk()
+            }
+            return written
+        }
+
+        override fun isOpen(): Boolean = open
+
+        override fun close() {
+            if (!open) return
+            open = false
+            try {
+                writeHeaderOnce()
+                flushChunk()
+            } finally {
+                dest.close()
+            }
+        }
     }
 
     /** Streams a FILE entry's cleartext from the start, authenticating every chunk. */

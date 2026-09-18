@@ -57,6 +57,7 @@ class CryptofsInteropTest {
     @Test
     fun `a vault written by CryptVault opens in cryptofs`() {
         val big = ByteArray(70_000).also { rnd.nextBytes(it) }
+        val exact = ByteArray(3 * 32768).also { rnd.nextBytes(it) }
         val longName = "l".repeat(150) + ".bin"
         CryptomatorVault.create(PathVaultStorage(dir), password).use { vault ->
             vault.writeFile("", "hello.txt").use { it.write(ByteBuffer.wrap("hello from CryptVault".toByteArray())) }
@@ -65,13 +66,20 @@ class CryptofsInteropTest {
             vault.writeFile(docs, longName).use { it.write(ByteBuffer.wrap("long".toByteArray())) }
             val sub = vault.createDirectory(docs, "Ünïcödé 🔐")
             vault.writeFile(sub, "note.md").use { it.write(ByteBuffer.wrap("# note".toByteArray())) }
+            vault.writeFile("", "empty.bin").close()
+            vault.writeFile("", "exact.bin").use { it.write(ByteBuffer.wrap(exact)) }
         }
 
         CryptoFileSystemProvider.newFileSystem(dir, cryptofsProperties()).use { fs ->
             val root = fs.getPath("/")
             val names = Files.list(root).use { s -> s.map { it.fileName.toString() }.sorted().toList() }
-            assertEquals(listOf("Documents", "hello.txt"), names)
+            assertEquals(listOf("Documents", "empty.bin", "exact.bin", "hello.txt"), names)
             assertEquals("hello from CryptVault", Files.readString(root.resolve("hello.txt")))
+            // the two sizes cryptolib's own channel gets wrong: desktop must see them right
+            assertEquals(0L, Files.size(root.resolve("empty.bin")))
+            assertEquals(0, Files.readAllBytes(root.resolve("empty.bin")).size)
+            assertEquals((3 * 32768).toLong(), Files.size(root.resolve("exact.bin")))
+            assertArrayEquals(exact, Files.readAllBytes(root.resolve("exact.bin")))
             assertArrayEquals(big, Files.readAllBytes(root.resolve("Documents/big.bin")))
             assertEquals(70_000L, Files.size(root.resolve("Documents/big.bin")))
             assertEquals("long", Files.readString(root.resolve("Documents/$longName")))
@@ -85,7 +93,7 @@ class CryptofsInteropTest {
         }
 
         CryptomatorVault.open(PathVaultStorage(dir), password).use { vault ->
-            assertEquals(listOf("Documents", "renamed.txt"), vault.list("").map { it.name })
+            assertEquals(listOf("Documents", "empty.bin", "exact.bin", "renamed.txt"), vault.list("").map { it.name })
             val docs = vault.list("").first { it.name == "Documents" }.dirId!!
             assertEquals(listOf("big.bin", "from-desktop.txt", "Ünïcödé 🔐"), vault.list(docs).map { it.name })
             val fromDesktop = vault.list(docs).first { it.name == "from-desktop.txt" }

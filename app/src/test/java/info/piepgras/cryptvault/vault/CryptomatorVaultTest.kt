@@ -118,6 +118,38 @@ class CryptomatorVaultTest {
     }
 
     @Test
+    fun `empty files and exact chunk multiples carry no surplus chunk`() {
+        CryptomatorVault.create(storage, password).use { vault ->
+            vault.put("", "empty.txt", ByteArray(0))
+            val one = ByteArray(32768).also { rnd.nextBytes(it) }
+            val two = ByteArray(2 * 32768).also { rnd.nextBytes(it) }
+            vault.put("", "one.bin", one)
+            vault.put("", "two.bin", two)
+            val e = vault.entry("", "empty.txt")
+            assertEquals(0L, e.size)
+            assertEquals(68L, Files.size(dir.resolve(e.contentPath!!)))
+            assertArrayEquals(ByteArray(0), vault.get("", "empty.txt"))
+            assertEquals(68L + 32796, Files.size(dir.resolve(vault.entry("", "one.bin").contentPath!!)))
+            assertEquals(68L + 2 * 32796, Files.size(dir.resolve(vault.entry("", "two.bin").contentPath!!)))
+            assertEquals(32768L, vault.entry("", "one.bin").size)
+            assertEquals(65536L, vault.entry("", "two.bin").size)
+            assertArrayEquals(one, vault.get("", "one.bin"))
+            assertArrayEquals(two, vault.get("", "two.bin"))
+            vault.openRandomAccess(vault.entry("", "two.bin")).use { r ->
+                assertEquals(65536L, r.size)
+                val buf = ByteBuffer.allocate(100)
+                assertEquals(100, r.read(65_436, buf))
+                assertArrayEquals(two.copyOfRange(65_436, 65_536), buf.array())
+                assertEquals(-1, r.read(65_536, ByteBuffer.allocate(1)))
+            }
+            vault.openRandomAccess(e).use { r ->
+                assertEquals(0L, r.size)
+                assertEquals(-1, r.read(0, ByteBuffer.allocate(1)))
+            }
+        }
+    }
+
+    @Test
     fun `directories nest, list, move and delete with their subtree`() {
         CryptomatorVault.create(storage, password).use { vault ->
             val docs = vault.createDirectory("", "Documents")
@@ -324,7 +356,10 @@ class CryptomatorVaultTest {
             assertEquals(0L, vault.cleartextSize(68))
             assertEquals(-1L, vault.cleartextSize(10))
             assertEquals(-1L, vault.cleartextSize(68 + 5)) // fewer bytes than one chunk's overhead
+            assertEquals(0L, vault.cleartextSize(68 + 28)) // a trailing empty chunk, tolerated
             assertEquals(1L, vault.cleartextSize(68 + 28 + 1))
+            assertEquals(32768L, vault.cleartextSize(68 + 32796))
+            assertEquals(32768L, vault.cleartextSize(68 + 32796 + 28))
             assertNull(vault.list("").firstOrNull())
         }
     }
