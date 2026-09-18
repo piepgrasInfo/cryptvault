@@ -1,0 +1,113 @@
+# Research: Android platform, permissions and Play policy (2026-09-16)
+
+Provenance: produced by a web-research agent for the CryptVault build brief on 2026-09-16; the
+questions it answered are in `BUILD_BRIEF.md` Appendix B. Facts marked UNVERIFIED were not
+confirmed against a primary source. Sources are linked inline. The brief's decisions win where
+this report and the brief disagree; this file is evidence, not a specification.
+
+---
+
+## 1. Play / toolchain baseline
+
+- **Target API**: from **31 Aug 2026** new apps and updates must target **Android 16 (API 36)**; existing apps must target ≥35 to stay visible to new users on newer devices; extension to **1 Nov 2026** requestable. Wear OS 35, TV 34, Automotive 35, XR 34. https://support.google.com/googleplay/android-developer/answer/11926878 — reiterated in the 15 Jul 2026 policy announcement https://support.google.com/googleplay/android-developer/answer/17134731. Expect API 37 to become mandatory ~Aug 2027 (UNVERIFIED — not announced).
+- **Latest stable OS**: **Android 17 (API 37)**, released 16 Jun 2026 https://android-developers.googleblog.com/2026/06/Android-17.html; QPR2 beta in progress https://developer.android.com/about/versions/17.
+- **16 KB pages**: since 1 Nov 2025 new apps/updates targeting 15+ must support 16 KB; from **1 Feb 2027** non-compliant updates cannot be released. Only apps shipping native `.so` (own or SDK) are affected; pure Kotlin/Java is compliant. Verify with APK Analyzer "Alignment" column, `check_elf_alignment.sh app.apk`, `llvm-objdump -p lib.so | grep LOAD` (needs `align 2**14`), `zipalign -v -c -P 16 4 app.apk`; AGP ≥8.5.1 and NDK ≥r28 align by default; Android 16 has a compat mode + `android:pageSizeCompat`. https://developer.android.com/guide/practices/page-sizes, https://android-developers.googleblog.com/2025/05/prepare-play-apps-for-devices-with-16kb-page-size.html. Relevant to CryptVault if you add SQLCipher/libsodium/Argon2 JNI.
+- **Toolchain (best effort, Sept 2026)**: AGP **9.3.0** (Jul 2026; Gradle ≥9.5.0, JDK 17, build-tools 36.0.0, NDK 28.2 default, max API 37) https://developer.android.com/build/releases/agp-9-3-0-release-notes; Gradle 9.7.1 (19 Aug 2026) https://gradle.org/releases/; Kotlin **2.4.20** (7 Sep 2026) https://kotlinlang.org/docs/releases.html; AGP 9 has built-in Kotlin — do not apply `org.jetbrains.kotlin.android` (`android.builtInKotlin=false` opt-out dies in AGP 10) https://blog.jetbrains.com/kotlin/2026/01/update-your-projects-for-agp9/; Compose BOM **2026.09.00** → ui/foundation/runtime 1.12.1, **material3 1.4.0** https://developer.android.com/develop/ui/compose/bom/bom-mapping; Android Studio Quail 4 (2026.1.4, 1 Sep 2026) https://developer.android.com/studio/releases.
+- **Navigation**: **Navigation 3** is stable (1.1.7, 26 Aug 2026; 1.2.0-rc01 9 Sep 2026) and is the Compose-first recommendation; the old Navigation library is in maintenance mode. https://developer.android.com/jetpack/androidx/releases/navigation3, https://developer.android.com/jetpack/androidx/releases/navigation
+- **API levels that gate security features** (from API diffs https://developer.android.com/sdk/api_diff/28/changes/android.security.keystore.KeyGenParameterSpec.Builder.html, .../30/..., .../31/...): `setUserAuthenticationRequired` 23; `setInvalidatedByBiometricEnrollment`, `setAttestationChallenge` 24; `openProxyFileDescriptor` 26; **StrongBox, `setUnlockedDeviceRequired`, `setUserConfirmationRequired`, platform BiometricPrompt, USE_BIOMETRIC** 28; **`setUserAuthenticationParameters`** (timeout/per-use + auth type) 30, which also is the floor for DEVICE_CREDENTIAL in BiometricPrompt; `setAttestKeyAlias`/`setMaxUsageCount` 31; `dataExtractionRules` 31; POST_NOTIFICATIONS, `setRecentsScreenshotEnabled`, clipboard `EXTRA_IS_SENSITIVE` 33; FGS types mandatory, screenshot detection 34. **Recommendation: minSdk 30** (clean auth-parameter API, 512 persisted grants, native photo picker) — or 28 if reach matters, with 30-gated code paths.
+
+## 2. Storage & file access
+
+- SAF: `ACTION_OPEN_DOCUMENT`/`ACTION_CREATE_DOCUMENT` (19), `ACTION_OPEN_DOCUMENT_TREE` (21). Persist with `FLAG_GRANT_PERSISTABLE_URI_PERMISSION` + `takePersistableUriPermission`; grants die when the document is moved/deleted; Android 11+ forbids picking internal-storage root, Download, `Android/data`, `Android/obb`; `DocumentFile.canWrite()` is unreliable — query `FLAG_SUPPORTS_WRITE`. https://developer.android.com/training/data-storage/shared/documents-files. Persisted-grant cap: **128 (<API 30), 512 (API 30+)** — not on the docs page; from AOSP `MAX_PERSISTED_URI_GRANTS` and https://issuetracker.google.com/issues/149315521, https://commonsware.com/blog/2020/06/13/count-your-saf-uri-permission-grants.html.
+- **Photo Picker**: no permission; native on 11+ (mainline), backport to 4.4 via Play services; results are temporary until reboot unless persisted; up to 5,000 media grants; images/video only. https://developer.android.com/training/data-storage/shared/photopicker
+- **READ_MEDIA_***: Play allows them only when pickers are insufficient (gallery-type apps), declaration required, enforced since 28 May 2025 https://support.google.com/googleplay/android-developer/answer/14115180. Partial access (Android 14 `READ_MEDIA_VISUAL_USER_SELECTED`) https://developer.android.com/about/versions/14/changes/partial-photo-video-access. CryptVault should use Photo Picker + SAF and request none of these.
+- **MANAGE_EXTERNAL_STORAGE**: permitted categories are file managers, backup/restore, antivirus, document management, on-device search, **"Disk/Folder Encryption and Locking"**, device migration; explicitly invalid: media access and "any file selection activity requiring manual user selection"; Declaration Form required. https://support.google.com/googleplay/android-developer/answer/10467955. A vault that encrypts user-picked files does **not** qualify; it could only if bulk folder encryption were the core purpose. Avoid.
+- MediaStore.Downloads (API 29) lets you write to Downloads without permission, but exporting via `ACTION_CREATE_DOCUMENT` is the cleaner, user-chosen route. https://developer.android.com/training/data-storage/shared/media
+- **Cloud apps as DocumentsProviders** (all provider behaviour is third-party and can change):
+  - Google Drive: supports `ACTION_OPEN_DOCUMENT`/`CREATE_DOCUMENT` (per https://github.com/OneDrive/onedrive-api-docs/issues/1134); folder-tree picking widely reported absent (e.g. https://forum.obsidian.md/t/third-party-syncing-folders-not-visible-in-file-picker-android/20978) — current tree support UNVERIFIED.
+  - OneDrive: `OPEN_DOCUMENT` yes, `CREATE_DOCUMENT` no as of that 2019 issue; tree UNVERIFIED.
+  - Dropbox: no DocumentsProvider historically (https://community.dropbox.com/t5/API-Support-Feedback/Android-Storage-Access-Framework-support/m-p/147405; only an unofficial provider https://github.com/jiro-aqua/document-provider-dropbox-android) — UNVERIFIED for 2026 (thread content not retrievable).
+  - Nextcloud: tree support added (https://github.com/nextcloud/android/issues/303) but write bugs reported (0-byte files https://github.com/nextcloud/android/issues/6726, `createFile` null https://github.com/nextcloud/android/issues/7350).
+  - Practical caveats: no change notifications guaranteed, async upload (stream close ≠ uploaded), grants vanish on sign-out (provider returns empty roots), move/delete, provider-specific size/rename limits. **Conclusion**: use vendor SDKs/REST + OAuth for the built-in Dropbox/OneDrive/Drive backends; offer SAF-tree as a generic "other provider" option with a self-test on selection.
+
+## 3. Handing decrypted content to other apps
+
+- **FileProvider**: `content://` + `FLAG_GRANT_READ_URI_PERMISSION` via `setDataAndType`/ClipData; grant expires when the receiving task stack finishes; avoid `grantUriPermission()` (persistent, needs `revokeUriPermission`) and `Uri.fromFile()`. https://developer.android.com/training/secure-file-sharing/share-file. Android 17 warns that from Android 18 `ACTION_SEND`/`SEND_MULTIPLE` will no longer auto-grant — always set flags explicitly; test with `StrictMode.detectImplicitUriPermissionGrant()` https://developer.android.com/about/versions/17/behavior-changes-all.
+- Temp-file lifecycle: decrypt into a per-session subdir of `cacheDir` (never backed up), random names, wipe on lock/timeout/app start; the receiver can still copy the plaintext — unavoidable. `ACTION_EDIT` + `FLAG_GRANT_WRITE_URI_PERMISSION` for round trips; detect changes on return (hash/mtime) and re-encrypt — many editors "save as" instead of writing back. Cryptomator Android uses exactly this share/export + re-upload-on-return model https://docs.cryptomator.org/android/access-vault/.
+- **Custom DocumentsProvider**: manifest `android:permission="android.permission.MANAGE_DOCUMENTS"`, `exported=true`, `grantUriPermissions=true`, `DOCUMENTS_PROVIDER` intent filter; implement `queryRoots`/`queryChildDocuments`/`queryDocument`/`openDocument`; return empty roots when locked; tree picking needs `FLAG_SUPPORTS_IS_CHILD` + `isChildDocument`; `openDocument` must return a `ParcelFileDescriptor` — temp file, pipe (`createReliablePipe`, sequential only) or `StorageManager.openProxyFileDescriptor` (API 26, FUSE-backed, `ProxyFileDescriptorCallback` onRead/onWrite/onGetSize) for seekable streaming decrypt of large files (needs a chunked, random-access cipher format). https://developer.android.com/guide/topics/providers/create-document-provider, https://developer.android.com/sdk/api_diff/26/changes/android.os.storage.StorageManager.html. Cryptomator Android still has **no** DocumentsProvider (work paused Oct 2023, needed DB refactor; thread last checked Sept 2025) https://github.com/cryptomator/android/issues/35, https://community.cryptomator.org/t/official-update-needed-on-the-document-provider-for-the-android/13424 — a sign of the effort involved.
+- **Receiving**: `ACTION_SEND`/`SEND_MULTIPLE` filters with `mimeType="*/*"`, copy `EXTRA_STREAM` immediately https://developer.android.com/training/sharing/receive. For your container format: path attributes are only meaningful with scheme+host, so extension matching on `content:` URIs from mail apps does not work; match by MIME. Mail clients map unknown extensions to `application/octet-stream`; registering for it makes CryptVault appear for every unknown file. Use a custom extension plus a registered custom type (`application/vnd.cryptvault`), accept `application/octet-stream` too, and validate a magic header before importing. https://developer.android.com/guide/topics/manifest/data-element
+
+## 4. Biometrics & Keystore
+
+- `USE_BIOMETRIC` (normal permission). androidx.biometric: stable **1.1.0** (2021); **1.4.0-alpha07** (Apr 2026) adds `biometric-compose` (`rememberAuthenticationLauncher`), `AuthenticationRequest`, minSdk 23. https://developer.android.com/jetpack/androidx/releases/biometric — decide alpha vs stable.
+- `BIOMETRIC_STRONG` (Class 3) is required for `CryptoObject`; `DEVICE_CREDENTIAL` alone/combined unsupported ≤API 29; cannot pair `setNegativeButtonText` with DEVICE_CREDENTIAL; timeout keys: `setUserAuthenticationParameters(seconds, AUTH_BIOMETRIC_STRONG or AUTH_DEVICE_CREDENTIAL)`; per-use: duration 0 + CryptoObject; biometric-only keys are invalidated on new enrollment by default. https://developer.android.com/identity/sign-in/biometric-auth
+- StrongBox: `FEATURE_STRONGBOX_KEYSTORE`, `setIsStrongBoxBacked(true)`, catch `StrongBoxUnavailableException` and fall back; AES-128/256, EC P-256, RSA-2048, HMAC-SHA256. Attestation exists but only matters with a server. https://developer.android.com/privacy-and-security/keystore
+- Keystore keys are **not** part of Auto Backup/device transfer (key material never leaves the system/secure hardware; docs do not state it explicitly — UNVERIFIED official wording, but widely evidenced, e.g. https://github.com/MuntashirAkon/AppManager/issues/82). Design consequence: the master password (KDF → KEK) must always be able to open the vault; biometrics only unwrap a device-local copy.
+- Credential Manager/passkeys: recommended for sign-in flows, not for a local vault without accounts; not needed.
+- Platform changes: **Identity Check** (Android 15+, expanded Jan 2026) forces biometrics outside trusted places for all apps using BiometricPrompt — no dev action https://blog.google/security/android-theft-protection-feature-updates/; **Private space** (15): apps in a locked private space are force-stopped, so background backup will not run there https://developer.android.com/about/versions/15/behavior-changes-all; **Advanced Protection Mode** (16; `QUERY_ADVANCED_PROTECTION_MODE`, `isAdvancedProtectionEnabled`, callback; 17 disables accessibility for non-a11y apps) https://developer.android.com/privacy-and-security/advanced-protection-mode; Android 16 `accessibilityDataSensitive` / Compose `semantics { sensitiveData = true }` https://android-developers.googleblog.com/2025/12/enhancing-android-security-stop-malware.html; Android 17: 50,000-key per-app Keystore cap, hybrid PQC APK signing (needs a fresh classical key) https://developer.android.com/about/versions/17/features.
+
+## 5. Hardening & privacy
+
+- `FLAG_SECURE` on the window (also blanks recents; in Compose set it on the Activity window and use `SecureFlagPolicy.SecureOn` for dialogs/popups); `setRecentsScreenshotEnabled(false)` (33) for recents only; screenshot detection (34, `DETECT_SCREEN_CAPTURE`) only notifies; `HIDE_OVERLAY_WINDOWS` (31) + `filterTouchesWhenObscured`; Android 15 `setContentSensitivity` hides from screen share; on targetSdk 37 `FLAG_SECURE` is also the way to disable Content Capture. https://developer.android.com/security/fraud-prevention/activities, https://developer.android.com/about/versions/14/features/screenshot-detection, https://developer.android.com/about/versions/17/behavior-changes-17
+- Backup: `allowBackup` defaults true; use `dataExtractionRules` (31+, `<cloud-backup>`/`<device-transfer>`) plus `fullBackupContent` for ≤30; 25 MB quota; cache/no-backup dirs excluded. https://developer.android.com/identity/data/autobackup. Given the Keystore point, either `allowBackup=false` or exclude the vault and all key-wrapping files.
+- Clipboard: `ClipDescription.EXTRA_IS_SENSITIVE` (33) hides preview; Android 12+ shows paste toasts; `ClipboardManager.clearPrimaryClip()` (28) for timed clearing. https://developer.android.com/develop/ui/views/touch-and-input/copy-paste
+- Autofill: decide whether password managers may fill the master password (`importantForAutofill`).
+- Root/integrity: Play Integrity needs a backend to verify tokens (10k req/day default) — of little use for an offline vault; local root checks are advisory only. https://developer.android.com/google/play/integrity/overview
+- Network: cleartext off by default; Android 17 targets get Certificate Transparency and ECH by default; `usesCleartextTraffic` is slated for deprecation — use network security config. https://developer.android.com/about/versions/17/behavior-changes-17
+- Export compliance: Play Console has **no** per-app encryption questionnaire (unlike Apple); developer self-determines US EAR obligations; Google blocks embargoed countries. https://support.google.com/googleplay/android-developer/answer/113770. Mass-market crypto self-classification (BIS annual report) is a legal question for the owner (UNVERIFIED).
+
+## 6. Background work
+
+- WorkManager `PeriodicWorkRequest` ≥15 min; constraints UNMETERED/charging/battery-not-low/storage-not-low; expedited work needs `getForegroundInfo()`; long uploads via `setForeground()` → FGS `dataSync` (declare `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_DATA_SYNC`, `foregroundServiceType="dataSync"`, mandatory on 14+). https://developer.android.com/develop/background-work/background-tasks/persistent/getting-started/define-work, https://developer.android.com/about/versions/14/changes/fgs-types-required
+- Android 15+: dataSync FGS limited to **6 h per 24 h** across all such services; `Service.onTimeout()` → `stopSelf()`; further starts throw `ForegroundServiceStartNotAllowedException` until the app is foregrounded. https://developer.android.com/develop/background-work/services/fgs/timeout. Preferred: WorkManager for periodic backup; **user-initiated data transfer jobs** (Android 14, `JobInfo.setUserInitiated`, `RUN_USER_INITIATED_JOBS`) for manual "back up now". https://developer.android.com/about/versions/15/changes/datasync-migration
+- `POST_NOTIFICATIONS` runtime permission (33) for progress notifications https://developer.android.com/develop/ui/views/notifications/notification-permission. Android 15 throws on network I/O outside a valid process lifecycle — keep uploads inside workers/FGS. Doze defers periodic work; private-space copies never run in background.
+
+## 7. Play Console policy facts
+
+- **Data safety**: "collect" = transmitted off device; exempt: on-device-only processing, E2EE, and — verbatim — "If the user chooses to upload their data directly to their own external drive or cloud storage account and your app never collects or accesses the data, then your app does not need to declare collection". Locally stored OAuth tokens: no collection. Self-hosted Sentry-compatible crash reporting: declare **Crash logs** (and Diagnostics if enabled) under "App info and performance", collected, not shared; answer encryption-in-transit and provide a deletion request path; if the SDK sends installation/device IDs, declare "Device or other IDs". https://support.google.com/googleplay/android-developer/answer/10787469
+- **Permissions Declaration Form**: only for restricted permissions (All files access, READ_MEDIA_*, QUERY_ALL_PACKAGES…) — avoid them and no form is needed. https://support.google.com/googleplay/android-developer/answer/9888170
+- **Content rating**: IARC questionnaire mandatory; "unrated apps are not permitted" (Jul 2026 clarification). https://support.google.com/googleplay/android-developer/answer/9859655
+- **Account deletion**: applies only to apps that let users create an account in-app — N/A for CryptVault (the Data-safety deletion question for crash data still applies). https://support.google.com/googleplay/android-developer/answer/13327111
+- **Privacy policy**: required for every app in Play Console (even with no collection); must also be linked in-app when sensitive permissions/data are involved. https://support.google.com/googleplay/android-developer/answer/10144311
+- **Accounts**: organization accounts need a D-U-N-S number (verification up to 30 days; legal name/address must match the payments profile), org website/phone, public developer email+phone https://support.google.com/googleplay/android-developer/answer/13628312; personal accounts created after 13 Nov 2023 need **12 opted-in testers for 14 continuous days** before production https://support.google.com/googleplay/android-developer/answer/14151465.
+- **Android developer verification**: Play auto-registers ~99% of apps; register remaining package names/signing keys in Play Console; enforcement from **30 Sep 2026** in BR/ID/SG/TH, global 2027; unregistered apps risk removal (Jul 2026 announcement). https://developer.android.com/developer-verification, https://support.google.com/googleplay/android-developer/answer/17134731
+
+## Recommendations for the brief
+
+1. targetSdk 36 now, plan 37 for 2027; minSdk 30 (or 28 with gated paths); AGP 9.3 / Kotlin 2.4.20 / Compose BOM 2026.09.00 / Material 3 1.4 / Navigation 3.
+2. No native libs unless 16 KB-aligned; add `zipalign -c -P 16` to CI.
+3. No READ_MEDIA_*, no MANAGE_EXTERNAL_STORAGE, no QUERY_ALL_PACKAGES → no declaration forms.
+4. Import via Photo Picker + `ACTION_OPEN_DOCUMENT(_TREE)`; export via `ACTION_CREATE_DOCUMENT`; manage the persisted-grant cap.
+5. Cloud backup through vendor SDKs (Dropbox/Graph/Drive REST) with OAuth; SAF-tree only as generic fallback with a write self-test.
+6. Password-derived KEK is the root of trust; Keystore/biometric key only wraps a cached copy; handle enrollment invalidation and post-restore absence gracefully.
+7. BiometricPrompt with BIOMETRIC_STRONG + CryptoObject; timeout vs per-use configurable; DEVICE_CREDENTIAL fallback only on API 30+.
+8. Phase 1: FileProvider share/open with cache-dir temp files and aggressive wipe; Phase 2 (optional): DocumentsProvider with `openProxyFileDescriptor` and a chunked cipher format.
+9. Register a custom extension + custom MIME, accept `application/octet-stream`, validate magic bytes; receive `ACTION_SEND(_MULTIPLE)`.
+10. FLAG_SECURE everywhere (incl. Compose dialogs), recents blanking, `sensitiveData` semantics, HIDE_OVERLAY_WINDOWS, clipboard sensitive flag + timed clear.
+11. `allowBackup=false` or strict `dataExtractionRules`; document that Auto Backup cannot restore the vault key.
+12. Backups via WorkManager (unmetered/charging constraints); manual runs as user-initiated data-transfer jobs; respect the 6 h dataSync cap; request POST_NOTIFICATIONS.
+13. Data safety: declare crash logs only; user-chosen cloud uploads are exempt; publish privacy policy URL + in-app link; complete IARC.
+14. Register all package names/signing keys for developer verification before 30 Sep 2026; decide personal vs organization account (D-U-N-S, 12-tester rule).
+15. Query Advanced Protection Mode and tighten behaviour (e.g. disable share-to-external) when enabled.
+
+## Open questions for the app owner
+
+- Personal or organization Play account (D-U-N-S availability; 12-tester closed test)?
+- minSdk 28 vs 30 — how much reach vs. API cleanliness?
+- Ship the DocumentsProvider in v1, or share/export only?
+- Cipher format: whole-file AEAD (simple) vs chunked/seekable (streaming, large files)?
+- Which backup backends at launch (Dropbox, OneDrive, Drive, WebDAV, generic SAF folder)?
+- Allow password managers to autofill the master password?
+- Biometric policy: per-use vs timeout window; allow PIN/pattern fallback?
+- Crash reporting: opt-in or default-on; what identifiers does the SDK send?
+- Behaviour when the app is installed in a private space / Advanced Protection is on?
+- Use androidx.biometric 1.4 alpha (Compose API) or stable 1.1.0?
+- US EAR self-classification handling (legal counsel)?
+- Adopt hybrid PQC APK signing from the first release?
+
+---
+
+Note added by the brief's author: the house toolchain pins (AGP 9.3.1, Compose BOM 2026.06.01,
+minSdk 26, target/compile 37, Navigation Compose) take precedence over the version
+recommendations above; see `BUILD_BRIEF.md` §8. The interview answered every open question
+above except the US EAR and PQC-signing items, which are carried in `BUILD_BRIEF.md` §13.

@@ -1,0 +1,35 @@
+{
+  "app_name": "CryptVault",
+  "project_name": "CryptVault",
+  "package": "info.piepgras.cryptvault",
+  "project_dir": "/home/martin/AndroidStudioProjects/cryptvault",
+  "app_type": "Productivity / tools (security)",
+  "one_liner": "An encrypted vault for the files and notes that matter, in the open Cryptomator format: open them in any app, back them up to your own cloud, mail them in a container only the recipient can open.",
+  "min_sdk": 26,
+  "target_sdk": 37,
+  "compile_sdk": 37,
+  "locales": [
+    "de",
+    "ru"
+  ],
+  "capabilities": [
+    "crash-reporting",
+    "file-sharing",
+    "material-icons-extended",
+    "navigation",
+    "networking",
+    "notifications",
+    "serialization",
+    "shared-module"
+  ],
+  "theme_color": "#1E3A8A",
+  "crash_reporting_dsn": "",
+  "git_remote": "git@192.168.5.5:/foundation/backup/git/cryptvault",
+  "template_project": "/home/martin/AndroidStudioProjects/existentialdreadrunner",
+  "developer": {
+    "legal_name": "Martin Kruse",
+    "contact_email": "apps@piepgras.info",
+    "website": "https://piepgras.info",
+    "imprint_url": "https://piepgras.info/imprint/"
+  }
+}
