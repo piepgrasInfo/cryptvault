@@ -35,7 +35,7 @@ class SafVaultStorage(private val resolver: ContentResolver, val treeUri: Uri) :
     private fun docUri(docId: String): Uri = DocumentsContract.buildDocumentUriUsingTree(treeUri, docId)
     private fun childrenUri(docId: String): Uri = DocumentsContract.buildChildDocumentsUriUsingTree(treeUri, docId)
 
-    private data class Child(val id: String, val name: String, val isDirectory: Boolean, val size: Long)
+    private data class Child(val id: String, val name: String, val isDirectory: Boolean, val size: Long, val lastModified: Long)
 
     private fun children(docId: String): List<Child> {
         val out = ArrayList<Child>()
@@ -44,7 +44,7 @@ class SafVaultStorage(private val resolver: ContentResolver, val treeUri: Uri) :
         cursor.use { c ->
             while (c.moveToNext()) {
                 val mime = c.getString(2) ?: ""
-                out += Child(c.getString(0), c.getString(1) ?: continue, mime == DocumentsContract.Document.MIME_TYPE_DIR, if (c.isNull(3)) 0 else c.getLong(3))
+                out += Child(c.getString(0), c.getString(1) ?: continue, mime == DocumentsContract.Document.MIME_TYPE_DIR, if (c.isNull(3)) 0 else c.getLong(3), if (c.isNull(4)) 0 else c.getLong(4))
             }
         }
         return out
@@ -84,7 +84,7 @@ class SafVaultStorage(private val resolver: ContentResolver, val treeUri: Uri) :
         val id = resolve(dir) ?: throw IOException("not a directory: $dir")
         val kids = children(id)
         synchronized(lock) { for (k in kids) ids[if (dir.isEmpty()) k.name else "$dir/${k.name}"] = k.id }
-        return kids.map { StorageEntry(it.name, it.isDirectory, if (it.isDirectory) 0 else it.size) }
+        return kids.map { StorageEntry(it.name, it.isDirectory, if (it.isDirectory) 0 else it.size, if (it.isDirectory) 0 else it.lastModified) }
     }
 
     override fun stat(path: String): StorageEntry? {
@@ -98,7 +98,7 @@ class SafVaultStorage(private val resolver: ContentResolver, val treeUri: Uri) :
             if (!c.moveToFirst()) return null
             val mime = c.getString(2) ?: ""
             val isDir = mime == DocumentsContract.Document.MIME_TYPE_DIR
-            return StorageEntry(c.getString(1) ?: nameOf(path), isDir, if (isDir || c.isNull(3)) 0 else c.getLong(3))
+            return StorageEntry(c.getString(1) ?: nameOf(path), isDir, if (isDir || c.isNull(3)) 0 else c.getLong(3), if (isDir || c.isNull(4)) 0 else c.getLong(4))
         }
     }
 
@@ -242,6 +242,7 @@ class SafVaultStorage(private val resolver: ContentResolver, val treeUri: Uri) :
             DocumentsContract.Document.COLUMN_DISPLAY_NAME,
             DocumentsContract.Document.COLUMN_MIME_TYPE,
             DocumentsContract.Document.COLUMN_SIZE,
+            DocumentsContract.Document.COLUMN_LAST_MODIFIED,
         )
 
         /**

@@ -10,8 +10,8 @@ import java.nio.file.StandardCopyOption
 import java.nio.file.StandardOpenOption
 import kotlin.streams.asSequence
 
-/** One entry of a ciphertext directory listing. */
-data class StorageEntry(val name: String, val isDirectory: Boolean, val size: Long)
+/** One entry of a ciphertext directory listing; [lastModified] in epoch millis, 0 when unknown. */
+data class StorageEntry(val name: String, val isDirectory: Boolean, val size: Long, val lastModified: Long = 0)
 
 /**
  * The bytes under a vault: a directory tree of ciphertext files. Paths are relative to the
@@ -51,7 +51,7 @@ class PathVaultStorage(val root: Path) : VaultStorage {
         return Files.list(p).use { stream ->
             stream.asSequence().map { child ->
                 val isDir = Files.isDirectory(child)
-                StorageEntry(child.fileName.toString(), isDir, if (isDir) 0 else Files.size(child))
+                StorageEntry(child.fileName.toString(), isDir, if (isDir) 0 else Files.size(child), if (isDir) 0 else Files.getLastModifiedTime(child).toMillis())
             }.toList()
         }
     }
@@ -60,7 +60,7 @@ class PathVaultStorage(val root: Path) : VaultStorage {
         val p = resolve(path)
         if (!Files.exists(p)) return null
         val isDir = Files.isDirectory(p)
-        return StorageEntry(p.fileName?.toString() ?: "", isDir, if (isDir) 0 else Files.size(p))
+        return StorageEntry(p.fileName?.toString() ?: "", isDir, if (isDir) 0 else Files.size(p), if (isDir) 0 else Files.getLastModifiedTime(p).toMillis())
     }
 
     override fun readChannel(path: String): SeekableByteChannel =
