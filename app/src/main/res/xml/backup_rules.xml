@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  Backup rules for devices older than API 31 (Android 12).
-  Everything the app stores is on-device, so all of it is included in the
-  automatic backup. Whatever this includes has to be described in
-  legal/privacy-policy.md under 'Device backups'.
--->
-<full-backup-content>
-        <include domain="sharedpref" path="." />
-</full-backup-content>

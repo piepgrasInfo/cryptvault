@@ -21,6 +21,13 @@ navigationCompose = "2.8.5"
 ktor = "3.0.3"
 serialization = "1.11.0"
 kotlin = "2.4.10"
+# The vault format. 2.2.2, never 2.2.1: the official Android app marks 2.2.1 as broken for
+# file creation (buildsystem/dependencies.gradle in cryptomator/android). AGPL-3.0, see NOTICE.
+cryptolib = "2.2.2"
+# Test-only: Cryptomator's own file-system layer, which opens the vaults this app writes -
+# the interop check of BUILD_BRIEF.md §12 Phase 0 runs on the JVM. Needs Java 25 at test time.
+cryptofs = "2.10.0"
+slf4j = "2.0.17"
 
 [libraries]
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -52,6 +59,10 @@ ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.r
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
+cryptolib = { group = "org.cryptomator", name = "cryptolib", version.ref = "cryptolib" }
+cryptofs = { group = "org.cryptomator", name = "cryptofs", version.ref = "cryptofs" }
+slf4j-nop = { group = "org.slf4j", name = "slf4j-nop", version.ref = "slf4j" }
+slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

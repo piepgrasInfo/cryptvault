@@ -11,6 +11,14 @@ import java.util.Properties
 val keystorePropertiesFile = rootProject.file("keystore.properties")
 val hasReleaseSigning = keystorePropertiesFile.exists()
 
+// Provider registrations (docs/PROVIDER_SETUP.md). Not secrets, but per developer, so they are
+// read from a gitignored file into BuildConfig; an empty value hides that backup target.
+val providerProperties = Properties().apply {
+    val f = rootProject.file("providers.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+fun provider(key: String): String = "\"${providerProperties.getProperty(key, "").trim()}\""
+
 android {
     namespace = "info.piepgras.cryptvault"
     compileSdk = 37
@@ -22,6 +30,8 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "DROPBOX_APP_KEY", provider("DROPBOX_APP_KEY"))
+        buildConfigField("String", "MSAL_CLIENT_ID", provider("MSAL_CLIENT_ID"))
     }
 
     signingConfigs {
@@ -100,8 +110,15 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
 
+    // The vault format (BUILD_BRIEF.md §3). cryptolib logs through slf4j: a no-op binding in
+    // release, stderr (visible in logcat) in debug.
+    implementation(libs.cryptolib)
+    debugImplementation(libs.slf4j.simple)
+    releaseImplementation(libs.slf4j.nop)
+
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.cryptofs)
 
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.junit)

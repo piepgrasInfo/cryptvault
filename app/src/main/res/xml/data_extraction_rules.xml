@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  Data extraction rules for API 31+ (Android 12+).
+  Android 12+: nothing is backed up to the cloud and nothing moves in a device-to-device
+  transfer. allowBackup="false" on the application element covers older versions. Why: a vault
+  is only readable with its password, the biometric wrap in the Keystore never transfers, and
+  the registry would point at vaults that are not there. CryptVault's own backup (BUILD_BRIEF.md
+  §6) is how a vault survives a phone. legal/privacy-policy.md says the same under 'Device backups'.
 -->
 <data-extraction-rules>
     <cloud-backup>
-        <include domain="sharedpref" path="." />
+        <exclude domain="root" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="external" path="." />
+        <exclude domain="device_file" path="." />
     </cloud-backup>
     <device-transfer>
-        <include domain="sharedpref" path="." />
+        <exclude domain="root" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="external" path="." />
+        <exclude domain="device_file" path="." />
     </device-transfer>
 </data-extraction-rules>

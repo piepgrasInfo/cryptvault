@@ -5,7 +5,9 @@ format. Open items in any app, back the vault up to your own cloud (Dropbox, One
 Drive, WebDAV or any folder), and mail small items in an encrypted container the recipient opens
 with free tools. GPL-3.0-or-later.
 
-This repository is at the **design stage**. There is no app code yet. What is here:
+The design is complete and the foundation is built (Phase 0 of the brief: the Cryptomator
+format adapter with its tests, the recovery key, licences). The app's screens, backup and mail
+come in the later phases. What is here:
 
 - `BUILD_BRIEF.md` — the design target a building agent starts from: product, vault format,
   security, backup, mail, architecture, screens, legal consequences, the phased build plan, and
@@ -15,12 +17,22 @@ This repository is at the **design stage**. There is no app code yet. What is he
   phase gate.
 - `docs/PROVIDER_SETUP.md` — the registrations and other lead-time items the developer does by hand.
 - `docs/research/` — the research reports the brief rests on, with sources.
-- `spec.json` — the input for the house scaffolder.
+- `spec.json` — the input the house scaffolder generated the project from.
+- `CLAUDE.md` — build commands, conventions and the architecture as it is; `handoff.md` — the
+  session log with what was verified.
 
-## Building the project from this brief
+## Building
 
-1. Repoint `origin` to `git@192.168.5.5:/foundation/backup/git/cryptvault` and prove it with
-   `git ls-remote` (see `BUILD_BRIEF.md` §12, Phase 0).
-2. Run the `app-generate-android-project` skill with the committed `spec.json`; it produces the
-   Gradle project, `CLAUDE.md`, `handoff.md`, the legal and store scaffolding.
-3. Follow the phases in `BUILD_BRIEF.md` §12.
+```bash
+cp providers.properties.example providers.properties   # fill in later; empty is fine
+./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug :shared:jvmTest
+```
+
+Needs an Android SDK in `local.properties` (`sdk.dir=…`) and a Java 25 JDK for the daemon
+(downloaded automatically through `gradle/gradle-daemon-jvm.properties`).
+
+## Licence
+
+GPL-3.0-or-later. `NOTICE` lists the third-party components, above all Cryptomator's
+`cryptolib` (AGPL-3.0) and the recovery-key code and word list ported from Cryptomator desktop
+(GPL-3.0).

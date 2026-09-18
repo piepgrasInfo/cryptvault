@@ -1,0 +1,10 @@
+# Copy to providers.properties (gitignored) and fill in. These identifiers are not secrets - they
+# ship inside every APK - but they are per developer registration, so they stay out of the
+# repository. See docs/PROVIDER_SETUP.md for where each one comes from. Empty values are allowed:
+# the corresponding backup target then hides itself in the app.
+
+# Dropbox App Console -> your app -> Settings -> App key.
+DROPBOX_APP_KEY=
+
+# Microsoft Entra -> App registrations -> your app -> Application (client) ID.
+MSAL_CLIENT_ID=

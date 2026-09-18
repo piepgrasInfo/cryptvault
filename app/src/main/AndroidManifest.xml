@@ -19,10 +19,13 @@
         android:largeScreens="true"
         android:xlargeScreens="true" />
 
+    <!-- No device backup or transfer: a vault is only readable with its password, the
+         biometric wrap lives in the Keystore and never transfers, and the app's own state is
+         a registry that a restore would leave pointing at vaults that are not there. CryptVault's
+         own backup (BUILD_BRIEF.md §6) is the way a vault survives a phone. -->
     <application
         android:name=".CryptVaultApp"
-        android:allowBackup="true"
-        android:fullBackupContent="@xml/backup_rules"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:resizeableActivity="true"
         android:icon="@mipmap/ic_launcher"

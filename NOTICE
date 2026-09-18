@@ -1,0 +1,32 @@
+CryptVault
+Copyright (C) 2026 Martin Kruse
+
+This program is free software: you can redistribute it and/or modify it under the terms of the
+GNU General Public License as published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version. See LICENSE.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+----------------------------------------------------------------------------------------------
+
+Third-party components and ported code. Every entry here is also named in the app's About screen.
+
+Cryptomator cryptolib (https://github.com/cryptomator/cryptolib)
+  Copyright (C) Skymatic GmbH. Licensed under the GNU Affero General Public License v3.0.
+  Used as a library for the Cryptomator vault format 8 (masterkey file, file headers, chunked
+  AES-GCM content, AES-SIV file names). Its transitive dependencies siv-mode (MIT), Gson
+  (Apache-2.0), Guava (Apache-2.0) and slf4j-api (MIT) ship with it.
+
+Cryptomator desktop (https://github.com/cryptomator/cryptomator), GPL-3.0:
+  - the 4096-word English recovery-key dictionary (src/main/resources/i18n/4096words_en.txt),
+    reproduced in shared/src/commonMain/kotlin/info/piepgras/cryptvault/recovery/RecoveryWords.kt;
+  - the word encoding and the recovery-key checksum layout (WordEncoder.java,
+    RecoveryKeyFactory.java), ported to Kotlin in the same package.
+  Origin commit: e1d83c996e501649b2253741e4a80ce54646b317. Attribution is repeated at the top of
+  each ported file.
+
+Components added by later phases are appended here in the commit that adds them:
+zip4j (Apache-2.0), kage (Apache-2.0), PGPainless (Apache-2.0), Bouncy Castle (MIT-style),
+Dropbox SDK for Java (MIT), MSAL for Android (MIT), zxcvbn4j (MIT), the EFF long word list
+(CC-BY-3.0), and the AndroidX/Kotlin libraries (Apache-2.0).
