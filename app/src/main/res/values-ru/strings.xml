@@ -1,7 +1,254 @@
-<resources>
-    <!-- ru translations. Every string in values/strings.xml must also exist here,
-         in the same commit - lint reports a missing one as a MissingTranslation error.
-         app_name repeats the untranslated brand name on purpose. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">CryptVault</string>
-    <string name="placeholder_subtitle">TODO: translate.</string>
+
+    <string name="action_ok">ОК</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_back">Назад</string>
+    <string name="action_more">Ещё</string>
+    <string name="action_lock">Заблокировать</string>
+    <string name="action_save">Сохранить</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_rename">Переименовать</string>
+    <string name="action_move">Переместить</string>
+    <string name="action_share">Поделиться</string>
+    <string name="action_export">Экспортировать</string>
+    <string name="action_open">Открыть</string>
+    <string name="action_edit">Изменить</string>
+    <string name="action_open_with">Открыть с помощью…</string>
+    <string name="action_edit_with">Изменить с помощью…</string>
+    <string name="action_search">Поиск</string>
+    <string name="action_sort">Сортировка</string>
+    <string name="action_toggle_grid">Переключить вид сетки</string>
+    <string name="action_select_all">Выбрать все</string>
+    <string name="action_continue">Продолжить</string>
+    <string name="action_change">Изменить</string>
+    <string name="action_import_here">Импортировать сюда</string>
+    <string name="action_delete_originals">Удалить оригиналы</string>
+
+    <string name="gate_legal_title">Перед началом</string>
+    <string name="gate_legal_body">CryptVault хранит ваши файлы в зашифрованном хранилище на этом устройстве. Открыть его может только ваш пароль. Если потеряны и пароль, и ключ восстановления, данные утрачены навсегда; никто, включая разработчика, не сможет их вернуть.\n\nУ приложения нет учётной записи и сервера. Телефон ничего не покидает, кроме того, что вы сохраняете в собственное облачное хранилище — по-прежнему в зашифрованном виде — и того, чем вы сами делитесь или что отправляете.\n\nПродолжая, вы принимаете условия использования и ознакомлены с политикой конфиденциальности; обе доступны в разделе Настройки › О приложении.</string>
+    <string name="gate_legal_accept">Понятно</string>
+    <string name="gate_legal_decline">Выйти</string>
+    <string name="gate_crash_title">Отчёты о сбоях</string>
+    <string name="gate_crash_body">При сбое приложение может отправить отчёт (ошибку, трассировку стека и модель устройства) на собственный сервер разработчика. Отчёты никогда не содержат имён файлов, заголовков, тегов, заметок, названий хранилищ или учётных записей. По умолчанию это выключено; изменить можно в настройках в любой момент.</string>
+    <string name="gate_crash_yes">Отправлять отчёты</string>
+    <string name="gate_crash_no">Не сейчас</string>
+
+    <string name="vaults_create">Новое хранилище</string>
+    <string name="vaults_add_existing">Открыть существующее хранилище…</string>
+    <string name="vaults_add_existing_title">Название этого хранилища</string>
+    <string name="vaults_lock_all">Заблокировать все</string>
+    <string name="vaults_empty_title">Хранилищ пока нет</string>
+    <string name="vaults_empty_body">Создайте хранилище для важных файлов и заметок или откройте уже существующее хранилище Cryptomator.</string>
+    <plurals name="vaults_pending_import">
+        <item quantity="one">%d полученный файл ожидает. Разблокируйте хранилище, чтобы импортировать его.</item>
+        <item quantity="few">%d полученных файла ожидают. Разблокируйте хранилище, чтобы импортировать их.</item>
+        <item quantity="many">%d полученных файлов ожидают. Разблокируйте хранилище, чтобы импортировать их.</item>
+        <item quantity="other">%d полученных файла ожидают. Разблокируйте хранилище, чтобы импортировать их.</item>
+    </plurals>
+    <string name="vault_state_locked">Заблокировано</string>
+    <string name="vault_state_unlocked">Разблокировано</string>
+    <string name="vault_location_folder">Папка: %1$s</string>
+    <string name="vault_location_missing">Папка больше недоступна. Откройте её заново через меню.</string>
+    <string name="vault_name_label">Название хранилища</string>
+
+    <string name="create_vault_title">Новое хранилище</string>
+    <string name="create_vault_location">Где хранить</string>
+    <string name="create_vault_private">Внутри приложения</string>
+    <string name="create_vault_private_hint">Невидимо для других приложений. Покидает телефон только через резервную копию, экспорт или отправку.</string>
+    <string name="create_vault_folder">В выбранной мной папке</string>
+    <string name="create_vault_folder_hint">SD-карта, локальная папка или папка облачного приложения. Открывается в Cryptomator на компьютере.</string>
+    <string name="create_vault_choose_folder">Выбрать папку…</string>
+    <string name="create_vault_folder_chosen">Папка выбрана ✓ (изменить)</string>
+    <string name="create_vault_cloud_warning">Похоже, это папка облачного приложения. Запись там медленнее, и приложение может создавать конфликтные копии.</string>
+    <string name="create_vault_recovery_notice">Пароль — единственный ключ. После создания запишите ключ восстановления из настроек хранилища: это единственный путь обратно, если пароль будет утерян.</string>
+    <string name="create_vault_action">Создать хранилище</string>
+    <string name="password_label">Пароль</string>
+    <string name="password_confirm_label">Повторите пароль</string>
+    <string name="password_current_label">Текущий пароль</string>
+    <string name="password_new_label">Новый пароль</string>
+    <string name="password_hint">Не менее 10 символов. Несколько несвязанных слов лучше, чем спецсимволы.</string>
+    <string name="password_ok">Хорошо.</string>
+    <plurals name="password_too_weak">
+        <item quantity="one">Используйте не менее %1$d символа.</item>
+        <item quantity="few">Используйте не менее %1$d символов.</item>
+        <item quantity="many">Используйте не менее %1$d символов.</item>
+        <item quantity="other">Используйте не менее %1$d символа.</item>
+    </plurals>
+    <string name="password_mismatch">Пароли не совпадают.</string>
+    <string name="password_toggle_visibility">Показать или скрыть пароль</string>
+
+    <string name="unlock_action">Разблокировать</string>
+    <string name="unlock_wrong_password">Неверный пароль.</string>
+    <string name="unlock_format_error">CryptVault не может открыть это хранилище: %1$s</string>
+    <string name="unlock_io_error">Не удалось открыть хранилище: %1$s</string>
+
+    <string name="fab_add">Добавить</string>
+    <string name="fab_import_files">Импортировать файлы</string>
+    <string name="fab_import_media">Импортировать фото и видео</string>
+    <string name="fab_capture">Сделать фото</string>
+    <string name="fab_new_note">Новая заметка</string>
+    <string name="fab_new_folder">Новая папка</string>
+    <string name="search_hint">Поиск по заголовкам, именам, тегам и заметкам</string>
+    <string name="browser_empty">Пока пусто. Нажмите +, чтобы добавить файлы, фото, заметку или папку.</string>
+    <string name="browser_no_matches">Ничего не найдено.</string>
+    <plurals name="browser_pending_import">
+        <item quantity="one">%d полученный файл ожидает.</item>
+        <item quantity="few">%d полученных файла ожидают.</item>
+        <item quantity="many">%d полученных файлов ожидают.</item>
+        <item quantity="other">%d полученных файла ожидают.</item>
+    </plurals>
+    <plurals name="selected_count">
+        <item quantity="one">Выбран %d</item>
+        <item quantity="few">Выбрано %d</item>
+        <item quantity="many">Выбрано %d</item>
+        <item quantity="other">Выбрано %d</item>
+    </plurals>
+    <string name="sort_name">Имя</string>
+    <string name="sort_date">Дата</string>
+    <string name="sort_size">Размер</string>
+    <string name="sort_kind">Тип</string>
+    <string name="folder_root">Корень хранилища</string>
+    <string name="folder_name_label">Имя папки</string>
+    <string name="file_name_label">Имя файла</string>
+    <string name="dialog_new_folder">Новая папка</string>
+    <string name="dialog_rename">Переименовать</string>
+    <string name="dialog_move_to">Переместить в</string>
+    <string name="dialog_delete_title">Удалить?</string>
+    <plurals name="dialog_delete_items">
+        <item quantity="one">Удалить %d элемент из хранилища? Здесь это нельзя отменить; резервные копии сохраняют последние снимки.</item>
+        <item quantity="few">Удалить %d элемента из хранилища? Здесь это нельзя отменить; резервные копии сохраняют последние снимки.</item>
+        <item quantity="many">Удалить %d элементов из хранилища? Здесь это нельзя отменить; резервные копии сохраняют последние снимки.</item>
+        <item quantity="other">Удалить %d элемента из хранилища? Здесь это нельзя отменить; резервные копии сохраняют последние снимки.</item>
+    </plurals>
+    <string name="dialog_delete_item">Удалить «%1$s» из хранилища? Здесь это нельзя отменить; резервные копии сохраняют последние снимки.</string>
+    <string name="dialog_delete_folder">Удалить папку «%1$s» со всем содержимым? Здесь это нельзя отменить.</string>
+    <string name="dialog_delete_originals_title">Удалить оригиналы?</string>
+    <plurals name="dialog_delete_originals">
+        <item quantity="one">%d файл теперь в хранилище. Удалить оригинал за пределами хранилища?</item>
+        <item quantity="few">%d файла теперь в хранилище. Удалить оригиналы за пределами хранилища?</item>
+        <item quantity="many">%d файлов теперь в хранилище. Удалить оригиналы за пределами хранилища?</item>
+        <item quantity="other">%d файла теперь в хранилище. Удалить оригиналы за пределами хранилища?</item>
+    </plurals>
+    <string name="progress_importing">Импорт…</string>
+    <string name="progress_exporting">Экспорт…</string>
+    <string name="progress_preparing">Расшифровка…</string>
+    <string name="progress_n_of_m">%1$d из %2$d</string>
+    <plurals name="msg_imported">
+        <item quantity="one">Импортирован %1$d файл.</item>
+        <item quantity="few">Импортировано %1$d файла.</item>
+        <item quantity="many">Импортировано %1$d файлов.</item>
+        <item quantity="other">Импортировано %1$d файла.</item>
+    </plurals>
+    <plurals name="msg_import_failed">
+        <item quantity="one">Импортирован %1$d файл. Не удалось: %2$s</item>
+        <item quantity="few">Импортировано %1$d файла. Не удалось: %2$s</item>
+        <item quantity="many">Импортировано %1$d файлов. Не удалось: %2$s</item>
+        <item quantity="other">Импортировано %1$d файла. Не удалось: %2$s</item>
+    </plurals>
+    <plurals name="msg_originals_deleted">
+        <item quantity="one">Удалён %1$d оригинал.</item>
+        <item quantity="few">Удалено %1$d оригинала.</item>
+        <item quantity="many">Удалено %1$d оригиналов.</item>
+        <item quantity="other">Удалено %1$d оригинала.</item>
+    </plurals>
+    <string name="msg_originals_not_deletable">Оригиналы не удалось удалить отсюда. Удалите их в их собственном приложении.</string>
+    <plurals name="msg_moved">
+        <item quantity="one">Перемещён %1$d элемент.</item>
+        <item quantity="few">Перемещено %1$d элемента.</item>
+        <item quantity="many">Перемещено %1$d элементов.</item>
+        <item quantity="other">Перемещено %1$d элемента.</item>
+    </plurals>
+    <plurals name="msg_deleted">
+        <item quantity="one">Удалён %1$d элемент.</item>
+        <item quantity="few">Удалено %1$d элемента.</item>
+        <item quantity="many">Удалено %1$d элементов.</item>
+        <item quantity="other">Удалено %1$d элемента.</item>
+    </plurals>
+    <plurals name="msg_exported">
+        <item quantity="one">Экспортирован %1$d файл.</item>
+        <item quantity="few">Экспортировано %1$d файла.</item>
+        <item quantity="many">Экспортировано %1$d файлов.</item>
+        <item quantity="other">Экспортировано %1$d файла.</item>
+    </plurals>
+    <plurals name="msg_saved_back">
+        <item quantity="one">%1$d изменённый файл сохранён обратно в хранилище.</item>
+        <item quantity="few">%1$d изменённых файла сохранены обратно в хранилище.</item>
+        <item quantity="many">%1$d изменённых файлов сохранены обратно в хранилище.</item>
+        <item quantity="other">%1$d изменённых файла сохранены обратно в хранилище.</item>
+    </plurals>
+    <string name="msg_no_app_for">На этом телефоне нет приложения, открывающего %1$s.</string>
+    <string name="open_with_notice_title">Открытие в другом приложении</string>
+    <string name="open_with_notice_body">Файл расшифровывается во временную копию и передаётся выбранному приложению. Оно может сохранить собственную копию; CryptVault не сможет её забрать. Временная копия удаляется при блокировке хранилища.</string>
+
+    <string name="item_title_label">Заголовок</string>
+    <string name="item_tags_label">Теги</string>
+    <string name="item_tags_hint">поездка, документы, 2026</string>
+    <string name="item_note_label">Заметка</string>
+    <string name="item_info_name">Имя файла</string>
+    <string name="item_info_folder">Папка</string>
+    <string name="item_info_type">Тип</string>
+    <string name="item_info_size">Размер</string>
+    <string name="item_info_added">Добавлен</string>
+    <string name="item_info_modified">Изменён</string>
+
+    <string name="note_new_title">Новая заметка</string>
+    <string name="note_edit_title">Заметка</string>
+    <string name="note_title_label">Заголовок</string>
+    <string name="note_body_label">Текст</string>
+    <string name="note_default_title">Заметка</string>
+
+    <string name="vault_settings_title">Настройки хранилища</string>
+    <string name="vault_settings_name">Название</string>
+    <string name="vault_settings_location">Расположение</string>
+    <string name="vault_settings_auto_lock">Автоматическая блокировка</string>
+    <string name="vault_settings_change_password">Сменить пароль</string>
+    <string name="vault_settings_export_folder">Экспортировать папку хранилища</string>
+    <string name="vault_settings_export_folder_hint">Копирует зашифрованное хранилище как есть в выбранную папку — для Cryptomator на компьютере или другого телефона.</string>
+    <string name="vault_settings_delete">Удалить хранилище</string>
+    <string name="vault_settings_delete_hint">Резервные копии в вашем облачном хранилище не затрагиваются.</string>
+    <string name="auto_lock_immediately">Сразу</string>
+    <plurals name="auto_lock_seconds">
+        <item quantity="one">Через %d секунду в фоне</item>
+        <item quantity="few">Через %d секунды в фоне</item>
+        <item quantity="many">Через %d секунд в фоне</item>
+        <item quantity="other">Через %d секунды в фоне</item>
+    </plurals>
+    <plurals name="auto_lock_minutes">
+        <item quantity="one">Через %d минуту в фоне</item>
+        <item quantity="few">Через %d минуты в фоне</item>
+        <item quantity="many">Через %d минут в фоне</item>
+        <item quantity="other">Через %d минуты в фоне</item>
+    </plurals>
+    <plurals name="auto_lock_hours">
+        <item quantity="one">Через %d час в фоне</item>
+        <item quantity="few">Через %d часа в фоне</item>
+        <item quantity="many">Через %d часов в фоне</item>
+        <item quantity="other">Через %d часа в фоне</item>
+    </plurals>
+    <string name="msg_password_changed">Пароль изменён.</string>
+    <string name="msg_vault_exported">Папка хранилища экспортирована.</string>
+    <string name="dialog_delete_vault_body">Удалить хранилище «%1$s»? После этого ничего из него нельзя будет восстановить, кроме как из резервной копии.</string>
+    <string name="dialog_delete_vault_forget">Только убрать из этого списка; файлы в папке оставить</string>
+    <string name="dialog_delete_vault_files">Удалить и файлы в папке</string>
+
+    <string name="settings_title">Настройки</string>
+    <string name="settings_crash_reporting">Отправлять отчёты о сбоях</string>
+    <string name="settings_crash_reporting_hint">По умолчанию выключено. Отчёты уходят на собственный сервер разработчика и никогда не содержат имён файлов, заголовков, тегов, заметок или названий хранилищ.</string>
+    <string name="about_title">О приложении</string>
+    <string name="about_version">Версия %1$s</string>
+    <string name="about_body">Зашифрованное хранилище для важных файлов и заметок в открытом формате Cryptomator: открывайте их в любом приложении, сохраняйте в собственное облако и отправляйте небольшие элементы в контейнере, который откроет только получатель.</string>
+    <string name="about_license_title">Свободное ПО</string>
+    <string name="about_license_body">CryptVault — свободное программное обеспечение под лицензией GNU General Public License версии 3 или более поздней. Исходный код доступен у разработчика.</string>
+    <string name="about_components_title">Создано с помощью</string>
+    <string name="about_components_body">Cryptomator cryptolib (AGPL-3.0) для формата хранилища; список слов и кодирование ключа восстановления перенесены из Cryptomator для компьютера (GPL-3.0); Kotlin, Jetpack Compose и AndroidX (Apache-2.0); Sentry SDK (MIT), используется только если вы включите отчёты о сбоях.</string>
+    <string name="about_developer">Разработчик: %1$s · %2$s</string>
+    <string name="permissions_title">Разрешения</string>
+    <string name="permissions_intro">Что приложение запрашивает у системы и зачем. Ничего из этого не запрашивается при запуске; каждое разрешение запрашивается, когда оно впервые нужно функции.</string>
+    <string name="perm_internet_title">Интернет</string>
+    <string name="perm_internet_body">Только для подключённых вами облачных хранилищ резервных копий, для создаваемых вами ссылок и для отчётов о сбоях, если вы их включили. Нет учётных записей, аналитики и рекламы.</string>
+    <string name="perm_notifications_title">Уведомления</string>
+    <string name="perm_notifications_body">Уведомления о ходе и ошибках резервного копирования и восстановления. Запрашивается при первом запуске резервного копирования.</string>
+    <string name="permissions_not_requested_title">Чего приложение не запрашивает</string>
+    <string name="permissions_not_requested_body">Нет доступа к вашим фото, файлам или хранилищу в целом: файлы поступают по одному через системный выбор файлов, выбор фото или отправку — только когда вы их выбираете. Нет разрешения на камеру: фото делает приложение камеры. Нет доступа к местоположению, контактам и микрофону.</string>
 </resources>

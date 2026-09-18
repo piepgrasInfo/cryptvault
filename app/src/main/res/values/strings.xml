@@ -1,4 +1,232 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">CryptVault</string>
-    <string name="placeholder_subtitle">Scaffolded. Nothing here yet.</string>
+
+    <!-- Common actions -->
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_back">Back</string>
+    <string name="action_more">More</string>
+    <string name="action_lock">Lock</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_move">Move</string>
+    <string name="action_share">Share</string>
+    <string name="action_export">Export</string>
+    <string name="action_open">Open</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_open_with">Open with…</string>
+    <string name="action_edit_with">Edit with…</string>
+    <string name="action_search">Search</string>
+    <string name="action_sort">Sort</string>
+    <string name="action_toggle_grid">Toggle grid view</string>
+    <string name="action_select_all">Select all</string>
+    <string name="action_continue">Continue</string>
+    <string name="action_change">Change</string>
+    <string name="action_import_here">Import here</string>
+    <string name="action_delete_originals">Delete originals</string>
+
+    <!-- Startup gates -->
+    <string name="gate_legal_title">Before you start</string>
+    <string name="gate_legal_body">CryptVault keeps your files in an encrypted vault on this device. Only your password can open it. If you lose the password and the recovery key, the data is gone for good; nobody, including the developer, can get it back.\n\nThe app has no account and no server. Nothing leaves the phone except what you back up to your own cloud storage, still encrypted, and what you share or send yourself.\n\nBy continuing you accept the terms of service and acknowledge the privacy policy, both available under Settings › About.</string>
+    <string name="gate_legal_accept">I understand</string>
+    <string name="gate_legal_decline">Quit</string>
+    <string name="gate_crash_title">Crash reports</string>
+    <string name="gate_crash_body">If the app crashes, it can send a report (the error, the stack trace and your device model) to the developer\'s own server. Reports never contain file names, titles, tags, notes, vault names or account names. This is off unless you switch it on, and you can change it in Settings at any time.</string>
+    <string name="gate_crash_yes">Send reports</string>
+    <string name="gate_crash_no">Not now</string>
+
+    <!-- Vault list -->
+    <string name="vaults_create">New vault</string>
+    <string name="vaults_add_existing">Open existing vault…</string>
+    <string name="vaults_add_existing_title">Name for this vault</string>
+    <string name="vaults_lock_all">Lock all</string>
+    <string name="vaults_empty_title">No vaults yet</string>
+    <string name="vaults_empty_body">Create a vault for the files and notes that matter, or open a Cryptomator vault you already have.</string>
+    <plurals name="vaults_pending_import">
+        <item quantity="one">%d shared file is waiting. Unlock a vault to import it.</item>
+        <item quantity="other">%d shared files are waiting. Unlock a vault to import them.</item>
+    </plurals>
+    <string name="vault_state_locked">Locked</string>
+    <string name="vault_state_unlocked">Unlocked</string>
+    <string name="vault_location_folder">Folder: %1$s</string>
+    <string name="vault_location_missing">The folder is no longer reachable. Open it again from the menu.</string>
+    <string name="vault_name_label">Vault name</string>
+
+    <!-- Create vault -->
+    <string name="create_vault_title">New vault</string>
+    <string name="create_vault_location">Where to keep it</string>
+    <string name="create_vault_private">Inside the app</string>
+    <string name="create_vault_private_hint">Invisible to other apps. Leaves the phone only through backup, export or sharing.</string>
+    <string name="create_vault_folder">In a folder I choose</string>
+    <string name="create_vault_folder_hint">An SD card, a local folder or a cloud app\'s folder. Opens in Cryptomator on the desktop.</string>
+    <string name="create_vault_choose_folder">Choose folder…</string>
+    <string name="create_vault_folder_chosen">Folder chosen ✓ (change)</string>
+    <string name="create_vault_cloud_warning">This looks like a cloud app\'s folder. Writes are slower there, and the app may create conflicted copies.</string>
+    <string name="create_vault_recovery_notice">The password is the only key. After creating the vault, write down its recovery key from the vault settings: it is the only way back in if the password is lost.</string>
+    <string name="create_vault_action">Create vault</string>
+    <string name="password_label">Password</string>
+    <string name="password_confirm_label">Repeat password</string>
+    <string name="password_current_label">Current password</string>
+    <string name="password_new_label">New password</string>
+    <string name="password_hint">At least 10 characters. A few unrelated words are better than symbols.</string>
+    <string name="password_ok">Good.</string>
+    <plurals name="password_too_weak">
+        <item quantity="one">Use at least %1$d character.</item>
+        <item quantity="other">Use at least %1$d characters.</item>
+    </plurals>
+    <string name="password_mismatch">The passwords do not match.</string>
+    <string name="password_toggle_visibility">Show or hide the password</string>
+
+    <!-- Unlock -->
+    <string name="unlock_action">Unlock</string>
+    <string name="unlock_wrong_password">Wrong password.</string>
+    <string name="unlock_format_error">This is not a vault CryptVault can open: %1$s</string>
+    <string name="unlock_io_error">Could not open the vault: %1$s</string>
+
+    <!-- Browser -->
+    <string name="fab_add">Add</string>
+    <string name="fab_import_files">Import files</string>
+    <string name="fab_import_media">Import photos and videos</string>
+    <string name="fab_capture">Take a photo</string>
+    <string name="fab_new_note">New note</string>
+    <string name="fab_new_folder">New folder</string>
+    <string name="search_hint">Search titles, names, tags and notes</string>
+    <string name="browser_empty">Nothing here yet. Use + to add files, photos, a note or a folder.</string>
+    <string name="browser_no_matches">No matches.</string>
+    <plurals name="browser_pending_import">
+        <item quantity="one">%d shared file is waiting.</item>
+        <item quantity="other">%d shared files are waiting.</item>
+    </plurals>
+    <plurals name="selected_count">
+        <item quantity="one">%d selected</item>
+        <item quantity="other">%d selected</item>
+    </plurals>
+    <string name="sort_name">Name</string>
+    <string name="sort_date">Date</string>
+    <string name="sort_size">Size</string>
+    <string name="sort_kind">Kind</string>
+    <string name="folder_root">Vault root</string>
+    <string name="folder_name_label">Folder name</string>
+    <string name="file_name_label">File name</string>
+    <string name="dialog_new_folder">New folder</string>
+    <string name="dialog_rename">Rename</string>
+    <string name="dialog_move_to">Move to</string>
+    <string name="dialog_delete_title">Delete?</string>
+    <plurals name="dialog_delete_items">
+        <item quantity="one">Delete %d item from the vault? This cannot be undone here; your backups keep the last snapshots.</item>
+        <item quantity="other">Delete %d items from the vault? This cannot be undone here; your backups keep the last snapshots.</item>
+    </plurals>
+    <string name="dialog_delete_item">Delete “%1$s” from the vault? This cannot be undone here; your backups keep the last snapshots.</string>
+    <string name="dialog_delete_folder">Delete the folder “%1$s” and everything in it? This cannot be undone here.</string>
+    <string name="dialog_delete_originals_title">Delete the originals?</string>
+    <plurals name="dialog_delete_originals">
+        <item quantity="one">%d file is now in the vault. Delete the original outside the vault?</item>
+        <item quantity="other">%d files are now in the vault. Delete the originals outside the vault?</item>
+    </plurals>
+    <string name="progress_importing">Importing…</string>
+    <string name="progress_exporting">Exporting…</string>
+    <string name="progress_preparing">Decrypting…</string>
+    <string name="progress_n_of_m">%1$d of %2$d</string>
+    <plurals name="msg_imported">
+        <item quantity="one">%1$d file imported.</item>
+        <item quantity="other">%1$d files imported.</item>
+    </plurals>
+    <plurals name="msg_import_failed">
+        <item quantity="one">%1$d file imported. Failed: %2$s</item>
+        <item quantity="other">%1$d files imported. Failed: %2$s</item>
+    </plurals>
+    <plurals name="msg_originals_deleted">
+        <item quantity="one">%1$d original deleted.</item>
+        <item quantity="other">%1$d originals deleted.</item>
+    </plurals>
+    <string name="msg_originals_not_deletable">The originals could not be deleted from here. Delete them in their own app.</string>
+    <plurals name="msg_moved">
+        <item quantity="one">%1$d item moved.</item>
+        <item quantity="other">%1$d items moved.</item>
+    </plurals>
+    <plurals name="msg_deleted">
+        <item quantity="one">%1$d item deleted.</item>
+        <item quantity="other">%1$d items deleted.</item>
+    </plurals>
+    <plurals name="msg_exported">
+        <item quantity="one">%1$d file exported.</item>
+        <item quantity="other">%1$d files exported.</item>
+    </plurals>
+    <plurals name="msg_saved_back">
+        <item quantity="one">%1$d edited file saved back into the vault.</item>
+        <item quantity="other">%1$d edited files saved back into the vault.</item>
+    </plurals>
+    <string name="msg_no_app_for">No app on this phone opens %1$s.</string>
+    <string name="open_with_notice_title">Opening in another app</string>
+    <string name="open_with_notice_body">The file is decrypted into a temporary copy and handed to the app you choose. That app may keep its own copy; CryptVault cannot take it back. The temporary copy is removed when the vault locks.</string>
+
+    <!-- Item detail -->
+    <string name="item_title_label">Title</string>
+    <string name="item_tags_label">Tags</string>
+    <string name="item_tags_hint">travel, id, 2026</string>
+    <string name="item_note_label">Note</string>
+    <string name="item_info_name">File name</string>
+    <string name="item_info_folder">Folder</string>
+    <string name="item_info_type">Type</string>
+    <string name="item_info_size">Size</string>
+    <string name="item_info_added">Added</string>
+    <string name="item_info_modified">Modified</string>
+
+    <!-- Notes -->
+    <string name="note_new_title">New note</string>
+    <string name="note_edit_title">Note</string>
+    <string name="note_title_label">Title</string>
+    <string name="note_body_label">Text</string>
+    <string name="note_default_title">Note</string>
+
+    <!-- Vault settings -->
+    <string name="vault_settings_title">Vault settings</string>
+    <string name="vault_settings_name">Name</string>
+    <string name="vault_settings_location">Location</string>
+    <string name="vault_settings_auto_lock">Lock automatically</string>
+    <string name="vault_settings_change_password">Change password</string>
+    <string name="vault_settings_export_folder">Export vault folder</string>
+    <string name="vault_settings_export_folder_hint">Copies the encrypted vault as-is into a folder you choose, for a desktop Cryptomator or another phone.</string>
+    <string name="vault_settings_delete">Delete vault</string>
+    <string name="vault_settings_delete_hint">Backups in your cloud storage are not touched.</string>
+    <string name="auto_lock_immediately">Immediately</string>
+    <plurals name="auto_lock_seconds">
+        <item quantity="one">After %d second in the background</item>
+        <item quantity="other">After %d seconds in the background</item>
+    </plurals>
+    <plurals name="auto_lock_minutes">
+        <item quantity="one">After %d minute in the background</item>
+        <item quantity="other">After %d minutes in the background</item>
+    </plurals>
+    <plurals name="auto_lock_hours">
+        <item quantity="one">After %d hour in the background</item>
+        <item quantity="other">After %d hours in the background</item>
+    </plurals>
+    <string name="msg_password_changed">Password changed.</string>
+    <string name="msg_vault_exported">Vault folder exported.</string>
+    <string name="dialog_delete_vault_body">Delete the vault “%1$s”? Nothing in it can be recovered afterwards, except from a backup.</string>
+    <string name="dialog_delete_vault_forget">Only remove it from this list; keep the files in their folder</string>
+    <string name="dialog_delete_vault_files">Delete the files in the folder too</string>
+
+    <!-- Settings, about, permissions -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_crash_reporting">Send crash reports</string>
+    <string name="settings_crash_reporting_hint">Off by default. Reports go to the developer\'s own server and never contain file names, titles, tags, notes or vault names.</string>
+    <string name="about_title">About</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_body">An encrypted vault for the files and notes that matter, in the open Cryptomator format: open them in any app, back them up to your own cloud, and mail small items in a container only the recipient can open.</string>
+    <string name="about_license_title">Free software</string>
+    <string name="about_license_body">CryptVault is free software under the GNU General Public License, version 3 or later. The source code is available from the developer.</string>
+    <string name="about_components_title">Built with</string>
+    <string name="about_components_body">Cryptomator cryptolib (AGPL-3.0) for the vault format; the recovery-key word list and encoding ported from Cryptomator desktop (GPL-3.0); Kotlin, Jetpack Compose and AndroidX (Apache-2.0); Sentry SDK (MIT), used only if you switch crash reports on.</string>
+    <string name="about_developer">Developer: %1$s · %2$s</string>
+    <string name="permissions_title">Permissions</string>
+    <string name="permissions_intro">What the app asks the system for, and why. Nothing here is requested at start; each permission is asked for when a feature first needs it.</string>
+    <string name="perm_internet_title">Internet</string>
+    <string name="perm_internet_body">Used only for the cloud backup targets you connect, for share links you create, and for crash reports if you switched them on. There are no accounts, no analytics and no advertising.</string>
+    <string name="perm_notifications_title">Notifications</string>
+    <string name="perm_notifications_body">Progress and failure notices for backups and restores. Asked for the first time you start a backup.</string>
+    <string name="permissions_not_requested_title">What the app does not ask for</string>
+    <string name="permissions_not_requested_body">No access to your photos, files or storage in general: files come in through the system picker, the photo picker or sharing, one by one, only when you choose them. No camera permission: taking a photo uses the camera app. No location, contacts or microphone.</string>
 </resources>

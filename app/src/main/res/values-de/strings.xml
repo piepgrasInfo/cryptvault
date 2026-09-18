@@ -1,7 +1,222 @@
-<resources>
-    <!-- de translations. Every string in values/strings.xml must also exist here,
-         in the same commit - lint reports a missing one as a MissingTranslation error.
-         app_name repeats the untranslated brand name on purpose. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">CryptVault</string>
-    <string name="placeholder_subtitle">TODO: translate.</string>
+
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Abbrechen</string>
+    <string name="action_back">Zurück</string>
+    <string name="action_more">Mehr</string>
+    <string name="action_lock">Sperren</string>
+    <string name="action_save">Speichern</string>
+    <string name="action_delete">Löschen</string>
+    <string name="action_rename">Umbenennen</string>
+    <string name="action_move">Verschieben</string>
+    <string name="action_share">Teilen</string>
+    <string name="action_export">Exportieren</string>
+    <string name="action_open">Öffnen</string>
+    <string name="action_edit">Bearbeiten</string>
+    <string name="action_open_with">Öffnen mit…</string>
+    <string name="action_edit_with">Bearbeiten mit…</string>
+    <string name="action_search">Suchen</string>
+    <string name="action_sort">Sortieren</string>
+    <string name="action_toggle_grid">Rasteransicht umschalten</string>
+    <string name="action_select_all">Alle auswählen</string>
+    <string name="action_continue">Weiter</string>
+    <string name="action_change">Ändern</string>
+    <string name="action_import_here">Hier importieren</string>
+    <string name="action_delete_originals">Originale löschen</string>
+
+    <string name="gate_legal_title">Bevor es losgeht</string>
+    <string name="gate_legal_body">CryptVault bewahrt deine Dateien in einem verschlüsselten Tresor auf diesem Gerät auf. Nur dein Passwort öffnet ihn. Gehen Passwort und Wiederherstellungsschlüssel verloren, sind die Daten endgültig weg; niemand, auch nicht der Entwickler, kann sie zurückholen.\n\nDie App hat kein Konto und keinen Server. Nichts verlässt das Telefon außer dem, was du in deinen eigenen Cloud-Speicher sicherst – weiterhin verschlüsselt – und dem, was du selbst teilst oder verschickst.\n\nMit „Weiter“ akzeptierst du die Nutzungsbedingungen und nimmst die Datenschutzerklärung zur Kenntnis, beide unter Einstellungen › Über.</string>
+    <string name="gate_legal_accept">Verstanden</string>
+    <string name="gate_legal_decline">Beenden</string>
+    <string name="gate_crash_title">Absturzberichte</string>
+    <string name="gate_crash_body">Wenn die App abstürzt, kann sie einen Bericht (den Fehler, den Stacktrace und dein Gerätemodell) an den eigenen Server des Entwicklers senden. Berichte enthalten nie Dateinamen, Titel, Tags, Notizen, Tresornamen oder Kontonamen. Das ist aus, solange du es nicht einschaltest, und lässt sich in den Einstellungen jederzeit ändern.</string>
+    <string name="gate_crash_yes">Berichte senden</string>
+    <string name="gate_crash_no">Jetzt nicht</string>
+
+    <string name="vaults_create">Neuer Tresor</string>
+    <string name="vaults_add_existing">Vorhandenen Tresor öffnen…</string>
+    <string name="vaults_add_existing_title">Name für diesen Tresor</string>
+    <string name="vaults_lock_all">Alle sperren</string>
+    <string name="vaults_empty_title">Noch keine Tresore</string>
+    <string name="vaults_empty_body">Lege einen Tresor für die Dateien und Notizen an, die wichtig sind, oder öffne einen Cryptomator-Tresor, den du schon hast.</string>
+    <plurals name="vaults_pending_import">
+        <item quantity="one">%d geteilte Datei wartet. Entsperre einen Tresor, um sie zu importieren.</item>
+        <item quantity="other">%d geteilte Dateien warten. Entsperre einen Tresor, um sie zu importieren.</item>
+    </plurals>
+    <string name="vault_state_locked">Gesperrt</string>
+    <string name="vault_state_unlocked">Entsperrt</string>
+    <string name="vault_location_folder">Ordner: %1$s</string>
+    <string name="vault_location_missing">Der Ordner ist nicht mehr erreichbar. Öffne ihn über das Menü erneut.</string>
+    <string name="vault_name_label">Tresorname</string>
+
+    <string name="create_vault_title">Neuer Tresor</string>
+    <string name="create_vault_location">Wo er liegen soll</string>
+    <string name="create_vault_private">In der App</string>
+    <string name="create_vault_private_hint">Für andere Apps unsichtbar. Verlässt das Telefon nur durch Sicherung, Export oder Teilen.</string>
+    <string name="create_vault_folder">In einem Ordner meiner Wahl</string>
+    <string name="create_vault_folder_hint">Eine SD-Karte, ein lokaler Ordner oder der Ordner einer Cloud-App. Geht am Rechner mit Cryptomator auf.</string>
+    <string name="create_vault_choose_folder">Ordner wählen…</string>
+    <string name="create_vault_folder_chosen">Ordner gewählt ✓ (ändern)</string>
+    <string name="create_vault_cloud_warning">Das sieht nach dem Ordner einer Cloud-App aus. Dort ist Schreiben langsamer, und die App kann Konfliktkopien anlegen.</string>
+    <string name="create_vault_recovery_notice">Das Passwort ist der einzige Schlüssel. Notiere nach dem Anlegen den Wiederherstellungsschlüssel aus den Tresoreinstellungen: Er ist der einzige Weg zurück, wenn das Passwort verloren geht.</string>
+    <string name="create_vault_action">Tresor anlegen</string>
+    <string name="password_label">Passwort</string>
+    <string name="password_confirm_label">Passwort wiederholen</string>
+    <string name="password_current_label">Aktuelles Passwort</string>
+    <string name="password_new_label">Neues Passwort</string>
+    <string name="password_hint">Mindestens 10 Zeichen. Ein paar zusammenhanglose Wörter sind besser als Sonderzeichen.</string>
+    <string name="password_ok">Gut.</string>
+    <plurals name="password_too_weak">
+        <item quantity="one">Verwende mindestens %1$d Zeichen.</item>
+        <item quantity="other">Verwende mindestens %1$d Zeichen.</item>
+    </plurals>
+    <string name="password_mismatch">Die Passwörter stimmen nicht überein.</string>
+    <string name="password_toggle_visibility">Passwort anzeigen oder verbergen</string>
+
+    <string name="unlock_action">Entsperren</string>
+    <string name="unlock_wrong_password">Falsches Passwort.</string>
+    <string name="unlock_format_error">Diesen Tresor kann CryptVault nicht öffnen: %1$s</string>
+    <string name="unlock_io_error">Der Tresor ließ sich nicht öffnen: %1$s</string>
+
+    <string name="fab_add">Hinzufügen</string>
+    <string name="fab_import_files">Dateien importieren</string>
+    <string name="fab_import_media">Fotos und Videos importieren</string>
+    <string name="fab_capture">Foto aufnehmen</string>
+    <string name="fab_new_note">Neue Notiz</string>
+    <string name="fab_new_folder">Neuer Ordner</string>
+    <string name="search_hint">Titel, Namen, Tags und Notizen durchsuchen</string>
+    <string name="browser_empty">Noch nichts hier. Mit + fügst du Dateien, Fotos, eine Notiz oder einen Ordner hinzu.</string>
+    <string name="browser_no_matches">Keine Treffer.</string>
+    <plurals name="browser_pending_import">
+        <item quantity="one">%d geteilte Datei wartet.</item>
+        <item quantity="other">%d geteilte Dateien warten.</item>
+    </plurals>
+    <plurals name="selected_count">
+        <item quantity="one">%d ausgewählt</item>
+        <item quantity="other">%d ausgewählt</item>
+    </plurals>
+    <string name="sort_name">Name</string>
+    <string name="sort_date">Datum</string>
+    <string name="sort_size">Größe</string>
+    <string name="sort_kind">Art</string>
+    <string name="folder_root">Tresorwurzel</string>
+    <string name="folder_name_label">Ordnername</string>
+    <string name="file_name_label">Dateiname</string>
+    <string name="dialog_new_folder">Neuer Ordner</string>
+    <string name="dialog_rename">Umbenennen</string>
+    <string name="dialog_move_to">Verschieben nach</string>
+    <string name="dialog_delete_title">Löschen?</string>
+    <plurals name="dialog_delete_items">
+        <item quantity="one">%d Eintrag aus dem Tresor löschen? Das lässt sich hier nicht rückgängig machen; deine Sicherungen behalten die letzten Stände.</item>
+        <item quantity="other">%d Einträge aus dem Tresor löschen? Das lässt sich hier nicht rückgängig machen; deine Sicherungen behalten die letzten Stände.</item>
+    </plurals>
+    <string name="dialog_delete_item">„%1$s“ aus dem Tresor löschen? Das lässt sich hier nicht rückgängig machen; deine Sicherungen behalten die letzten Stände.</string>
+    <string name="dialog_delete_folder">Den Ordner „%1$s“ mit allem darin löschen? Das lässt sich hier nicht rückgängig machen.</string>
+    <string name="dialog_delete_originals_title">Originale löschen?</string>
+    <plurals name="dialog_delete_originals">
+        <item quantity="one">%d Datei ist jetzt im Tresor. Das Original außerhalb des Tresors löschen?</item>
+        <item quantity="other">%d Dateien sind jetzt im Tresor. Die Originale außerhalb des Tresors löschen?</item>
+    </plurals>
+    <string name="progress_importing">Importiere…</string>
+    <string name="progress_exporting">Exportiere…</string>
+    <string name="progress_preparing">Entschlüssele…</string>
+    <string name="progress_n_of_m">%1$d von %2$d</string>
+    <plurals name="msg_imported">
+        <item quantity="one">%1$d Datei importiert.</item>
+        <item quantity="other">%1$d Dateien importiert.</item>
+    </plurals>
+    <plurals name="msg_import_failed">
+        <item quantity="one">%1$d Datei importiert. Fehlgeschlagen: %2$s</item>
+        <item quantity="other">%1$d Dateien importiert. Fehlgeschlagen: %2$s</item>
+    </plurals>
+    <plurals name="msg_originals_deleted">
+        <item quantity="one">%1$d Original gelöscht.</item>
+        <item quantity="other">%1$d Originale gelöscht.</item>
+    </plurals>
+    <string name="msg_originals_not_deletable">Die Originale ließen sich von hier aus nicht löschen. Lösche sie in ihrer eigenen App.</string>
+    <plurals name="msg_moved">
+        <item quantity="one">%1$d Eintrag verschoben.</item>
+        <item quantity="other">%1$d Einträge verschoben.</item>
+    </plurals>
+    <plurals name="msg_deleted">
+        <item quantity="one">%1$d Eintrag gelöscht.</item>
+        <item quantity="other">%1$d Einträge gelöscht.</item>
+    </plurals>
+    <plurals name="msg_exported">
+        <item quantity="one">%1$d Datei exportiert.</item>
+        <item quantity="other">%1$d Dateien exportiert.</item>
+    </plurals>
+    <plurals name="msg_saved_back">
+        <item quantity="one">%1$d bearbeitete Datei in den Tresor zurückgespeichert.</item>
+        <item quantity="other">%1$d bearbeitete Dateien in den Tresor zurückgespeichert.</item>
+    </plurals>
+    <string name="msg_no_app_for">Keine App auf diesem Telefon öffnet %1$s.</string>
+    <string name="open_with_notice_title">Öffnen in einer anderen App</string>
+    <string name="open_with_notice_body">Die Datei wird in eine temporäre Kopie entschlüsselt und der App übergeben, die du wählst. Diese App kann eine eigene Kopie behalten; CryptVault kann sie nicht zurückholen. Die temporäre Kopie wird entfernt, wenn der Tresor sperrt.</string>
+
+    <string name="item_title_label">Titel</string>
+    <string name="item_tags_label">Tags</string>
+    <string name="item_tags_hint">reise, ausweis, 2026</string>
+    <string name="item_note_label">Notiz</string>
+    <string name="item_info_name">Dateiname</string>
+    <string name="item_info_folder">Ordner</string>
+    <string name="item_info_type">Typ</string>
+    <string name="item_info_size">Größe</string>
+    <string name="item_info_added">Hinzugefügt</string>
+    <string name="item_info_modified">Geändert</string>
+
+    <string name="note_new_title">Neue Notiz</string>
+    <string name="note_edit_title">Notiz</string>
+    <string name="note_title_label">Titel</string>
+    <string name="note_body_label">Text</string>
+    <string name="note_default_title">Notiz</string>
+
+    <string name="vault_settings_title">Tresoreinstellungen</string>
+    <string name="vault_settings_name">Name</string>
+    <string name="vault_settings_location">Speicherort</string>
+    <string name="vault_settings_auto_lock">Automatisch sperren</string>
+    <string name="vault_settings_change_password">Passwort ändern</string>
+    <string name="vault_settings_export_folder">Tresorordner exportieren</string>
+    <string name="vault_settings_export_folder_hint">Kopiert den verschlüsselten Tresor unverändert in einen Ordner deiner Wahl, für Cryptomator am Rechner oder ein anderes Telefon.</string>
+    <string name="vault_settings_delete">Tresor löschen</string>
+    <string name="vault_settings_delete_hint">Sicherungen in deinem Cloud-Speicher bleiben unberührt.</string>
+    <string name="auto_lock_immediately">Sofort</string>
+    <plurals name="auto_lock_seconds">
+        <item quantity="one">Nach %d Sekunde im Hintergrund</item>
+        <item quantity="other">Nach %d Sekunden im Hintergrund</item>
+    </plurals>
+    <plurals name="auto_lock_minutes">
+        <item quantity="one">Nach %d Minute im Hintergrund</item>
+        <item quantity="other">Nach %d Minuten im Hintergrund</item>
+    </plurals>
+    <plurals name="auto_lock_hours">
+        <item quantity="one">Nach %d Stunde im Hintergrund</item>
+        <item quantity="other">Nach %d Stunden im Hintergrund</item>
+    </plurals>
+    <string name="msg_password_changed">Passwort geändert.</string>
+    <string name="msg_vault_exported">Tresorordner exportiert.</string>
+    <string name="dialog_delete_vault_body">Den Tresor „%1$s“ löschen? Danach lässt sich nichts daraus wiederherstellen, außer aus einer Sicherung.</string>
+    <string name="dialog_delete_vault_forget">Nur aus dieser Liste entfernen; die Dateien in ihrem Ordner behalten</string>
+    <string name="dialog_delete_vault_files">Auch die Dateien im Ordner löschen</string>
+
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_crash_reporting">Absturzberichte senden</string>
+    <string name="settings_crash_reporting_hint">Standardmäßig aus. Berichte gehen an den eigenen Server des Entwicklers und enthalten nie Dateinamen, Titel, Tags, Notizen oder Tresornamen.</string>
+    <string name="about_title">Über</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_body">Ein verschlüsselter Tresor für die Dateien und Notizen, die wichtig sind, im offenen Cryptomator-Format: in jeder App öffnen, in die eigene Cloud sichern und kleine Einträge in einem Container verschicken, den nur der Empfänger öffnen kann.</string>
+    <string name="about_license_title">Freie Software</string>
+    <string name="about_license_body">CryptVault ist freie Software unter der GNU General Public License, Version 3 oder später. Der Quelltext ist beim Entwickler erhältlich.</string>
+    <string name="about_components_title">Gebaut mit</string>
+    <string name="about_components_body">Cryptomator cryptolib (AGPL-3.0) für das Tresorformat; Wortliste und Kodierung des Wiederherstellungsschlüssels portiert aus Cryptomator Desktop (GPL-3.0); Kotlin, Jetpack Compose und AndroidX (Apache-2.0); Sentry SDK (MIT), nur genutzt, wenn du Absturzberichte einschaltest.</string>
+    <string name="about_developer">Entwickler: %1$s · %2$s</string>
+    <string name="permissions_title">Berechtigungen</string>
+    <string name="permissions_intro">Was die App vom System verlangt, und warum. Nichts davon wird beim Start angefragt; jede Berechtigung wird erst erbeten, wenn eine Funktion sie braucht.</string>
+    <string name="perm_internet_title">Internet</string>
+    <string name="perm_internet_body">Nur für die Cloud-Sicherungsziele, die du verbindest, für Freigabelinks, die du erzeugst, und für Absturzberichte, falls du sie eingeschaltet hast. Es gibt keine Konten, keine Analytik und keine Werbung.</string>
+    <string name="perm_notifications_title">Benachrichtigungen</string>
+    <string name="perm_notifications_body">Fortschritts- und Fehlermeldungen für Sicherungen und Wiederherstellungen. Wird beim ersten Start einer Sicherung erbeten.</string>
+    <string name="permissions_not_requested_title">Was die App nicht verlangt</string>
+    <string name="permissions_not_requested_body">Keinen Zugriff auf deine Fotos, Dateien oder den Speicher im Allgemeinen: Dateien kommen einzeln über die Systemauswahl, die Fotoauswahl oder das Teilen herein, nur wenn du sie wählst. Keine Kameraberechtigung: Ein Foto nimmt die Kamera-App auf. Kein Standort, keine Kontakte, kein Mikrofon.</string>
 </resources>

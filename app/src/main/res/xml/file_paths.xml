@@ -1,4 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+  Everything handed to another app comes from the cache: decrypted hand-offs (open/), share-sheet
+  copies (share/), camera captures on their way in (capture/). Nothing under the app's files
+  directory is ever exposed.
+-->
 <paths>
-    <external-files-path name="exports" path="exports/" />
+    <cache-path name="open" path="open/" />
+    <cache-path name="share" path="share/" />
+    <cache-path name="capture" path="capture/" />
 </paths>

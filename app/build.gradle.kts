@@ -101,6 +101,8 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.lifecycle.viewmodel.savedstate)
+    implementation(libs.lifecycle.process)
+    implementation(libs.exifinterface)
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.navigation.compose)

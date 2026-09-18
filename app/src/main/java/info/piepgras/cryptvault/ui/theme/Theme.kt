@@ -23,15 +23,13 @@ private val LightColorScheme = lightColorScheme(
 )
 
 /**
- * Dynamic colour is on by default: on Android 12+ the app takes the user's
- * wallpaper palette. Turn it off (dynamicColor = false) if the app's own colours
- * carry meaning - a game board, a chart, a status indicator - because wallpaper
- * colours will otherwise silently override them.
+ * Dynamic colour is off: the navy brand colour is the app's identity on a security app's
+ * screens (BUILD_BRIEF.md §1), and a wallpaper palette would silently replace it.
  */
 @Composable
 fun CryptVaultTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val colorScheme = when {

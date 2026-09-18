@@ -28,6 +28,7 @@ cryptolib = "2.2.2"
 # the interop check of BUILD_BRIEF.md §12 Phase 0 runs on the JVM. Needs Java 25 at test time.
 cryptofs = "2.10.0"
 slf4j = "2.0.17"
+exifinterface = "1.4.2"
 
 [libraries]
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -63,6 +64,8 @@ cryptolib = { group = "org.cryptomator", name = "cryptolib", version.ref = "cryp
 cryptofs = { group = "org.cryptomator", name = "cryptofs", version.ref = "cryptofs" }
 slf4j-nop = { group = "org.slf4j", name = "slf4j-nop", version.ref = "slf4j" }
 slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j" }
+lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycle" }
+exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exifinterface" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
