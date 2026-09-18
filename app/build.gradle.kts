@@ -114,6 +114,8 @@ dependencies {
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.okhttp)
+    implementation(libs.work.runtime)
 
     // The vault format (BUILD_BRIEF.md §3). cryptolib logs through slf4j: a no-op binding in
     // release, stderr (visible in logcat) in debug.
@@ -124,6 +126,7 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.cryptofs)
+    testImplementation(libs.okhttp.mockwebserver)
 
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.junit)

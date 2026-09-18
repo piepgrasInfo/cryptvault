@@ -26,6 +26,9 @@ Cryptomator desktop (https://github.com/cryptomator/cryptomator), GPL-3.0:
   Origin commit: e1d83c996e501649b2253741e4a80ce54646b317. Attribution is repeated at the top of
   each ported file.
 
+OkHttp and Okio (https://square.github.io/okhttp/), Apache-2.0: the HTTP client of the WebDAV
+backup target (Phase 4); also the engine behind Ktor.
+
 Components added by later phases are appended here in the commit that adds them:
 zip4j (Apache-2.0), kage (Apache-2.0), PGPainless (Apache-2.0), Bouncy Castle (MIT-style),
 Dropbox SDK for Java (MIT), MSAL for Android (MIT), zxcvbn4j (MIT), the EFF long word list
