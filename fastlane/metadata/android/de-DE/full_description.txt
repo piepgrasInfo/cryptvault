@@ -1,0 +1,4 @@
+TODO: max 4000 characters.
+
+Say what the app does, then what it does not do (no account, no ads, no tracking)
+if that is true - it is the part people actually read.

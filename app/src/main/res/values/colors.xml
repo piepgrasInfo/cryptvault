@@ -1,0 +1,4 @@
+<resources>
+    <!-- Keep in step with ui/theme/Color.kt and the launcher icon background. -->
+    <color name="brand">#1E3A8A</color>
+</resources>

@@ -1,0 +1,5 @@
+<resources>
+    <!-- The Activity is fully Compose; this exists so the manifest has a theme to name
+         and so the pre-Compose window background matches. -->
+    <style name="Theme.CryptVault" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

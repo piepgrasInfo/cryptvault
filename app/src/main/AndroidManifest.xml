@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Used by nothing unless the user switches crash reporting on in Settings.
+         See CrashReporting.kt for why the SDK cannot start on its own. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Checks connectivity before attempting a request. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Runtime permission on API 33+. Request it lazily, at the point the user
+         first asks for something that needs a notification - not at startup. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <supports-screens
+        android:anyDensity="true"
+        android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:xlargeScreens="true" />
+
+    <application
+        android:name=".CryptVaultApp"
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:resizeableActivity="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.CryptVault"
+        android:supportsRtl="true">
+
+        <!-- Stops the Sentry SDK starting itself from its own ContentProvider. Without
+             this it would be running before the user has had any chance to refuse,
+             which is the entire point of the opt-in. The DSN is passed in code
+             (CrashReporting.kt) for the same reason. -->
+        <meta-data android:name="io.sentry.auto-init" android:value="false" />
+        <meta-data android:name="io.sentry.send-default-pii" android:value="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Lets the app hand generated files to any other app (mail, Drive, Files...)
+             through the share sheet without asking for storage permissions. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+    </application>
+
+</manifest>

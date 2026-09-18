@@ -1,0 +1,3 @@
+<resources>
+    <style name="Theme.CryptVault" parent="android:Theme.Material.NoActionBar" />
+</resources>

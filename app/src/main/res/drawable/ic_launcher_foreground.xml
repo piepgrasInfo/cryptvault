@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder mark. Everything inside the central 72x72dp safe zone, because
+     circular and squircle masks clip the rest. Replaced by app-launcher-icon-creator. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M38,40h32v6h-32z M38,52h32v6h-32z M38,64h20v6h-20z" />
+</vector>

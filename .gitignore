@@ -1,0 +1,20 @@
+/build/
+/app/build/
+/shared/build/
+/.gradle/
+# Kotlin compiler session data, written into the project root by AGP's built-in Kotlin support.
+/.kotlin/
+/local.properties
+keystore.properties
+*.jks
+*.keystore
+/.idea/
+*.iml
+.claude/
+*.hprof
+.DS_Store
+
+# Build outputs, if ever produced outside the build directories above.
+*.apk
+*.aab
+/captures/

@@ -1,0 +1,7 @@
+<resources>
+    <!-- ru translations. Every string in values/strings.xml must also exist here,
+         in the same commit - lint reports a missing one as a MissingTranslation error.
+         app_name repeats the untranslated brand name on purpose. -->
+    <string name="app_name">CryptVault</string>
+    <string name="placeholder_subtitle">TODO: translate.</string>
+</resources>
