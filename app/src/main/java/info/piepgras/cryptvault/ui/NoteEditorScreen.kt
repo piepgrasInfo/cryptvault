@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import info.piepgras.cryptvault.CryptVaultApp
 import info.piepgras.cryptvault.R
 import info.piepgras.cryptvault.items.Manifest
+import info.piepgras.cryptvault.security.sensitive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -95,7 +97,12 @@ fun NoteEditorScreen(vaultId: String, folder: String, itemId: String?, onLocked:
             TopAppBar(
                 title = { Text(if (item == null) stringResource(R.string.note_new_title) else stringResource(R.string.note_edit_title)) },
                 navigationIcon = { IconButton(onClick = { save(onBack) }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.action_back)) } },
-                actions = { IconButton(onClick = { save(onBack) }, enabled = !saving) { Icon(Icons.Filled.Check, stringResource(R.string.action_save)) } },
+                actions = {
+                    IconButton(onClick = { container.clipboard.copy(body); scope.launch { snackbar.showSnackbar(resources.getString(R.string.msg_copied)) } }, enabled = body.isNotEmpty()) {
+                        Icon(Icons.Filled.ContentCopy, stringResource(R.string.action_copy))
+                    }
+                    IconButton(onClick = { save(onBack) }, enabled = !saving) { Icon(Icons.Filled.Check, stringResource(R.string.action_save)) }
+                },
             )
         },
         snackbarHost = { SnackbarHost(snackbar) },
@@ -105,7 +112,7 @@ fun NoteEditorScreen(vaultId: String, folder: String, itemId: String?, onLocked:
             OutlinedTextField(
                 value = body, onValueChange = { body = it },
                 label = { Text(stringResource(R.string.note_body_label)) },
-                modifier = Modifier.fillMaxWidth().weight(1f).padding(top = 8.dp),
+                modifier = Modifier.fillMaxWidth().weight(1f).padding(top = 8.dp).sensitive(),
                 enabled = loaded,
             )
         }

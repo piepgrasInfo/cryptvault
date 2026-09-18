@@ -21,8 +21,8 @@ Two Gradle modules:
   goes here (BUILD_BRIEF.md §8).
 
 `BUILD_BRIEF.md` is the design target (2026-09-17): what the app becomes, phase by phase, and
-which decisions are settled. **Phases 0 (foundation) and 1 (vault core) are done; Phase 2
-(security) is in progress.** This file describes what exists;
+which decisions are settled. **Phases 0 (foundation), 1 (vault core) and 2 (security) are done;
+Phase 3 (DocumentsProvider) is next.** This file describes what exists;
 the brief describes what comes next and wins where the two disagree about the target. Its
 companions: `docs/VAULT_LAYOUT.md` (normative on-disk and remote layout), `docs/THREAT_MODEL.md`
 (requirements checked at each phase gate), `docs/PROVIDER_SETUP.md` (developer registrations).
@@ -94,11 +94,20 @@ let it drift:
   FileProvider URI with explicit grants and ClipData to the chosen app, notice on resume whether
   a writable hand-off changed and write it back, wipe on lock, process start and age. Never gate
   on `resolveActivity()` (package visibility makes it lie); catch the launch failure instead.
-- **Locking** (`unlock/LockManager`): per-vault background timeout, screen-off locks all,
-  every lock wipes that vault's hand-offs. `unlock/BiometricWrap` holds the Keystore-wrapped
-  masterkey copy (auth window 300 s, invalidated on enrolment change); `unlock/PasswordPolicy`
-  is zxcvbn score ≥ 3 plus a 10-character floor with EFF-word suggestions; `:shared`'s
-  `unlock/Backoff` and `unlock/Passphrase` are the pure rules behind them.
+- **Locking and unlocking** (`unlock/`): `LockManager` — per-vault background timeout,
+  screen-off locks all, every lock wipes that vault's hand-offs. `BiometricWrap` holds the
+  Keystore-wrapped masterkey copy (AES-GCM, auth window 300 s, BIOMETRIC_STRONG or, on API 30+,
+  the device credential; invalidated on enrolment change); `BiometricUnlock` shows the system
+  prompt from the `FragmentActivity`; `VaultRepository.unlockWithRawKey` opens the vault with
+  the unwrapped key. `PasswordPolicy` is zxcvbn score ≥ 3 plus a 10-character floor with
+  EFF-word suggestions; `prefs/UnlockPrefs` persists the per-vault failure count so the
+  `:shared` `Backoff` schedule (2 s doubling, 5 min cap, never a wipe) survives restarts.
+  The recovery key: `CreateVaultViewModel` computes the 44 words right after creation and parks
+  them in `Container.recoveryKeyToShow`; `RecoveryKeyScreen` shows them once (hidden until
+  revealed, no copy, "written down" confirmation) and clears them; vault settings re-show them
+  after a password check; `RecoverScreen` resets the password from the words (validated per
+  word against the list, checksum, then `CryptomatorVault.resetPassword`, which refuses a key
+  that does not sign this vault's config).
 - **Screen hygiene** (`security/`): `SecureWindow` sets FLAG_SECURE, hides overlays and blanks
   recents; in **debug builds only**, `cache/allow-screenshots` (create it with
   `adb shell run-as info.piepgras.cryptvault touch cache/allow-screenshots`) turns FLAG_SECURE

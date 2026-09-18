@@ -66,6 +66,7 @@ import info.piepgras.cryptvault.items.Item
 import info.piepgras.cryptvault.items.ItemKind
 import info.piepgras.cryptvault.items.OpenVault
 import info.piepgras.cryptvault.prefs.AppPrefs
+import info.piepgras.cryptvault.security.sensitive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -183,7 +184,7 @@ fun ItemDetailScreen(vaultId: String, itemId: String, onLocked: () -> Unit, onBa
                     is Preview.Picture -> Image(p.bitmap, null, Modifier.fillMaxWidth().heightIn(max = 360.dp), contentScale = ContentScale.Fit)
                     is Preview.Text -> Text(
                         p.text + if (p.truncated) "\n…" else "",
-                        Modifier.fillMaxWidth().padding(16.dp).heightIn(max = 340.dp).verticalScroll(rememberScrollState()),
+                        Modifier.fillMaxWidth().padding(16.dp).heightIn(max = 340.dp).verticalScroll(rememberScrollState()).sensitive(),
                         fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall,
                     )
                     Preview.None -> Icon(iconFor(item), null, Modifier.size(96.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -205,7 +206,7 @@ fun ItemDetailScreen(vaultId: String, itemId: String, onLocked: () -> Unit, onBa
                 Spacer(Modifier.height(8.dp))
                 OutlinedTextField(value = tags, onValueChange = { tags = it }, label = { Text(stringResource(R.string.item_tags_label)) }, placeholder = { Text(stringResource(R.string.item_tags_hint)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 Spacer(Modifier.height(8.dp))
-                OutlinedTextField(value = note, onValueChange = { note = it }, label = { Text(stringResource(R.string.item_note_label)) }, minLines = 3, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = note, onValueChange = { note = it }, label = { Text(stringResource(R.string.item_note_label)) }, minLines = 3, modifier = Modifier.fillMaxWidth().sensitive())
                 if (dirty) {
                     Spacer(Modifier.height(8.dp))
                     Button(onClick = { save() }, Modifier.fillMaxWidth()) { Text(stringResource(R.string.action_save)) }

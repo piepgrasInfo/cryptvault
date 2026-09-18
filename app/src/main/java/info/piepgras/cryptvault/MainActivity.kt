@@ -39,6 +39,10 @@ import info.piepgras.cryptvault.ui.NoteEditorScreen
 import info.piepgras.cryptvault.ui.NoteRoute
 import info.piepgras.cryptvault.ui.PermissionsRoute
 import info.piepgras.cryptvault.ui.PermissionsScreen
+import info.piepgras.cryptvault.ui.RecoverRoute
+import info.piepgras.cryptvault.ui.RecoverScreen
+import info.piepgras.cryptvault.ui.RecoveryKeyRoute
+import info.piepgras.cryptvault.ui.RecoveryKeyScreen
 import info.piepgras.cryptvault.ui.ScrollingDialogText
 import info.piepgras.cryptvault.ui.SettingsRoute
 import info.piepgras.cryptvault.ui.SettingsScreen
@@ -145,7 +149,7 @@ class MainActivity : FragmentActivity() {
             composable<CreateVaultRoute> {
                 CreateVaultScreen(
                     onBack = { nav.popBackStack() },
-                    onCreated = { id -> nav.navigate(UnlockRoute(id)) { popUpTo(VaultsRoute) } },
+                    onCreated = { id -> nav.navigate(RecoveryKeyRoute(id, thenUnlock = true)) { popUpTo(VaultsRoute) } },
                 )
             }
             composable<UnlockRoute> { entry ->
@@ -154,6 +158,25 @@ class MainActivity : FragmentActivity() {
                     vaultId = route.vaultId,
                     onBack = { nav.popBackStack() },
                     onUnlocked = { nav.navigate(BrowserRoute(route.vaultId)) { popUpTo(VaultsRoute) } },
+                    onRecover = { nav.navigate(RecoverRoute(route.vaultId)) },
+                )
+            }
+            composable<RecoveryKeyRoute> { entry ->
+                val route = entry.toRoute<RecoveryKeyRoute>()
+                RecoveryKeyScreen(
+                    vaultId = route.vaultId,
+                    onDone = {
+                        if (route.thenUnlock) nav.navigate(UnlockRoute(route.vaultId)) { popUpTo(VaultsRoute) }
+                        else nav.popBackStack()
+                    },
+                )
+            }
+            composable<RecoverRoute> { entry ->
+                val route = entry.toRoute<RecoverRoute>()
+                RecoverScreen(
+                    vaultId = route.vaultId,
+                    onBack = { nav.popBackStack() },
+                    onReset = { nav.navigate(UnlockRoute(route.vaultId)) { popUpTo(VaultsRoute) } },
                 )
             }
             composable<BrowserRoute> { entry ->
@@ -198,6 +221,7 @@ class MainActivity : FragmentActivity() {
                     vaultId = route.vaultId,
                     onBack = { nav.popBackStack() },
                     onDeleted = { nav.navigate(VaultsRoute) { popUpTo(VaultsRoute) { inclusive = true } } },
+                    onShowRecoveryKey = { nav.navigate(RecoveryKeyRoute(route.vaultId)) },
                 )
             }
             composable<SettingsRoute> {

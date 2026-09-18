@@ -28,6 +28,17 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import info.piepgras.cryptvault.R
+import info.piepgras.cryptvault.security.sensitive
+
+/**
+ * Every dialog is its own window, so FLAG_SECURE on the Activity does not cover it; this gives
+ * dialogs the same policy (BUILD_BRIEF.md §4.4), with the debug-only screenshot escape.
+ */
+@Composable
+fun secureDialogProperties(dismissOnClickOutside: Boolean = true): DialogProperties {
+    val activity = androidx.activity.compose.LocalActivity.current
+    return DialogProperties(dismissOnClickOutside = dismissOnClickOutside, securePolicy = info.piepgras.cryptvault.security.SecureWindow.dialogPolicy(activity))
+}
 
 /** Dialog content must scroll (CLAUDE.md): a dialog that overflows hides its own buttons. */
 @Composable
@@ -56,6 +67,7 @@ fun ConfirmDialog(
             }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
+        properties = secureDialogProperties(),
     )
 }
 
@@ -92,7 +104,7 @@ fun TextInputDialog(
                         keyboardType = if (password) KeyboardType.Password else KeyboardType.Text,
                         imeAction = if (singleLine) ImeAction.Done else ImeAction.Default,
                     ),
-                    modifier = Modifier.fillMaxWidth().focusRequester(focus),
+                    modifier = Modifier.fillMaxWidth().focusRequester(focus).let { if (password) it.sensitive() else it },
                 )
             }
         },
@@ -100,7 +112,7 @@ fun TextInputDialog(
             TextButton(onClick = { onConfirm(value) }, enabled = value.isNotBlank() && error == null) { Text(confirmLabel) }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
-        properties = DialogProperties(dismissOnClickOutside = false),
+        properties = secureDialogProperties(dismissOnClickOutside = false),
     )
 }
 
@@ -111,5 +123,6 @@ fun InfoDialog(title: String, text: String, onDismiss: () -> Unit) {
         title = { Text(title) },
         text = { ScrollingDialogText(text) },
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_ok)) } },
+        properties = secureDialogProperties(),
     )
 }

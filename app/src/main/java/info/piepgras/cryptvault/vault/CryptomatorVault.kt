@@ -156,6 +156,24 @@ class CryptomatorVault private constructor(
         }
 
         /**
+         * Opens the vault with the 64 raw masterkey bytes (the biometric wrap's copy) instead of
+         * the password; the config signature check guarantees the key belongs to this vault. The
+         * caller zeroes [rawKey].
+         */
+        fun openWithRawKey(storage: VaultStorage, rawKey: ByteArray, random: SecureRandom = SecureRandom()): CryptomatorVault {
+            val token = readText(storage, VAULT_CONFIG_FILE)
+                ?: throw VaultFormatException("no vault.cryptomator: not a Cryptomator vault of format 8")
+            val config = try {
+                VaultConfigToken.verify(token, rawKey)
+            } catch (e: VaultConfigException) {
+                throw VaultFormatException("this key does not belong to this vault", e)
+            }
+            if (config.format != FORMAT || config.cipherCombo != CIPHER_COMBO) throw VaultFormatException("unsupported vault format")
+            val masterkey = Masterkey(rawKey.copyOf())
+            return CryptomatorVault(storage, masterkey, cryptorProvider().provide(masterkey, random), random, config)
+        }
+
+        /**
          * Replaces the masterkey file using the raw key from a recovery key. The key is checked
          * against `vault.cryptomator`'s signature first, so a recovery key for another vault is
          * refused before anything is written. The caller zeroes [rawKey].

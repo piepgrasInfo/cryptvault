@@ -131,6 +131,37 @@ class VaultRepository(
         open
     }
 
+    /** Unlocks with the biometric wrap's raw masterkey copy. The caller zeroes [rawKey]. */
+    suspend fun unlockWithRawKey(id: String, rawKey: ByteArray): OpenVault = withContext(Dispatchers.IO) {
+        _open.value[id]?.let { return@withContext it }
+        val record = registry.get(id) ?: throw IOException("unknown vault")
+        val vault = CryptomatorVault.openWithRawKey(storageFor(record), rawKey)
+        val open = OpenVault(record.id, vault, thumbnails, clock)
+        try {
+            open.initialize()
+        } catch (e: Exception) {
+            open.close()
+            throw e
+        }
+        synchronized(lock) {
+            _open.value[id]?.let { open.close(); return@withContext it }
+            _open.value = _open.value + (id to open)
+        }
+        registry.update(record.copy(lastUnlockedAt = Iso8601.format(clock())))
+        open
+    }
+
+    /** The raw masterkey after a password check, for enabling the biometric wrap. The caller zeroes it. */
+    suspend fun rawKey(id: String, password: CharArray): ByteArray = withContext(Dispatchers.IO) {
+        val record = registry.get(id) ?: throw IOException("unknown vault")
+        CryptomatorVault.open(storageFor(record), password).use { it.rawKey() }
+    }
+
+    fun setBiometric(id: String, enabled: Boolean) {
+        val record = registry.get(id) ?: return
+        registry.update(record.copy(biometric = enabled))
+    }
+
     fun lock(id: String) {
         val v = synchronized(lock) {
             val v = _open.value[id] ?: return

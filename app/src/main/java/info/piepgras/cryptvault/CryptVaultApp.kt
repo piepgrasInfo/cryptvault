@@ -27,6 +27,8 @@ class CryptVaultApp : Application() {
         val lockManager = LockManager(app, repository, openWith)
         val clipboard = SensitiveClipboard(app)
         val biometricWrap = BiometricWrap(app)
+        /** (vaultId, 44 words) waiting to be shown once by the recovery-key screen, then cleared. */
+        val recoveryKeyToShow = kotlinx.coroutines.flow.MutableStateFlow<Pair<String, String>?>(null)
     }
 
     lateinit var container: Container

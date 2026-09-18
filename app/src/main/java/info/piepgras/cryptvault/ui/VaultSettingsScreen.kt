@@ -45,6 +45,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import info.piepgras.cryptvault.CryptVaultApp
 import info.piepgras.cryptvault.R
+import info.piepgras.cryptvault.security.sensitive
 import info.piepgras.cryptvault.unlock.PasswordPolicy
 import info.piepgras.cryptvault.vault.VaultLocation
 import info.piepgras.cryptvault.vault.VaultRecord
@@ -56,11 +57,13 @@ private sealed class SettingsDialog {
     object AutoLock : SettingsDialog()
     object ChangePassword : SettingsDialog()
     object Delete : SettingsDialog()
+    /** Password check before a sensitive action; [purpose] says which. */
+    data class Password(val purpose: String) : SettingsDialog()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VaultSettingsScreen(vaultId: String, onBack: () -> Unit, onDeleted: () -> Unit) {
+fun VaultSettingsScreen(vaultId: String, onBack: () -> Unit, onDeleted: () -> Unit, onShowRecoveryKey: () -> Unit) {
     val context = LocalContext.current
     val resources = LocalResources.current
     val container = CryptVaultApp.container(context)
@@ -75,6 +78,49 @@ fun VaultSettingsScreen(vaultId: String, onBack: () -> Unit, onDeleted: () -> Un
     val scope = rememberCoroutineScope()
     var dialog by remember { mutableStateOf<SettingsDialog?>(null) }
     var exporting by remember { mutableStateOf(false) }
+    val activity = context as? androidx.fragment.app.FragmentActivity
+    val biometricPossible = remember { container.biometricWrap.canUse() }
+    val promptTitle = stringResource(R.string.settings_biometric_prompt_title)
+    val promptNegative = stringResource(R.string.action_cancel)
+
+    /** After the password check: turn the biometric shortcut on (prompt, then wrap) or show the key. */
+    fun afterPassword(purpose: String, chars: CharArray) {
+        scope.launch {
+            when (purpose) {
+                "biometric" -> {
+                    val raw = runCatching { repository.rawKey(vaultId, chars) }
+                    chars.fill('\u0000')
+                    raw.onFailure { snackbar.showSnackbar(if (it is WrongPasswordException) resources.getString(R.string.unlock_wrong_password) else it.message ?: "") }
+                    val key = raw.getOrNull() ?: return@launch
+                    if (activity == null) { key.fill(0); return@launch }
+                    info.piepgras.cryptvault.unlock.BiometricUnlock.prompt(activity, promptTitle, record.name, promptNegative) { outcome ->
+                        scope.launch {
+                            try {
+                                if (outcome is info.piepgras.cryptvault.unlock.BiometricUnlock.Outcome.Success) {
+                                    runCatching { container.biometricWrap.enable(vaultId, key) }
+                                        .onSuccess {
+                                            repository.setBiometric(vaultId, true)
+                                            snackbar.showSnackbar(resources.getString(R.string.msg_biometrics_enabled))
+                                        }
+                                        .onFailure { snackbar.showSnackbar(it.message ?: it.javaClass.simpleName) }
+                                } else if (outcome is info.piepgras.cryptvault.unlock.BiometricUnlock.Outcome.Failed) {
+                                    snackbar.showSnackbar(outcome.message)
+                                }
+                            } finally {
+                                key.fill(0)
+                            }
+                        }
+                    }
+                }
+                "recovery" -> {
+                    val words = runCatching { repository.recoveryKey(vaultId, chars) }
+                    chars.fill('\u0000')
+                    words.onSuccess { container.recoveryKeyToShow.value = vaultId to it; onShowRecoveryKey() }
+                        .onFailure { snackbar.showSnackbar(if (it is WrongPasswordException) resources.getString(R.string.unlock_wrong_password) else it.message ?: "") }
+                }
+            }
+        }
+    }
 
     val exportTree = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
         if (uri != null) {
@@ -121,6 +167,25 @@ fun VaultSettingsScreen(vaultId: String, onBack: () -> Unit, onDeleted: () -> Un
             )
             HorizontalDivider()
             ListItem(
+                headlineContent = { Text(stringResource(R.string.vault_settings_biometric)) },
+                supportingContent = { Text(stringResource(if (biometricPossible) R.string.vault_settings_biometric_hint else R.string.vault_settings_biometric_unavailable)) },
+                trailingContent = {
+                    androidx.compose.material3.Switch(
+                        checked = record.biometric && container.biometricWrap.isEnabled(vaultId),
+                        enabled = biometricPossible,
+                        onCheckedChange = { on ->
+                            if (on) dialog = SettingsDialog.Password("biometric")
+                            else { container.biometricWrap.disable(vaultId); repository.setBiometric(vaultId, false) }
+                        },
+                    )
+                },
+            )
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.vault_settings_recovery_key)) },
+                supportingContent = { Text(stringResource(R.string.vault_settings_recovery_key_hint)) },
+                modifier = Modifier.clickable { dialog = SettingsDialog.Password("recovery") },
+            )
+            ListItem(
                 headlineContent = { Text(stringResource(R.string.vault_settings_change_password)) },
                 modifier = Modifier.clickable { dialog = SettingsDialog.ChangePassword },
             )
@@ -138,8 +203,12 @@ fun VaultSettingsScreen(vaultId: String, onBack: () -> Unit, onDeleted: () -> Un
         }
     }
 
-    when (dialog) {
+    when (val d = dialog) {
         null -> Unit
+        is SettingsDialog.Password -> TextInputDialog(
+            title = stringResource(R.string.password_current_label), label = stringResource(R.string.password_label), password = true,
+            onConfirm = { pw -> dialog = null; afterPassword(d.purpose, pw.toCharArray()) }, onDismiss = { dialog = null },
+        )
         SettingsDialog.Rename -> TextInputDialog(
             title = stringResource(R.string.vault_settings_name), initial = record.name, label = stringResource(R.string.vault_name_label),
             onConfirm = { dialog = null; repository.rename(vaultId, it) }, onDismiss = { dialog = null },
@@ -169,7 +238,7 @@ fun VaultSettingsScreen(vaultId: String, onBack: () -> Unit, onDeleted: () -> Un
                     val o = old.toCharArray()
                     val n = new.toCharArray()
                     val result = runCatching { repository.changePassword(vaultId, o, n) }
-                    o.fill(' '); n.fill(' ')
+                    o.fill('\u0000'); n.fill('\u0000')
                     dialog = null
                     result.onSuccess { snackbar.showSnackbar(resources.getString(R.string.msg_password_changed)) }
                         .onFailure {
@@ -183,6 +252,7 @@ fun VaultSettingsScreen(vaultId: String, onBack: () -> Unit, onDeleted: () -> Un
             onConfirm = { deleteFiles ->
                 dialog = null
                 scope.launch {
+                    container.biometricWrap.disable(vaultId)
                     runCatching { repository.delete(vaultId, deleteFiles) }
                         .onSuccess { onDeleted() }
                         .onFailure { snackbar.showSnackbar(it.message ?: "") }
@@ -211,10 +281,10 @@ private fun ChangePasswordDialog(onConfirm: (String, String) -> Unit, onDismiss:
         title = { Text(stringResource(R.string.vault_settings_change_password)) },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
-                OutlinedTextField(value = old, onValueChange = { old = it }, label = { Text(stringResource(R.string.password_current_label)) }, singleLine = true, visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = new, onValueChange = { new = it }, label = { Text(stringResource(R.string.password_new_label)) }, singleLine = true, visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                    supportingText = { Text(if (new.isEmpty() || PasswordPolicy.check(new).ok) stringResource(R.string.password_hint) else pluralStringResource(R.plurals.password_too_weak, PasswordPolicy.MIN_LENGTH, PasswordPolicy.MIN_LENGTH)) })
-                OutlinedTextField(value = confirm, onValueChange = { confirm = it }, label = { Text(stringResource(R.string.password_confirm_label)) }, singleLine = true, visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), modifier = Modifier.fillMaxWidth().padding(top = 8.dp), isError = confirm.isNotEmpty() && confirm != new)
+                OutlinedTextField(value = old, onValueChange = { old = it }, label = { Text(stringResource(R.string.password_current_label)) }, singleLine = true, visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), modifier = Modifier.fillMaxWidth().sensitive())
+                OutlinedTextField(value = new, onValueChange = { new = it }, label = { Text(stringResource(R.string.password_new_label)) }, singleLine = true, visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), modifier = Modifier.fillMaxWidth().padding(top = 8.dp).sensitive(),
+                    supportingText = { Text(passwordAdvice(PasswordPolicy.check(new), new)) })
+                OutlinedTextField(value = confirm, onValueChange = { confirm = it }, label = { Text(stringResource(R.string.password_confirm_label)) }, singleLine = true, visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), modifier = Modifier.fillMaxWidth().padding(top = 8.dp).sensitive(), isError = confirm.isNotEmpty() && confirm != new)
             }
         },
         confirmButton = { TextButton(onClick = { onConfirm(old, new) }, enabled = ok) { Text(stringResource(R.string.action_change)) } },
