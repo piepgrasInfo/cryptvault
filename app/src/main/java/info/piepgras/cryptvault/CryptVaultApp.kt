@@ -25,6 +25,7 @@ class CryptVaultApp : Application() {
         val thumbnails = AndroidThumbnails(app)
         val repository = VaultRepository(app.contentResolver, registry, File(app.filesDir, "vaults"), thumbnails)
         val openWith = OpenWith(app)
+        val share = info.piepgras.cryptvault.share.ShareService(app, openWith)
         val lockManager = LockManager(app, repository, openWith)
         val clipboard = SensitiveClipboard(app)
         val biometricWrap = BiometricWrap(app)

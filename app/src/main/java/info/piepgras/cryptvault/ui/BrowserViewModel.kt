@@ -226,6 +226,26 @@ class BrowserViewModel(private val container: CryptVaultApp.Container, val vault
         }
     }
 
+    fun selectedForShare(): List<Item> = selectedItems()
+
+    fun estimateShare(items: List<Item>): Long = vault?.let { v -> container.share.estimateSize(v, items) } ?: 0L
+
+    /** Writes an encrypted container and hands it to the share sheet with subject and body (BUILD_BRIEF.md §7). */
+    fun shareEncrypted(items: List<Item>, kind: info.piepgras.cryptvault.share.ContainerKind, passphrase: CharArray) {
+        if (items.isEmpty()) return
+        viewModelScope.launch {
+            val v = vault ?: return@launch
+            progress.value = Progress(R.string.progress_preparing, 0, items.size, 0, 0)
+            val bundle = withContext(Dispatchers.IO) { runCatching { container.share.build(v, items, kind, passphrase) } }
+            passphrase.fill(' ')
+            progress.value = null
+            bundle.onSuccess { b ->
+                events.tryEmit(BrowserEvent.Launch(Intent.createChooser(openWith.shareIntent(listOf(b.file), b.mime, b.subject, b.body), null)))
+                selection.value = emptySet()
+            }.onFailure { events.tryEmit(BrowserEvent.Message(it.message ?: it.javaClass.simpleName)) }
+        }
+    }
+
     fun shareSelected() = share(selectedItems())
 
     fun share(items: List<Item>) {

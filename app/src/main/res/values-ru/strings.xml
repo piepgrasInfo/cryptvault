@@ -375,4 +375,59 @@
     <string name="vault_settings_backup_off">Выключено</string>
     <string name="vault_settings_backup_on">Включено — %1$s</string>
     <string name="backup_webdav_local_denied">Этот сервер находится в вашей локальной сети. Android требует на это разрешения; разрешите CryptVault «Локальная сеть» в настройках системы.</string>
+    <!-- Share as container (BUILD_BRIEF.md §7) -->
+    <string name="share_dialog_title">Поделиться в зашифрованном виде</string>
+    <string name="share_dialog_help">Файлы упаковываются в контейнер, который открывается только парольной фразой. Передайте фразу другим путём — сообщением, звонком — но никогда в том же письме.</string>
+    <string name="share_kind_zip">ZIP (AES-256)</string>
+    <string name="share_kind_age">age</string>
+    <string name="share_kind_pgp">OpenPGP</string>
+    <string name="share_openers_zip">Открывается в 7-Zip, WinRAR, PeaZip, Keka, The Unarchiver или iZip — но не в Проводнике Windows, Архивной утилите macOS или приложении «Файлы» iOS.</string>
+    <string name="share_openers_age">Открывается в age или rage (командная строка), AgePony (iOS/Android) или Mage (Android).</string>
+    <string name="share_openers_pgp">Открывается в GnuPG, Kleopatra/Gpg4win, GPG Suite, Thunderbird или Proton Mail.</string>
+    <string name="share_pass_generated">Сгенерированная</string>
+    <string name="share_pass_typed">Своя</string>
+    <string name="share_pass_regenerate">Другая</string>
+    <string name="share_pass_label">Парольная фраза</string>
+    <string name="share_pass_too_weak">Для этого формата слишком легко угадать; нужна стойкость %1$d из 4 или шесть слов.</string>
+    <string name="share_pass_separately">Парольная фраза никогда не попадает в письмо. Скопируйте её сейчас; после отправки она не сохраняется.</string>
+    <string name="share_size_warning">Свыше 15 МБ большинство почтовых служб отклоняют вложение. Поделитесь меньшим числом элементов или передайте контейнер облачному приложению.</string>
+    <string name="share_encrypted">Поделиться зашифрованно</string>
+    <string name="share_plain">Как есть</string>
+    <string name="share_subject">%1$s (зашифровано)</string>
+    <string name="share_body">Во вложении: %1$s — зашифрованный контейнер %2$s, %3$s.\n%4$s\nПарольная фраза передаётся отдельно.</string>
+    <string name="share_deliverability_title">Перед первым зашифрованным письмом</string>
+    <string name="share_deliverability_body">Gmail предупреждает получателей о зашифрованных архивах, а строгие корпоративные почтовые системы могут их задерживать. Если письмо не дошло, передайте контейнер облачному приложению и отправьте ссылку. Парольная фраза всегда идёт другим путём.</string>
+    <!-- Receiving a container -->
+    <string name="receive_title">Открыть полученный контейнер</string>
+    <string name="receive_detecting">Проверка файла…</string>
+    <string name="receive_not_container">Это не контейнер, который может открыть CryptVault (ZIP с AES, age или OpenPGP).</string>
+    <string name="receive_kind">Контейнер %1$s: %2$s</string>
+    <string name="receive_pass_prompt">Введите парольную фразу, полученную отдельно.</string>
+    <string name="receive_open">Открыть</string>
+    <string name="receive_wrong_pass">Эта парольная фраза его не открывает.</string>
+    <string name="receive_files">Содержимое</string>
+    <string name="receive_choose_vault">Поместить в</string>
+    <string name="receive_vault_locked">Сначала разблокируйте</string>
+    <string name="receive_no_vault">Сначала разблокируйте хранилище, затем откройте вложение снова.</string>
+    <string name="receive_import">Импортировать</string>
+    <string name="receive_open_vault">Открыть хранилище</string>
+    <plurals name="share_size_items">
+        <item quantity="one">%1$d элемент, около %2$s</item>
+        <item quantity="few">%1$d элемента, около %2$s</item>
+        <item quantity="many">%1$d элементов, около %2$s</item>
+        <item quantity="other">%1$d элемента, около %2$s</item>
+    </plurals>
+    <plurals name="share_default_title_n">
+        <item quantity="one">%d элемент из CryptVault</item>
+        <item quantity="few">%d элемента из CryptVault</item>
+        <item quantity="many">%d элементов из CryptVault</item>
+        <item quantity="other">%d элемента из CryptVault</item>
+    </plurals>
+    <plurals name="receive_done_n">
+        <item quantity="one">Импортирован %1$d элемент в %2$s.</item>
+        <item quantity="few">Импортировано %1$d элемента в %2$s.</item>
+        <item quantity="many">Импортировано %1$d элементов в %2$s.</item>
+        <item quantity="other">Импортировано %1$d элемента в %2$s.</item>
+    </plurals>
+    <string name="receive_too_big">Для открытия этого контейнера нужно больше памяти, чем позволяет это устройство. Попросите отправителя уменьшить рабочий фактор или откройте его на компьютере.</string>
 </resources>

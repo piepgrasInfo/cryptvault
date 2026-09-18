@@ -198,7 +198,7 @@ fun ItemDetailScreen(vaultId: String, itemId: String, onLocked: () -> Unit, onBa
                     Button(onClick = { withNotice { vm.openItem(item, false) } }, Modifier.weight(1f)) { Icon(Icons.AutoMirrored.Filled.OpenInNew, null); Spacer(Modifier.size(6.dp)); Text(stringResource(R.string.action_open)) }
                     OutlinedButton(onClick = { withNotice { vm.openItem(item, true) } }) { Icon(Icons.Filled.Edit, null) }
                 }
-                OutlinedButton(onClick = { vm.share(listOf(item)) }) { Icon(Icons.Filled.Share, null) }
+                OutlinedButton(onClick = { dialog = BrowserDialog.Share(listOf(item)) }) { Icon(Icons.Filled.Share, null) }
                 OutlinedButton(onClick = { exportOne.launch(item.name) }) { Icon(Icons.Filled.SaveAlt, null) }
             }
             Column(Modifier.padding(16.dp)) {
@@ -233,6 +233,13 @@ fun ItemDetailScreen(vaultId: String, itemId: String, onLocked: () -> Unit, onBa
         )
     }
     when (val d = dialog) {
+        is BrowserDialog.Share -> ShareContainerDialog(
+            itemCount = 1,
+            estimatedSize = vm.estimateShare(d.items),
+            onShareEncrypted = { kind, pass -> dialog = null; vm.shareEncrypted(d.items, kind, pass) },
+            onSharePlain = { dialog = null; vm.share(d.items) },
+            onDismiss = { dialog = null },
+        )
         is BrowserDialog.RenameItem -> TextInputDialog(
             title = stringResource(R.string.dialog_rename), initial = d.item.name, label = stringResource(R.string.file_name_label),
             onConfirm = { dialog = null; vm.renameItem(d.item, it) }, onDismiss = { dialog = null },

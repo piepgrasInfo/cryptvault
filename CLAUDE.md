@@ -22,9 +22,9 @@ Two Gradle modules:
 
 `BUILD_BRIEF.md` is the design target (2026-09-17): what the app becomes, phase by phase, and
 which decisions are settled. **Phases 0 (foundation), 1 (vault core), 2 (security), 3
-(DocumentsProvider) and 4 (backup and restore — WebDAV and folder targets; Dropbox, OneDrive
-and Google Drive await their developer registrations) are done; Phase 5 (mail and sharing)
-is next.** This file describes what exists;
+(DocumentsProvider), 4 (backup and restore — WebDAV and folder targets; Dropbox, OneDrive
+and Google Drive await their developer registrations) and 5 (mail containers; the link
+fallback awaits a provider) are done; Phase 6 (release preparation) is next.** This file describes what exists;
 the brief describes what comes next and wins where the two disagree about the target. Its
 companions: `docs/VAULT_LAYOUT.md` (normative on-disk and remote layout), `docs/THREAT_MODEL.md`
 (requirements checked at each phase gate), `docs/PROVIDER_SETUP.md` (developer registrations).
@@ -124,6 +124,23 @@ let it drift:
   `RestoreRunner` build a **new** private vault from a remote folder: meta files, password check,
   snapshot list, hash-verified downloads; "adopt as writer" re-points backup at that folder
   with a take-over. Dropbox, OneDrive and Google Drive are not built yet (registrations pending).
+- **Mail containers** (`share/`, rules in `:shared`'s `share/`): "Share" on items opens
+  `ShareContainerDialog` — ZIP AES-256 (default, remembered), age or OpenPGP; a generated
+  six-word passphrase (or a typed one that `SharePolicy` accepts: zxcvbn ≥ 3, ≥ 4 for ZIP
+  unless six list words), Copy through `SensitiveClipboard`, the 15 MB warning, a one-time
+  deliverability notice, "As is" for a plain share. `ShareService` writes the container into
+  `cache/share/` (`ContainerWriter`: zip4j AE-2 under one folder; kage scrypt; PGPainless v4
+  SKESK + SEIPDv1 + AES-256 with SHA-256 S2K at the maximum count through `CryptVaultPgp`;
+  several files ride in an inner STORE zip for age/PGP) and hands it to the share sheet with
+  subject and body; the passphrase never enters the mail. Receiving: `MainActivity` accepts
+  `ACTION_VIEW` for zip / pgp-encrypted / vnd.age / octet-stream, `ReceiveScreen` copies the
+  attachment to `cache/import/`, `ContainerSniff` decides by magic bytes, `ContainerReader`
+  decrypts (an inner zip is unpacked, entries flattened, zip-slip impossible), the files are
+  imported into an unlocked vault with `- note.txt` becoming the item's note. The manifest
+  sets `android:largeHeap="true"` because age's default scrypt work factor (18) needs 256 MB,
+  above the 192 MB standard growth limit — without it, opening an age file killed the process;
+  a remaining `OutOfMemoryError` becomes `ContainerTooLargeException` and one line on screen.
+  Not built: the link fallback (needs a Dropbox/OneDrive target or a reachable Nextcloud).
 - **Locking and unlocking** (`unlock/`): `LockManager` — per-vault background timeout,
   screen-off locks all, every lock wipes that vault's hand-offs. `BiometricWrap` holds the
   Keystore-wrapped masterkey copy (AES-GCM, auth window 300 s, BIOMETRIC_STRONG or, on API 30+,

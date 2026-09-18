@@ -29,7 +29,11 @@ Cryptomator desktop (https://github.com/cryptomator/cryptomator), GPL-3.0:
 OkHttp and Okio (https://square.github.io/okhttp/), Apache-2.0: the HTTP client of the WebDAV
 backup target (Phase 4); also the engine behind Ktor.
 
+zip4j (https://github.com/srikanth-lingala/zip4j), Apache-2.0: ZIP containers with AES-256 (Phase 5).
+kage (https://github.com/android-password-store/kage), Apache-2.0: age containers (Phase 5).
+PGPainless (https://pgpainless.org), Apache-2.0, and Bouncy Castle (https://www.bouncycastle.org),
+MIT-style licence: OpenPGP containers (Phase 5).
+
 Components added by later phases are appended here in the commit that adds them:
-zip4j (Apache-2.0), kage (Apache-2.0), PGPainless (Apache-2.0), Bouncy Castle (MIT-style),
 Dropbox SDK for Java (MIT), MSAL for Android (MIT), zxcvbn4j (MIT), the EFF long word list
 (CC-BY-3.0), and the AndroidX/Kotlin libraries (Apache-2.0).

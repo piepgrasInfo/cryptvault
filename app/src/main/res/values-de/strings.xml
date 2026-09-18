@@ -337,4 +337,53 @@
     <string name="vault_settings_backup_off">Aus</string>
     <string name="vault_settings_backup_on">An – %1$s</string>
     <string name="backup_webdav_local_denied">Dieser Server liegt in Ihrem lokalen Netzwerk. Android braucht dafür Ihre Erlaubnis; gestatten Sie CryptVault „Lokales Netzwerk“ in den Systemeinstellungen.</string>
+    <!-- Share as container (BUILD_BRIEF.md §7) -->
+    <string name="share_dialog_title">Verschlüsselt teilen</string>
+    <string name="share_dialog_help">Die Dateien kommen in einen Container, den nur die Passphrase öffnet. Übermitteln Sie die Passphrase auf einem anderen Weg – Nachricht, Anruf – nie in derselben Mail.</string>
+    <string name="share_kind_zip">ZIP (AES-256)</string>
+    <string name="share_kind_age">age</string>
+    <string name="share_kind_pgp">OpenPGP</string>
+    <string name="share_openers_zip">Öffnet sich mit 7-Zip, WinRAR, PeaZip, Keka, The Unarchiver oder iZip – nicht mit dem Windows-Explorer, dem macOS-Archivierungsprogramm oder der iOS-Dateien-App.</string>
+    <string name="share_openers_age">Öffnet sich mit age oder rage (Kommandozeile), AgePony (iOS/Android) oder Mage (Android).</string>
+    <string name="share_openers_pgp">Öffnet sich mit GnuPG, Kleopatra/Gpg4win, GPG Suite, Thunderbird oder Proton Mail.</string>
+    <string name="share_pass_generated">Erzeugt</string>
+    <string name="share_pass_typed">Eigene</string>
+    <string name="share_pass_regenerate">Neue</string>
+    <string name="share_pass_label">Passphrase</string>
+    <string name="share_pass_too_weak">Für dieses Format zu leicht zu erraten; braucht Stärke %1$d von 4 oder sechs Wörter.</string>
+    <string name="share_pass_separately">Die Passphrase kommt nie in die Mail. Kopieren Sie sie jetzt; nach dem Teilen wird sie nicht aufbewahrt.</string>
+    <string name="share_size_warning">Über 15 MB lehnen die meisten Mail-Anbieter den Anhang ab. Teilen Sie weniger, oder übergeben Sie den Container an eine Cloud-App.</string>
+    <string name="share_encrypted">Verschlüsselt teilen</string>
+    <string name="share_plain">Unverändert</string>
+    <string name="share_subject">%1$s (verschlüsselt)</string>
+    <string name="share_body">Anbei: %1$s – ein verschlüsselter %2$s-Container, %3$s.\n%4$s\nDie Passphrase kommt getrennt.</string>
+    <string name="share_deliverability_title">Vor der ersten verschlüsselten Mail</string>
+    <string name="share_deliverability_body">Gmail warnt Empfänger vor verschlüsselten Archiven, und strenge Firmen-Mailsysteme halten sie mitunter zurück. Kommt eine Mail nicht an, übergeben Sie den Container an eine Cloud-App und schicken einen Link. Die Passphrase geht immer einen anderen Weg.</string>
+    <!-- Receiving a container -->
+    <string name="receive_title">Empfangenen Container öffnen</string>
+    <string name="receive_detecting">Datei wird geprüft …</string>
+    <string name="receive_not_container">Das ist kein Container, den CryptVault öffnen kann (ZIP mit AES, age oder OpenPGP).</string>
+    <string name="receive_kind">%1$s-Container: %2$s</string>
+    <string name="receive_pass_prompt">Geben Sie die getrennt erhaltene Passphrase ein.</string>
+    <string name="receive_open">Öffnen</string>
+    <string name="receive_wrong_pass">Diese Passphrase öffnet ihn nicht.</string>
+    <string name="receive_files">Inhalt</string>
+    <string name="receive_choose_vault">Ablegen in</string>
+    <string name="receive_vault_locked">Zuerst entsperren</string>
+    <string name="receive_no_vault">Entsperren Sie zuerst einen Tresor und öffnen Sie den Anhang dann erneut.</string>
+    <string name="receive_import">Importieren</string>
+    <string name="receive_open_vault">Tresor öffnen</string>
+    <plurals name="share_size_items">
+        <item quantity="one">%1$d Element, etwa %2$s</item>
+        <item quantity="other">%1$d Elemente, etwa %2$s</item>
+    </plurals>
+    <plurals name="share_default_title_n">
+        <item quantity="one">%d Element aus CryptVault</item>
+        <item quantity="other">%d Elemente aus CryptVault</item>
+    </plurals>
+    <plurals name="receive_done_n">
+        <item quantity="one">%1$d Element in %2$s importiert.</item>
+        <item quantity="other">%1$d Elemente in %2$s importiert.</item>
+    </plurals>
+    <string name="receive_too_big">Dieser Container braucht zum Öffnen mehr Speicher, als dieses Gerät erlaubt. Bitten Sie den Absender um einen kleineren Arbeitsfaktor, oder öffnen Sie ihn am Computer.</string>
 </resources>

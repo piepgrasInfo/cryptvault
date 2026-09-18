@@ -67,6 +67,10 @@ android {
         }
     }
 
+    packaging {
+        // Bouncy Castle, PGPainless and kage each ship licence/notice files under the same names.
+        resources.excludes += setOf("META-INF/LICENSE.md", "META-INF/LICENSE-notice.md", "META-INF/NOTICE.md", "META-INF/DEPENDENCIES", "META-INF/versions/9/OSGI-INF/MANIFEST.MF")
+    }
     buildFeatures {
         compose = true
         buildConfig = true
@@ -116,6 +120,14 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.okhttp)
     implementation(libs.work.runtime)
+    implementation(libs.zip4j)
+    // kage ships the jdk15to18 flavour of the BC provider; PGPainless the jdk18on one. Same classes,
+    // two jars — keep one (jdk18on, pinned below) or dexing fails on duplicates.
+    implementation(libs.kage) { exclude(group = "org.bouncycastle", module = "bcprov-jdk15to18") }
+    implementation(libs.pgpainless)
+    implementation(libs.bouncycastle)
+    implementation(libs.bouncycastle.pg)
+    implementation(libs.bouncycastle.util)
 
     // The vault format (BUILD_BRIEF.md §3). cryptolib logs through slf4j: a no-op binding in
     // release, stderr (visible in logcat) in debug.

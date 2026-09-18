@@ -205,7 +205,7 @@ fun BrowserScreen(
                     navigationIcon = { IconButton(onClick = { vm.clearSelection() }) { Icon(Icons.Filled.Close, stringResource(R.string.action_cancel)) } },
                     actions = {
                         IconButton(onClick = { vm.selectAll(listing.items.map { it.id }) }) { Icon(Icons.Filled.SelectAll, stringResource(R.string.action_select_all)) }
-                        IconButton(onClick = { vm.shareSelected() }) { Icon(Icons.Filled.Share, stringResource(R.string.action_share)) }
+                        IconButton(onClick = { dialog = BrowserDialog.Share(vm.selectedForShare()) }) { Icon(Icons.Filled.Share, stringResource(R.string.action_share)) }
                         IconButton(onClick = { dialog = BrowserDialog.MoveItems }) { Icon(Icons.AutoMirrored.Filled.DriveFileMove, stringResource(R.string.action_move)) }
                         IconButton(onClick = { exportTree.launch(null) }) { Icon(Icons.Filled.SaveAlt, stringResource(R.string.action_export)) }
                         IconButton(onClick = { dialog = BrowserDialog.DeleteItems }) { Icon(Icons.Filled.Delete, stringResource(R.string.action_delete)) }
@@ -364,6 +364,13 @@ fun BrowserScreen(
             confirmLabel = stringResource(R.string.action_delete), destructive = true,
             onConfirm = { dialog = null; vm.deleteSelected() }, onDismiss = { dialog = null },
         )
+        is BrowserDialog.Share -> ShareContainerDialog(
+            itemCount = d.items.size,
+            estimatedSize = vm.estimateShare(d.items),
+            onShareEncrypted = { kind, pass -> dialog = null; vm.shareEncrypted(d.items, kind, pass) },
+            onSharePlain = { dialog = null; vm.share(d.items) },
+            onDismiss = { dialog = null },
+        )
         is BrowserDialog.DeleteOriginals -> ConfirmDialog(
             title = stringResource(R.string.dialog_delete_originals_title),
             text = pluralStringResource(R.plurals.dialog_delete_originals, d.sources.size, d.sources.size),
@@ -390,7 +397,7 @@ fun BrowserScreen(
         is BrowserDialog.ItemMenu -> ItemMenuDialog(d.item,
             onOpen = { dialog = null; withNotice { vm.openItem(d.item, false) } },
             onEdit = { dialog = null; withNotice { vm.openItem(d.item, true) } },
-            onShare = { dialog = null; vm.share(listOf(d.item)) },
+            onShare = { dialog = BrowserDialog.Share(listOf(d.item)) },
             onExport = { dialog = null; exportItem = d.item; exportOne.launch(d.item.name) },
             onRename = { dialog = BrowserDialog.RenameItem(d.item) },
             onMove = { dialog = null; vm.selectAll(listOf(d.item.id)); dialog = BrowserDialog.MoveItems },
@@ -414,6 +421,7 @@ sealed class BrowserDialog {
     object MoveItems : BrowserDialog()
     object DeleteItems : BrowserDialog()
     data class DeleteOriginals(val sources: List<ImportSource>) : BrowserDialog()
+    data class Share(val items: List<Item>) : BrowserDialog()
     data class FolderMenu(val folder: Folder) : BrowserDialog()
     data class RenameFolder(val folder: Folder) : BrowserDialog()
     data class MoveFolder(val folder: Folder) : BrowserDialog()

@@ -58,6 +58,9 @@ class OpenWith(private val context: Context, private val clock: () -> Long = { S
         return file
     }
 
+    /** A fresh directory under `cache/share/` for a container about to be handed to the share sheet. */
+    fun newShareDir(): File = randomDir(shareRoot)
+
     /** Decrypts into the share directory, for the share sheet; not tracked for save-back. */
     fun prepareForShare(vault: OpenVault, item: Item): File {
         val file = File(randomDir(shareRoot), item.name)

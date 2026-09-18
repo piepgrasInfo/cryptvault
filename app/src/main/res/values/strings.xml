@@ -347,4 +347,53 @@
     <string name="vault_settings_backup_off">Off</string>
     <string name="vault_settings_backup_on">On — %1$s</string>
     <string name="backup_webdav_local_denied">This server is on your local network. Android needs your permission for that; allow “Local network” for CryptVault in the system settings.</string>
+    <!-- Share as container (BUILD_BRIEF.md §7) -->
+    <string name="share_dialog_title">Share encrypted</string>
+    <string name="share_dialog_help">The files go into one container that only the passphrase opens. Send the passphrase another way — a message, a call — never in the same mail.</string>
+    <string name="share_kind_zip">ZIP (AES-256)</string>
+    <string name="share_kind_age">age</string>
+    <string name="share_kind_pgp">OpenPGP</string>
+    <string name="share_openers_zip">Opens with 7-Zip, WinRAR, PeaZip, Keka, The Unarchiver or iZip — not with Windows Explorer, the macOS Archive Utility or the iOS Files app.</string>
+    <string name="share_openers_age">Opens with age or rage (command line), AgePony (iOS/Android) or Mage (Android).</string>
+    <string name="share_openers_pgp">Opens with GnuPG, Kleopatra/Gpg4win, GPG Suite, Thunderbird or Proton Mail.</string>
+    <string name="share_pass_generated">Generated</string>
+    <string name="share_pass_typed">My own</string>
+    <string name="share_pass_regenerate">New one</string>
+    <string name="share_pass_label">Passphrase</string>
+    <string name="share_pass_too_weak">Too easy to guess for this format; needs strength %1$d of 4, or six words.</string>
+    <string name="share_pass_separately">The passphrase is never put into the mail. Copy it now; it is not kept after sharing.</string>
+    <string name="share_size_warning">Above 15 MB most mail providers refuse the attachment. Share fewer items, or hand the container to a cloud app instead.</string>
+    <string name="share_encrypted">Share encrypted</string>
+    <string name="share_plain">As is</string>
+    <string name="share_subject">%1$s (encrypted)</string>
+    <string name="share_body">Attached: %1$s — an encrypted %2$s container, %3$s.\n%4$s\nThe passphrase comes separately.</string>
+    <string name="share_deliverability_title">Before the first encrypted mail</string>
+    <string name="share_deliverability_body">Gmail warns recipients about encrypted archives, and strict company mail systems may hold them back. If a mail does not arrive, hand the container to a cloud app and send a link instead. The passphrase always travels another way.</string>
+    <!-- Receiving a container -->
+    <string name="receive_title">Open received container</string>
+    <string name="receive_detecting">Looking at the file…</string>
+    <string name="receive_not_container">This is not a container CryptVault can open (ZIP with AES, age or OpenPGP).</string>
+    <string name="receive_kind">%1$s container: %2$s</string>
+    <string name="receive_pass_prompt">Enter the passphrase you received separately.</string>
+    <string name="receive_open">Open</string>
+    <string name="receive_wrong_pass">That passphrase does not open it.</string>
+    <string name="receive_files">Contents</string>
+    <string name="receive_choose_vault">Put them into</string>
+    <string name="receive_vault_locked">Unlock first</string>
+    <string name="receive_no_vault">Unlock a vault first, then open the attachment again.</string>
+    <string name="receive_import">Import</string>
+    <string name="receive_open_vault">Open the vault</string>
+    <plurals name="share_size_items">
+        <item quantity="one">%1$d item, about %2$s</item>
+        <item quantity="other">%1$d items, about %2$s</item>
+    </plurals>
+    <plurals name="share_default_title_n">
+        <item quantity="one">%d item from CryptVault</item>
+        <item quantity="other">%d items from CryptVault</item>
+    </plurals>
+    <plurals name="receive_done_n">
+        <item quantity="one">Imported %1$d item into %2$s.</item>
+        <item quantity="other">Imported %1$d items into %2$s.</item>
+    </plurals>
+    <string name="receive_too_big">This container needs more memory to open than this device allows. Ask the sender for a smaller work factor, or open it on a computer.</string>
 </resources>

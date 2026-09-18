@@ -353,6 +353,82 @@ Verified:
 
 Commit: the one this entry is part of (`git log -1 -- handoff.md`).
 
+### [2026-09-18] Phase 5 — Mail and sharing (BUILD_BRIEF.md §12): the three containers, share sheet, receiving
+
+What changed:
+
+- **Rules in `:shared/share`**: `ContainerKind` (ZIP/age/PGP with extensions and MIME types),
+  `ContainerSniff` (by magic bytes: `PK\x03\x04`, `age-encryption.org/v1\n`, `0xC3`/`0x8C`),
+  `SharePolicy` (passphrase verdict — zxcvbn ≥ 3, ≥ 4 for ZIP unless six list words; 15 MB
+  warning; container names `<name>.zip` / `<name>.age` / `<name>.gpg`, several files
+  `<title>.zip.age` / `.zip.gpg`; STORE for already-compressed media; `<title> - note.txt`).
+- **Writers and reader in `:app/share`**: `ContainerWriter` — zip4j AES-256 AE-2 under one
+  top-level folder (no ZipCrypto path exists), kage `ScryptRecipient` at the default work
+  factor, PGPainless symmetric v4 SKESK + SEIPDv1 + AES-256 in binary with the file name in
+  the literal packet; `CryptVaultPgp` overrides Bouncy Castle's S2K to SHA-256 at count 0xFF
+  (the default was SHA-1 at 65 536). Several files travel inside an uncompressed inner ZIP for
+  age/PGP. `ContainerReader` detects by content, decrypts, unpacks an inner ZIP, flattens entry
+  names (zip-slip impossible) and maps every library's wrong-key failure to
+  `WrongPassphraseException`.
+- **Share**: `ShareContainerDialog` from the browser's selection, the item menu and the item
+  screen — format chips (default ZIP, remembered in `AppPrefs`), generated six-word
+  passphrase with "New one" and "Copy" (`SensitiveClipboard`) or a typed one with the policy
+  verdict, size line and warning, "Share encrypted" / "As is"; a one-time deliverability
+  notice first. `ShareService` builds the entries (a file item's note as `- note.txt`), writes
+  the container into `cache/share/` and hands it to the system chooser with subject
+  "<title> (encrypted)" and a body naming the attachment, the format, the size, the openers
+  and "the passphrase comes separately" — nothing else.
+- **Receive**: `ACTION_VIEW` filters for `application/zip`, `application/pgp-encrypted`,
+  `application/vnd.age` and `application/octet-stream` on `MainActivity` (mail apps hand
+  over generic types); `pendingContainer` → `ReceiveScreen`: copy to `cache/import/`, detect
+  (or decline in one line), passphrase, contents, choose an unlocked vault (locked ones lead
+  to the unlock screen), import — one file into the root, several into a folder named after
+  the container, `- note.txt` becoming its file's note — then wipe.
+- Dependencies: zip4j 2.11.6, kage 0.7.0 (its `bcprov-jdk15to18` excluded), PGPainless 2.0.4,
+  Bouncy Castle 1.86 (`bcprov`, `bcpg`, `bcutil` pinned together); duplicate `META-INF`
+  licence files excluded in packaging. NOTICE updated. Three count strings became `<plurals>`
+  (lint's `PluralsCandidate` stays at zero).
+- **Not built**: the link fallback (§7.3) — Dropbox and OneDrive targets do not exist yet and
+  no Nextcloud is reachable from this host to test the OCS share API against; the size warning
+  tells the user to hand the container to a cloud app instead. The Gmail/Outlook/Proton/iCloud
+  delivery matrix needs real mailboxes (§7.5) and is left for the developer.
+
+Verified:
+
+- `./gradlew :shared:jvmTest :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
+  :app:assembleRelease` — green, 47 + 49 tests, lint 0 errors / 18 warnings (baseline held;
+  three new count strings went straight to `<plurals>`), release build with the three new
+  libraries under R8 passes (6.4 MB unsigned APK; no new keep rules were needed).
+- `ContainerTest` round-trips every format (two files in ZIP, one and several files in age and
+  PGP), refuses a wrong passphrase in each, and leaves samples under `app/build/containers/`.
+  On the host: `gpg --list-packets` shows `symkey enc packet: version 4, cipher 9, s2k 3,
+  hash 8, count 65011712 (255)`, `mdc_method: 2` and the literal packet with the file name;
+  `gpg -d` returns the original bytes; libarchive's `bsdtar --passphrase` lists and extracts
+  the AES ZIP and reports "Incorrect passphrase" for a wrong one; the inner ZIP of a
+  multi-file `.gpg` lists both entries. No `age` CLI is installed here (no Go/Rust either), so
+  age is verified against kage's own decryption only — a CLI check remains for the developer.
+- Emulator: long-press `report.pdf` → Share → the deliverability notice → the dialog with a
+  generated passphrase ("unhitched manmade abiding said crummiest tinwork") → OpenPGP →
+  "Share encrypted" → the system chooser "Sharing 1 file — report.pdf.gpg" with Gmail, Drive
+  and Quick Share in 2 s. The container pulled from `cache/share/` decrypts on the host with
+  GnuPG and that passphrase to the original bytes.
+- Emulator receive: Files → Downloads → `report.pdf.gpg` → "Open with CryptVault" → the
+  screen names it an OpenPGP container → passphrase → "Contents: report.pdf" → Import →
+  "Imported 1 item into Personal." → the browser lists it.
+  - Emulator receive of `Holiday.zip.age` (two entries: a video and its `- note.txt`): the
+    first attempt **killed the process** — `OutOfMemoryError` at the 192 MB heap growth limit,
+    because age's default scrypt work factor 18 needs 256 MB. Fix: `android:largeHeap="true"`
+    (576 MB on this image, 512 MB+ on phones) and a typed `ContainerTooLargeException` that the
+    screen turns into one line instead of a crash. Second attempt: "age container:
+    Holiday.zip.age" → passphrase → "Contents: clip.mp4, clip - note.txt" → Import → "Imported
+    1 item" — the note file was paired with its video and shows on the item as its note.
+  - Also seen: sharing the 200 MB `notes.txt` as OpenPGP took well over a minute on the
+    emulator (S2K at the maximum count is cheap; AES over 200 MB in the emulator is not) with
+    the "Decrypting…" progress dialog up the whole time — acceptable, but the 15 MB warning
+    is what keeps real mails small.
+
+Commit: the one this entry is part of (`git log -1 -- handoff.md`).
+
 **Open before first release** (see also `RELEASE_CHECKLIST.md` once generated by the
 `app-generate-checklist` skill):
 

@@ -41,6 +41,8 @@ import info.piepgras.cryptvault.ui.NoteEditorScreen
 import info.piepgras.cryptvault.ui.NoteRoute
 import info.piepgras.cryptvault.ui.PermissionsRoute
 import info.piepgras.cryptvault.ui.PermissionsScreen
+import info.piepgras.cryptvault.ui.ReceiveRoute
+import info.piepgras.cryptvault.ui.ReceiveScreen
 import info.piepgras.cryptvault.ui.RecoverRoute
 import info.piepgras.cryptvault.ui.RestoreRoute
 import info.piepgras.cryptvault.ui.RestoreScreen
@@ -74,6 +76,8 @@ class MainActivity : FragmentActivity() {
     companion object {
         /** URIs shared into the app, waiting for a vault and a folder. */
         val pendingImport = MutableStateFlow<List<Uri>>(emptyList())
+        /** A container opened from a mail app or file manager, waiting for the receive screen. */
+        val pendingContainer = MutableStateFlow<Uri?>(null)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,6 +104,7 @@ class MainActivity : FragmentActivity() {
         val uris: List<Uri> = when (intent.action) {
             Intent.ACTION_SEND -> listOfNotNull(IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java))
             Intent.ACTION_SEND_MULTIPLE -> IntentCompat.getParcelableArrayListExtra(intent, Intent.EXTRA_STREAM, Uri::class.java) ?: emptyList()
+            Intent.ACTION_VIEW -> { intent.data?.let { pendingContainer.value = it }; intent.action = null; return }
             else -> return
         }
         if (uris.isNotEmpty()) pendingImport.value = uris
@@ -139,6 +144,10 @@ class MainActivity : FragmentActivity() {
     private fun App() {
         val nav = rememberNavController()
         val pending by pendingImport.collectAsState()
+        val container by pendingContainer.collectAsState()
+        androidx.compose.runtime.LaunchedEffect(container) {
+            container?.let { uri -> pendingContainer.value = null; nav.navigate(ReceiveRoute(uri.toString())) }
+        }
         NavHost(navController = nav, startDestination = VaultsRoute) {
             composable<VaultsRoute> {
                 VaultListScreen(
@@ -252,6 +261,15 @@ class MainActivity : FragmentActivity() {
                     onBack = { nav.popBackStack() },
                     onAbout = { nav.navigate(AboutRoute) },
                     onPermissions = { nav.navigate(PermissionsRoute) },
+                )
+            }
+            composable<ReceiveRoute> { entry ->
+                val route = entry.toRoute<ReceiveRoute>()
+                ReceiveScreen(
+                    uri = route.uri,
+                    onBack = { nav.popBackStack() },
+                    onUnlock = { nav.navigate(UnlockRoute(it)) },
+                    onOpenFolder = { vaultId, folder -> nav.navigate(BrowserRoute(vaultId, folder)) { popUpTo(VaultsRoute) } },
                 )
             }
             composable<AboutRoute> { AboutScreen(onBack = { nav.popBackStack() }) }

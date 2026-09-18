@@ -57,6 +57,7 @@
     <application
         android:name=".CryptVaultApp"
         android:allowBackup="false"
+        android:largeHeap="true"
         android:fullBackupContent="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:resizeableActivity="true"
@@ -90,6 +91,17 @@
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="*/*" />
+            </intent-filter>
+            <!-- Received containers (BUILD_BRIEF.md §7.4): mail apps hand over content:// URIs with
+                 generic types, so octet-stream is accepted; the kind is decided by content. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/pgp-encrypted" />
+                <data android:mimeType="application/vnd.age" />
+                <data android:mimeType="application/octet-stream" />
             </intent-filter>
         </activity>
 
