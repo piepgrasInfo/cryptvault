@@ -219,6 +219,10 @@
     <string name="perm_notifications_body">Fortschritts- und Fehlermeldungen für Sicherungen und Wiederherstellungen. Wird beim ersten Start einer Sicherung erbeten.</string>
     <string name="perm_overlay_title">Überlagerungen ausblenden</string>
     <string name="perm_overlay_body">Erlaubt der App, schwebende Fenster anderer Apps über ihren eigenen Bildschirmen auszublenden, damit nichts über das Passwortfeld gezeichnet werden kann. Wird automatisch gewährt; keine Nachfrage.</string>
+    <string name="perm_biometric_title">Biometrie</string>
+    <string name="perm_biometric_body">Erlaubt der App, die Fingerabdruck-, Gesichts- oder Bildschirmsperre-Abfrage des Systems anzuzeigen, wenn ein Tresor die biometrische Entsperrung eingeschaltet hat. Die App speichert nichts Biometrisches: Das System verwahrt die Vorlagen und gibt einen Schlüssel erst frei, nachdem es Sie geprüft hat. Wird automatisch gewährt; keine Nachfrage.</string>
+    <string name="perm_documents_title">Speicherort für andere Apps</string>
+    <string name="perm_documents_body">Entsperrte Tresore erscheinen als Speicherort in der Systemdateiauswahl und in der Files-App, sodass andere Apps Dateien darin öffnen und speichern können. Nur die eigenen Dateiwerkzeuge des Systems dürfen mit diesem Teil von CryptVault sprechen; Dateien werden im Fluss entschlüsselt, nichts landet im Klartext auf der Platte. Sperren entfernt den Tresor aus der Auswahl.</string>
     <string name="permissions_not_requested_title">Was die App nicht verlangt</string>
     <string name="permissions_not_requested_body">Keinen Zugriff auf deine Fotos, Dateien oder den Speicher im Allgemeinen: Dateien kommen einzeln über die Systemauswahl, die Fotoauswahl oder das Teilen herein, nur wenn du sie wählst. Keine Kameraberechtigung: Ein Foto nimmt die Kamera-App auf. Kein Standort, keine Kontakte, kein Mikrofon.</string>
     <string name="action_done">Fertig</string>

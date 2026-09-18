@@ -10,6 +10,7 @@ import info.piepgras.cryptvault.unlock.LockManager
 import info.piepgras.cryptvault.vault.VaultRegistry
 import info.piepgras.cryptvault.vault.VaultRepository
 import java.io.File
+import kotlinx.coroutines.launch
 
 /**
  * Process-wide setup. Deliberately thin: anything that can wait until a screen
@@ -33,6 +34,7 @@ class CryptVaultApp : Application() {
 
     lateinit var container: Container
         private set
+    private val appScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.Main)
 
     override fun onCreate() {
         super.onCreate()
@@ -40,6 +42,8 @@ class CryptVaultApp : Application() {
         if (CrashReporting.isEnabled(this)) CrashReporting.init(this)
         container = Container(this)
         container.lockManager.start()
+        // Every unlock or lock changes the roots the DocumentsProvider offers.
+        appScope.launch { container.repository.open.collect { container.lockManager.notifyRoots() } }
     }
 
     companion object {

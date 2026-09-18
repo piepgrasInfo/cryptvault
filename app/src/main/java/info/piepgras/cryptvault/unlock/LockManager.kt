@@ -4,10 +4,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import info.piepgras.cryptvault.openwith.OpenWith
+import info.piepgras.cryptvault.provider.ProxyDescriptors
+import info.piepgras.cryptvault.provider.VaultDocumentsProvider
 import info.piepgras.cryptvault.vault.VaultRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,18 +48,21 @@ class LockManager(
     }
 
     override fun onStart(owner: LifecycleOwner) {
+        Log.d(TAG, "foreground; cancelling ${pending.size} pending lock(s)")
         inForeground = true
         pending.values.forEach { it.cancel() }
         pending.clear()
     }
 
     override fun onStop(owner: LifecycleOwner) {
+        Log.d(TAG, "background; scheduling locks for ${repository.open.value.size} open vault(s)")
         inForeground = false
         for (id in repository.open.value.keys) scheduleLock(id)
     }
 
     private fun scheduleLock(id: String) {
         val seconds = repository.record(id)?.autoLockSeconds ?: 60
+        Log.d(TAG, "vault $id locks in $seconds s")
         pending[id]?.cancel()
         pending[id] = scope.launch {
             if (seconds > 0) delay(seconds * 1000L)
@@ -65,15 +71,28 @@ class LockManager(
     }
 
     fun lock(id: String) {
+        Log.d(TAG, "lock $id", Throwable("lock reason"))
         pending.remove(id)?.cancel()
+        ProxyDescriptors.closeAll(id) // descriptors other apps still hold fail on their next read
         repository.lock(id)
         openWith.wipe(id)
+        notifyRoots()
     }
 
     fun lockAll() {
+        Log.d(TAG, "lockAll", Throwable("lock reason"))
         pending.values.forEach { it.cancel() }
         pending.clear()
+        repository.open.value.keys.forEach { ProxyDescriptors.closeAll(it) }
         repository.lockAll()
         openWith.wipeAll()
+        notifyRoots()
+    }
+
+    /** Tells the pickers and the Files app that the set of roots changed. */
+    fun notifyRoots() {
+        runCatching { context.contentResolver.notifyChange(VaultDocumentsProvider.rootsUri(context), null) }
     }
 }
+
+private const val TAG = "LockManager"

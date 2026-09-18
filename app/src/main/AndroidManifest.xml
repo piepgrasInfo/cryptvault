@@ -86,6 +86,20 @@
             </intent-filter>
         </activity>
 
+        <!-- The unlocked vaults as storage roots for the system file picker and the Files app
+             (BUILD_BRIEF.md §5.2). MANAGE_DOCUMENTS is a system-only permission on the provider
+             element: only the platform's document UI and pickers can talk to it. -->
+        <provider
+            android:name=".provider.VaultDocumentsProvider"
+            android:authorities="${applicationId}.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+
         <!-- Lets the app hand generated files to any other app (mail, Drive, Files...)
              through the share sheet without asking for storage permissions. -->
         <provider

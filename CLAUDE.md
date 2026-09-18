@@ -21,8 +21,8 @@ Two Gradle modules:
   goes here (BUILD_BRIEF.md §8).
 
 `BUILD_BRIEF.md` is the design target (2026-09-17): what the app becomes, phase by phase, and
-which decisions are settled. **Phases 0 (foundation), 1 (vault core) and 2 (security) are done;
-Phase 3 (DocumentsProvider) is next.** This file describes what exists;
+which decisions are settled. **Phases 0 (foundation), 1 (vault core), 2 (security) and 3
+(DocumentsProvider) are done; Phase 4 (backup and restore) is next.** This file describes what exists;
 the brief describes what comes next and wins where the two disagree about the target. Its
 companions: `docs/VAULT_LAYOUT.md` (normative on-disk and remote layout), `docs/THREAT_MODEL.md`
 (requirements checked at each phase gate), `docs/PROVIDER_SETUP.md` (developer registrations).
@@ -94,6 +94,17 @@ let it drift:
   FileProvider URI with explicit grants and ClipData to the chosen app, notice on resume whether
   a writable hand-off changed and write it back, wipe on lock, process start and age. Never gate
   on `resolveActivity()` (package visibility makes it lie); catch the launch failure instead.
+- **DocumentsProvider** (`provider/`): `VaultDocumentsProvider` (authority
+  `<applicationId>.documents`, guarded by `MANAGE_DOCUMENTS`, so only the system picker and the
+  Files app can call it) exposes one root per **unlocked** vault; document ids are
+  `<vaultId>:<cleartext path>` (`DocumentId`, tested). Reads are seekable proxy descriptors
+  (`ProxyDescriptors.readOnly`: `openProxyFileDescriptor`, decrypting chunk by chunk on one
+  dedicated thread — a video player seeks, a PDF viewer jumps to the last page); writes are
+  whole-file through a pipe into `OpenVault.replaceContent`; create, delete, rename, move and
+  search map onto `OpenVault`. `ProxyDescriptors` tracks every open reader per vault and
+  `LockManager` closes them on lock, so a descriptor another app still holds gets EIO on its
+  next read, and the roots change notification empties the pickers (docs/THREAT_MODEL.md S8).
+  An empty "Copy to…"/"Save to" picker therefore means "locked", not a DocumentsUI filter.
 - **Locking and unlocking** (`unlock/`): `LockManager` — per-vault background timeout,
   screen-off locks all, every lock wipes that vault's hand-offs. `BiometricWrap` holds the
   Keystore-wrapped masterkey copy (AES-GCM, auth window 300 s, BIOMETRIC_STRONG or, on API 30+,
@@ -118,7 +129,13 @@ let it drift:
   → `CryptVault.avd`, port 5560). The Play image needs `-partition-size 16384` for the 2 GB
   tests and accepts adb only after the "Allow USB debugging" prompt, which the emulator console's
   `event mouse` can tap without a window. Gboard's first-run stylus tutorial swallows `input
-  text` until cancelled; Escape does not hide the keyboard, Back does.
+  text` until cancelled; Escape does not hide the keyboard, Back does. The shell holds
+  `MANAGE_DOCUMENTS`, so the provider can be probed without a UI:
+  `adb shell content query --uri content://info.piepgras.cryptvault.documents/root --projection root_id:title`
+  says which vaults are unlocked, `…/document/<vaultId>%3A/children` lists the root and
+  `content read --uri …/document/<vaultId>%3A<path>` streams a file; `input keyevent 26`
+  (screen off) locks every vault. Shell-granted URIs (`am start --grant-read-uri-permission`)
+  are not honoured, so share-in cannot be driven from the shell.
 - **One ViewModel per coherent area of state**, exposing `StateFlow` collected with
   `collectAsState()`. Repositories are reached only from a ViewModel.
 - **JVM-testable logic belongs in a plain file, not in a Composable** — anything with rules
@@ -162,11 +179,12 @@ is BUILD_BRIEF.md §8; what is declared today:
 | `INTERNET`, `ACCESS_NETWORK_STATE` | opt-in crash reporting today; backup providers and the mail link fallback from Phase 4 | Crash reporting defaults to off and the DSN is set in code, so the SDK cannot start before the user answers. No analytics. |
 | `POST_NOTIFICATIONS` | backup/restore progress and failure notices (Phase 4) | Request lazily at the first manual backup, never at startup. |
 | `HIDE_OVERLAY_WINDOWS` | hiding other apps' overlays above the unlock screen | Normal permission, granted at install; `setHideOverlayWindows` throws a SecurityException without it. |
+| `USE_BIOMETRIC`, `USE_FINGERPRINT` | the system biometric prompt for vaults with biometric unlock switched on | Normal permissions, merged in by `androidx.biometric` (check the merged manifest, not ours). The app stores no biometric data; the Keystore releases the wrapped key only after the system has authenticated the user. |
+| `MANAGE_DOCUMENTS` (on the provider element only) | guarding `VaultDocumentsProvider` so that only the system document picker and the Files app can call it | Signature-level permission the app never holds itself: the standard guard every DocumentsProvider must declare; nothing to request, nothing to show the user beyond the Permissions screen's "Documents" line. |
 
-Still to come, each with its four places in the commit that adds it: `USE_BIOMETRIC` (Phase 2, the
-prompt itself),
-`FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_DATA_SYNC` and `RUN_USER_INITIATED_JOBS` (Phase 4),
-`MANAGE_DOCUMENTS` on the provider element (Phase 3). Never: storage, `READ_MEDIA_*`,
+Still to come, each with its four places in the commit that adds it:
+`FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_DATA_SYNC` and `RUN_USER_INITIATED_JOBS` (Phase 4).
+Never: storage, `READ_MEDIA_*`,
 `MANAGE_EXTERNAL_STORAGE`, `CAMERA`, `QUERY_ALL_PACKAGES`, `SCHEDULE_EXACT_ALARM`.
 
 Re-read the **merged** manifest after any dependency change (`app/build/intermediates/merged_manifest/`).

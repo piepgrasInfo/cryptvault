@@ -229,6 +229,10 @@
     <string name="perm_notifications_body">Progress and failure notices for backups and restores. Asked for the first time you start a backup.</string>
     <string name="perm_overlay_title">Hide overlays</string>
     <string name="perm_overlay_body">Lets the app hide other apps\' floating windows above its own screens, so nothing can be drawn over the password field. Granted automatically; no prompt.</string>
+    <string name="perm_biometric_title">Biometrics</string>
+    <string name="perm_biometric_body">Lets the app show the system fingerprint, face or screen-lock prompt when a vault has biometric unlock switched on. Nothing biometric is stored by the app: the system keeps the templates and only releases a key after it has verified you. Granted automatically; no prompt.</string>
+    <string name="perm_documents_title">Storage root for other apps</string>
+    <string name="perm_documents_body">Unlocked vaults appear as a storage location in the system file picker and the Files app, so other apps can open and save files in them. Only the system\'s own file tools may talk to this part of CryptVault; files are decrypted on the fly and nothing is written to disk in the clear. Locking a vault removes it from the picker.</string>
     <string name="permissions_not_requested_title">What the app does not ask for</string>
     <string name="permissions_not_requested_body">No access to your photos, files or storage in general: files come in through the system picker, the photo picker or sharing, one by one, only when you choose them. No camera permission: taking a photo uses the camera app. No location, contacts or microphone.</string>
     <string name="action_done">Done</string>
