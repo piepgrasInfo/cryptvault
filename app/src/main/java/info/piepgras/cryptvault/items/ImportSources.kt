@@ -2,6 +2,7 @@ package info.piepgras.cryptvault.items
 
 import android.app.PendingIntent
 import android.content.ContentResolver
+import android.content.Context
 import android.content.ContentUris
 import android.net.Uri
 import android.os.Build
@@ -46,19 +47,12 @@ object ImportSources {
         resolver.openInputStream(uri) ?: throw IOException("cannot open $uri")
 
     /** Whether "move into vault" can delete this source directly (SAF documents with the delete flag). */
-    fun canDeleteDirectly(resolver: ContentResolver, uri: Uri): Boolean {
-        if (!DocumentsContract.isDocumentUri(null, uri) && uri.authority != "com.android.externalstorage.documents") {
-            if (!isDocumentUri(resolver, uri)) return false
-        }
-        return runCatching {
-            resolver.query(uri, arrayOf(DocumentsContract.Document.COLUMN_FLAGS), null, null, null)?.use { c ->
-                c.moveToFirst() && (c.getInt(0) and DocumentsContract.Document.FLAG_SUPPORTS_DELETE) != 0
-            } ?: false
-        }.getOrDefault(false)
-    }
-
-    private fun isDocumentUri(resolver: ContentResolver, uri: Uri): Boolean =
-        runCatching { resolver.getType(uri) != null && uri.pathSegments.firstOrNull() == "document" }.getOrDefault(false)
+    fun canDeleteDirectly(context: Context, uri: Uri): Boolean = runCatching {
+        if (!DocumentsContract.isDocumentUri(context, uri)) return false
+        context.contentResolver.query(uri, arrayOf(DocumentsContract.Document.COLUMN_FLAGS), null, null, null)?.use { c ->
+            c.moveToFirst() && (c.getInt(0) and DocumentsContract.Document.FLAG_SUPPORTS_DELETE) != 0
+        } ?: false
+    }.getOrDefault(false)
 
     fun deleteDirectly(resolver: ContentResolver, uri: Uri): Boolean =
         runCatching { DocumentsContract.deleteDocument(resolver, uri) }.getOrDefault(false)

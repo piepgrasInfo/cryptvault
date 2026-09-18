@@ -21,7 +21,8 @@ Two Gradle modules:
   goes here (BUILD_BRIEF.md §8).
 
 `BUILD_BRIEF.md` is the design target (2026-09-17): what the app becomes, phase by phase, and
-which decisions are settled. **Phase 0 (foundation) is done.** This file describes what exists;
+which decisions are settled. **Phases 0 (foundation) and 1 (vault core) are done; Phase 2
+(security) is in progress.** This file describes what exists;
 the brief describes what comes next and wins where the two disagree about the target. Its
 companions: `docs/VAULT_LAYOUT.md` (normative on-disk and remote layout), `docs/THREAT_MODEL.md`
 (requirements checked at each phase gate), `docs/PROVIDER_SETUP.md` (developer registrations).
@@ -67,11 +68,48 @@ ANDROID_SERIAL=emulator-5554 ./gradlew :app:connectedDebugAndroidTest --console=
 The scaffold plus the Phase 0 foundation. Change this section as reality arrives, and do not
 let it drift:
 
-- **`MainActivity.kt`** — the single Activity. Navigation Compose is in the dependencies (the
-  app clears six screens easily); until the screens exist it shows the scaffold placeholder.
-  It will own the startup gate order: legal disclaimer → crash-reporting opt-in → app. There is
-  no database, so no upgrade gate; the vault registry carries a `schema` field and migrates in
-  place. Runtime permissions are never a gate: each is requested at the point of use.
+- **`MainActivity.kt`** — the single Activity (a `FragmentActivity`, because
+  `androidx.biometric` needs one; `androidx.fragment` is pinned to 1.8.9 since the 1.2.5 that
+  biometric drags in rejects Compose's activity-result request codes). Navigation Compose with
+  `@Serializable` routes (`ui/Routes.kt`); the browser pushes one route per folder so Back goes
+  up. `launchMode="singleTask"`, so "Share to CryptVault" reaches the running instance through
+  `onNewIntent` and waits in `MainActivity.pendingImport` until a vault is unlocked. Startup
+  gates: legal disclaimer → crash-reporting opt-in → app. No database, no upgrade gate.
+  Runtime permissions are never a gate: each is requested at the point of use.
+- **Manual construction**: `CryptVaultApp.Container` holds the registry, repository,
+  thumbnails, open-with, lock manager, clipboard and biometric wrap; screens get it through
+  `CryptVaultApp.container(context)` and build their ViewModels with `viewModel { … }`.
+- **Vaults** (`vault/`): `VaultRegistry` (`vaults.json`, atomic writes), `VaultRepository` (the
+  one door: create private or in a picked folder, add existing, unlock/lock, rename, auto-lock,
+  change password, recovery key, reset, delete, export the ciphertext folder),
+  `SafVaultStorage` (DocumentsContract with cached ids, self-test on selection).
+- **Items** (`items/`): `OpenVault` is an unlocked vault — the manifest index over the cleartext
+  tree, reconciled on every unlock, every mutation committing the manifest atomically.
+  `ImportSources` turns picker/share/camera URIs into name, type, size and a stream;
+  `AndroidThumbnails` makes JPEGs for images (EXIF-aware), videos (a frame through
+  `MediaDataSource`) and PDFs (first page through a proxy descriptor). Imports stream straight
+  from the source into the vault (no plaintext temp file); the vault writes to a `.tmp` name and
+  renames on close, and sweeps stray temps on unlock, so a killed import leaves nothing behind.
+- **Open-with** (`openwith/OpenWith`): decrypt into `cache/open/<random>/<name>`, hand a
+  FileProvider URI with explicit grants and ClipData to the chosen app, notice on resume whether
+  a writable hand-off changed and write it back, wipe on lock, process start and age. Never gate
+  on `resolveActivity()` (package visibility makes it lie); catch the launch failure instead.
+- **Locking** (`unlock/LockManager`): per-vault background timeout, screen-off locks all,
+  every lock wipes that vault's hand-offs. `unlock/BiometricWrap` holds the Keystore-wrapped
+  masterkey copy (auth window 300 s, invalidated on enrolment change); `unlock/PasswordPolicy`
+  is zxcvbn score ≥ 3 plus a 10-character floor with EFF-word suggestions; `:shared`'s
+  `unlock/Backoff` and `unlock/Passphrase` are the pure rules behind them.
+- **Screen hygiene** (`security/`): `SecureWindow` sets FLAG_SECURE, hides overlays and blanks
+  recents; in **debug builds only**, `cache/allow-screenshots` (create it with
+  `adb shell run-as info.piepgras.cryptvault touch cache/allow-screenshots`) turns FLAG_SECURE
+  off so emulator screenshots work. `SensitiveClipboard` flags clips sensitive and clears them
+  after 60 s.
+- **Emulator lessons** (this host): AVDs live in `/home/martin/.android/avd`; run the emulator
+  with `ANDROID_AVD_HOME` pointing there and a per-project ini (`Medium_Phone_5560-CryptVault.ini`
+  → `CryptVault.avd`, port 5560). The Play image needs `-partition-size 16384` for the 2 GB
+  tests and accepts adb only after the "Allow USB debugging" prompt, which the emulator console's
+  `event mouse` can tap without a window. Gboard's first-run stylus tutorial swallows `input
+  text` until cancelled; Escape does not hide the keyboard, Back does.
 - **One ViewModel per coherent area of state**, exposing `StateFlow` collected with
   `collectAsState()`. Repositories are reached only from a ViewModel.
 - **JVM-testable logic belongs in a plain file, not in a Composable** — anything with rules
@@ -114,8 +152,10 @@ is BUILD_BRIEF.md §8; what is declared today:
 | --- | --- | --- |
 | `INTERNET`, `ACCESS_NETWORK_STATE` | opt-in crash reporting today; backup providers and the mail link fallback from Phase 4 | Crash reporting defaults to off and the DSN is set in code, so the SDK cannot start before the user answers. No analytics. |
 | `POST_NOTIFICATIONS` | backup/restore progress and failure notices (Phase 4) | Request lazily at the first manual backup, never at startup. |
+| `HIDE_OVERLAY_WINDOWS` | hiding other apps' overlays above the unlock screen | Normal permission, granted at install; `setHideOverlayWindows` throws a SecurityException without it. |
 
-Still to come, each with its four places in the commit that adds it: `USE_BIOMETRIC` (Phase 2),
+Still to come, each with its four places in the commit that adds it: `USE_BIOMETRIC` (Phase 2, the
+prompt itself),
 `FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_DATA_SYNC` and `RUN_USER_INITIATED_JOBS` (Phase 4),
 `MANAGE_DOCUMENTS` on the provider element (Phase 3). Never: storage, `READ_MEDIA_*`,
 `MANAGE_EXTERNAL_STORAGE`, `CAMERA`, `QUERY_ALL_PACKAGES`, `SCHEDULE_EXACT_ALARM`.
@@ -139,10 +179,12 @@ Re-read the **merged** manifest after any dependency change (`app/build/intermed
 - Unit tests use hand-written `Fake*` implementations plus `MainDispatcherRule` — no mocking
   library, no Robolectric. cryptolib runs on the plain JVM, so vault round trips are ordinary
   unit tests on a temp directory.
-- **Keep lint at 0 errors** and hold the warning count where it is: **15 warnings** after
-  Phase 0 — 14 version-currency notices (`AndroidGradlePluginVersion`, `GradleDependency`,
+- **Keep lint at 0 errors** and hold the warning count where it is: **16 warnings** after
+  Phase 1 — 15 version-currency notices (`AndroidGradlePluginVersion`, `GradleDependency`,
   `NewerVersionAvailable`, drifting upward on their own as libraries move) and one
   `UnusedResources` on `R.color.brand`, which exists for the launcher icon and store assets.
-  Anything else in the report is a real finding.
+  Anything else in the report is a real finding. Categories cleared on the way and not to be
+  reintroduced: `PluralsCandidate` (use `<plurals>`), `LocalContextGetResourceValueCall` (use
+  `LocalResources.current`), `UseKtx`, `NewApi`.
 - When a task touches code, `git add`, commit, and push to `origin/master` at the end — do not
   leave changes uncommitted.

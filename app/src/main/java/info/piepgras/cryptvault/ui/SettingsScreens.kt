@@ -96,6 +96,7 @@ fun PermissionsScreen(onBack: () -> Unit) {
             Text(stringResource(R.string.permissions_intro), style = MaterialTheme.typography.bodyMedium)
             PermissionEntry(stringResource(R.string.perm_internet_title), stringResource(R.string.perm_internet_body))
             PermissionEntry(stringResource(R.string.perm_notifications_title), stringResource(R.string.perm_notifications_body))
+            PermissionEntry(stringResource(R.string.perm_overlay_title), stringResource(R.string.perm_overlay_body))
             Text(stringResource(R.string.permissions_not_requested_title), Modifier.padding(top = 24.dp), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(R.string.permissions_not_requested_body), Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyMedium)
         }

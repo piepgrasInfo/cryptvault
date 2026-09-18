@@ -3,7 +3,7 @@ package info.piepgras.cryptvault
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.AlertDialog
@@ -26,6 +26,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import info.piepgras.cryptvault.prefs.AppPrefs
+import info.piepgras.cryptvault.security.SecureWindow
 import info.piepgras.cryptvault.ui.AboutRoute
 import info.piepgras.cryptvault.ui.AboutScreen
 import info.piepgras.cryptvault.ui.BrowserRoute
@@ -56,7 +57,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * point of use. Also the receiver of "Share to CryptVault": shared URIs wait in [pendingImport]
  * until the user has chosen and unlocked a vault.
  */
-class MainActivity : ComponentActivity() {
+/*
+ * FragmentActivity rather than ComponentActivity: androidx.biometric's BiometricPrompt needs one
+ * (it hosts its own fragment). setContent works the same.
+ */
+class MainActivity : FragmentActivity() {
 
     companion object {
         /** URIs shared into the app, waiting for a vault and a folder. */
@@ -66,6 +71,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        SecureWindow.apply(this)
         handleShare(intent)
         setContent {
             CryptVaultTheme {

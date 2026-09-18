@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import info.piepgras.cryptvault.items.AndroidThumbnails
 import info.piepgras.cryptvault.openwith.OpenWith
+import info.piepgras.cryptvault.security.SensitiveClipboard
+import info.piepgras.cryptvault.unlock.BiometricWrap
 import info.piepgras.cryptvault.unlock.LockManager
 import info.piepgras.cryptvault.vault.VaultRegistry
 import info.piepgras.cryptvault.vault.VaultRepository
@@ -23,6 +25,8 @@ class CryptVaultApp : Application() {
         val repository = VaultRepository(app.contentResolver, registry, File(app.filesDir, "vaults"), thumbnails)
         val openWith = OpenWith(app)
         val lockManager = LockManager(app, repository, openWith)
+        val clipboard = SensitiveClipboard(app)
+        val biometricWrap = BiometricWrap(app)
     }
 
     lateinit var container: Container

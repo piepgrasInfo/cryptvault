@@ -140,6 +140,7 @@ fun ItemDetailScreen(vaultId: String, itemId: String, onLocked: () -> Unit, onBa
                 is BrowserEvent.Message -> snackbar.showSnackbar(e.text)
                 is BrowserEvent.MessageRes -> snackbar.showSnackbar(e.format(resources))
                 is BrowserEvent.Launch -> runCatching { launch.launch(e.intent) }
+                    .onFailure { snackbar.showSnackbar(resources.getString(R.string.msg_no_app)) }
                 else -> Unit
             }
         }

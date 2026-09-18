@@ -12,10 +12,27 @@
          first asks for something that needs a notification - not at startup. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Knowing whether a camera app exists, for the Capture entry of the import menu. -->
+    <!-- Normal permission (no prompt): lets the app hide other apps' overlay windows above its
+         own, so nothing can be drawn over the unlock screen (BUILD_BRIEF.md §4.4). -->
+    <uses-permission android:name="android.permission.HIDE_OVERLAY_WINDOWS" />
+
+    <!-- Package visibility: a camera app for the Capture entry, and viewers/editors/share
+         targets for the open-with and share flows (Android 11+ hides them otherwise). -->
     <queries>
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="*/*" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.EDIT" />
+            <data android:mimeType="*/*" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="*/*" />
         </intent>
     </queries>
 
@@ -49,9 +66,12 @@
         <meta-data android:name="io.sentry.auto-init" android:value="false" />
         <meta-data android:name="io.sentry.send-default-pii" android:value="false" />
 
+        <!-- singleTask: a share into the app reaches the running instance through onNewIntent
+             instead of stacking a second copy of the app on top of the first. -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -496,6 +496,7 @@ that device backups do not include vaults and that CryptVault's own backup is th
 | `POST_NOTIFICATIONS` | backup/restore progress and failure notices | requested at the first manual backup, never at startup |
 | `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_DATA_SYNC` | long backups and restores on API 26–33 (WorkManager `setForeground`) | service element with `foregroundServiceType="dataSync"` |
 | `RUN_USER_INITIATED_JOBS` | "Back up now" / restore on API 34+ | normal permission |
+| `HIDE_OVERLAY_WINDOWS` | hiding other apps' overlays above the unlock screen (§4.4) | normal permission, granted at install; `setHideOverlayWindows` throws without it |
 | `MANAGE_DOCUMENTS` (on the provider element, not requested) | the DocumentsProvider | system-only; lets the Files app and pickers read the vault root |
 | `<queries>` for `ACTION_IMAGE_CAPTURE` | knowing whether a camera app exists | not a permission |
 

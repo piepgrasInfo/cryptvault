@@ -72,6 +72,7 @@ class OpenVault(
     }
 
     private fun walk(path: String, dirId: String, out: MutableList<TreeNode>) {
+        vault.sweepTemp(dirId)
         for (e in vault.list(dirId)) {
             val childPath = Names.join(path, e.name)
             when (e.kind) {

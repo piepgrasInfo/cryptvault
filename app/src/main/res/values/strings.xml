@@ -157,7 +157,7 @@
         <item quantity="one">%1$d edited file saved back into the vault.</item>
         <item quantity="other">%1$d edited files saved back into the vault.</item>
     </plurals>
-    <string name="msg_no_app_for">No app on this phone opens %1$s.</string>
+    <string name="msg_no_app">No app on this phone can open this file.</string>
     <string name="open_with_notice_title">Opening in another app</string>
     <string name="open_with_notice_body">The file is decrypted into a temporary copy and handed to the app you choose. That app may keep its own copy; CryptVault cannot take it back. The temporary copy is removed when the vault locks.</string>
 
@@ -227,6 +227,8 @@
     <string name="perm_internet_body">Used only for the cloud backup targets you connect, for share links you create, and for crash reports if you switched them on. There are no accounts, no analytics and no advertising.</string>
     <string name="perm_notifications_title">Notifications</string>
     <string name="perm_notifications_body">Progress and failure notices for backups and restores. Asked for the first time you start a backup.</string>
+    <string name="perm_overlay_title">Hide overlays</string>
+    <string name="perm_overlay_body">Lets the app hide other apps\' floating windows above its own screens, so nothing can be drawn over the password field. Granted automatically; no prompt.</string>
     <string name="permissions_not_requested_title">What the app does not ask for</string>
     <string name="permissions_not_requested_body">No access to your photos, files or storage in general: files come in through the system picker, the photo picker or sharing, one by one, only when you choose them. No camera permission: taking a photo uses the camera app. No location, contacts or microphone.</string>
 </resources>

@@ -103,6 +103,9 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.savedstate)
     implementation(libs.lifecycle.process)
     implementation(libs.exifinterface)
+    implementation(libs.zxcvbn)
+    implementation(libs.biometric)
+    implementation(libs.fragment)
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.navigation.compose)

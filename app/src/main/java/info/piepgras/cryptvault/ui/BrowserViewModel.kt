@@ -115,12 +115,17 @@ class BrowserViewModel(private val container: CryptVaultApp.Container, val vault
                         }
                     }
                 }
-                if (result.isSuccess) imported++ else failures += src.name
+                if (result.isSuccess) imported++ else {
+                    failures += src.name
+                    android.util.Log.w("CryptVault", "import of ${src.mime} (${src.size} bytes) failed", result.exceptionOrNull())
+                }
             }
             progress.value = null
             if (failures.isEmpty()) events.tryEmit(BrowserEvent.MessageRes(R.plurals.msg_imported, quantity = imported))
             else events.tryEmit(BrowserEvent.MessageRes(R.plurals.msg_import_failed, listOf(failures.joinToString(", ")), quantity = imported))
-            val deletable = sources.filter { it.isMedia || ImportSources.canDeleteDirectly(resolver, it.uri) }
+            val deletable = withContext(Dispatchers.IO) {
+                sources.filter { it.isMedia || ImportSources.canDeleteDirectly(context, it.uri) }
+            }
             if (imported > 0 && deletable.isNotEmpty()) events.tryEmit(BrowserEvent.AskDeleteOriginals(deletable))
         }
     }
@@ -214,13 +219,9 @@ class BrowserViewModel(private val container: CryptVaultApp.Container, val vault
             }
             progress.value = null
             file.onSuccess {
-                val intent = openWith.viewIntent(it, item.mime, edit)
-                if (intent.resolveActivity(context.packageManager) == null) {
-                    events.tryEmit(BrowserEvent.MessageRes(R.string.msg_no_app_for, listOf(item.mime)))
-                    openWith.wipe(vaultId)
-                } else {
-                    events.tryEmit(BrowserEvent.Launch(Intent.createChooser(intent, null)))
-                }
+                // No resolveActivity() gate: package visibility makes it return null for apps we
+                // may still start. The screen reports ActivityNotFoundException from the launch.
+                events.tryEmit(BrowserEvent.Launch(Intent.createChooser(openWith.viewIntent(it, item.mime, edit), null)))
             }.onFailure { events.tryEmit(BrowserEvent.Message(it.message ?: it.javaClass.simpleName)) }
         }
     }

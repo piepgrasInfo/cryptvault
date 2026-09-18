@@ -77,6 +77,8 @@ class CryptomatorVault private constructor(
         const val CONTENTS_FILE = "contents.c9r"
         const val LONG_NAME_FILE = "name.c9s"
         const val DIR_ID_BACKUP_FILE = "dirid.c9r"
+        /** A file being written; invisible to every Cryptomator client until renamed on close. */
+        const val TEMP_SUFFIX = ".tmp"
 
         // Every Cryptomator client uses an empty pepper; anything else would make the vault
         // unreadable elsewhere.
@@ -338,7 +340,9 @@ class CryptomatorVault private constructor(
 
     /**
      * Opens a new file for writing; bytes are encrypted as they are written and the header on
-     * close. An existing file of that name is replaced.
+     * close. The bytes go to a `.tmp` sibling that no client lists and are renamed into place
+     * when the channel closes, so a process killed mid-write leaves a stray temp file (swept by
+     * [sweepTemp]) and never a truncated entry. An existing file of that name is replaced.
      */
     fun writeFile(dirId: String, name: String): WritableByteChannel {
         val loc = locate(dirId, name)
@@ -349,7 +353,36 @@ class CryptomatorVault private constructor(
         } else {
             loc.entryPath
         }
-        return EncryptingChannel(storage.writeChannel(contentPath))
+        val tempPath = contentPath + TEMP_SUFFIX
+        return CommitOnClose(EncryptingChannel(storage.writeChannel(tempPath))) { storage.move(tempPath, contentPath) }
+    }
+
+    /** Deletes leftover `.tmp` files in a directory (a write the process did not survive). */
+    fun sweepTemp(dirId: String): Int {
+        val parent = dirPath(dirId)
+        var n = 0
+        for (e in storage.list(parent)) {
+            if (!e.isDirectory && e.name.endsWith(TEMP_SUFFIX)) {
+                runCatching { storage.delete("$parent/${e.name}") }.onSuccess { n++ }
+            } else if (e.isDirectory && e.name.endsWith(SHORTENED_SUFFIX)) {
+                for (c in storage.list("$parent/${e.name}")) {
+                    if (!c.isDirectory && c.name.endsWith(TEMP_SUFFIX)) runCatching { storage.delete("$parent/${e.name}/${c.name}") }.onSuccess { n++ }
+                }
+            }
+        }
+        return n
+    }
+
+    private class CommitOnClose(private val inner: WritableByteChannel, private val commit: () -> Unit) : WritableByteChannel {
+        private var closed = false
+        override fun write(src: ByteBuffer): Int = inner.write(src)
+        override fun isOpen(): Boolean = !closed
+        override fun close() {
+            if (closed) return
+            closed = true
+            inner.close()
+            commit()
+        }
     }
 
     /**

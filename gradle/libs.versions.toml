@@ -29,6 +29,13 @@ cryptolib = "2.2.2"
 cryptofs = "2.10.0"
 slf4j = "2.0.17"
 exifinterface = "1.4.2"
+# Password strength for the vault password gate (BUILD_BRIEF.md §4.1). MIT.
+zxcvbn = "1.9.0"
+# Biometric prompt; the stable line, not the 1.4 alphas (BUILD_BRIEF.md §13).
+biometric = "1.1.0"
+# Pinned because biometric 1.1.0 drags in fragment 1.2.5, whose FragmentActivity still rejects
+# the request codes Compose's activity-result registry generates ("lower 16 bits" crash).
+fragment = "1.8.9"
 
 [libraries]
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -66,6 +73,9 @@ slf4j-nop = { group = "org.slf4j", name = "slf4j-nop", version.ref = "slf4j" }
 slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j" }
 lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycle" }
 exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exifinterface" }
+zxcvbn = { group = "com.nulab-inc", name = "zxcvbn", version.ref = "zxcvbn" }
+biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
+fragment = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

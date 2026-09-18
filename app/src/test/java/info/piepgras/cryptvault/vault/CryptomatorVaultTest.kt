@@ -339,6 +339,27 @@ class CryptomatorVaultTest {
     }
 
     @Test
+    fun `a write that never closes leaves only a temp file, and the sweep removes it`() {
+        CryptomatorVault.create(storage, password).use { vault ->
+            val ch = vault.writeFile("", "interrupted.bin")
+            ch.write(ByteBuffer.wrap(ByteArray(50_000) { 3 }))
+            // no close: the process died here
+            val root = dir.resolve(vault.dirPath(""))
+            val names = Files.list(root).use { s -> s.map { it.fileName.toString() }.toList() }
+            assertTrue(names.any { it.endsWith(".c9r.tmp") })
+            assertFalse(names.any { it.endsWith(".c9r") && it != "dirid.c9r" })
+            assertTrue(vault.list("").isEmpty())
+            assertEquals(1, vault.sweepTemp(""))
+            assertTrue(Files.list(root).use { s -> s.map { it.fileName.toString() }.toList() }.none { it.endsWith(".tmp") })
+            // a completed write lands under its real name and the temp is gone
+            vault.put("", "done.bin", ByteArray(10))
+            val after = Files.list(root).use { s -> s.map { it.fileName.toString() }.toList() }
+            assertTrue(after.none { it.endsWith(".tmp") })
+            assertEquals(listOf("done.bin"), vault.list("").map { it.name })
+        }
+    }
+
+    @Test
     fun `unknown ciphertext entries are ignored, not fatal`() {
         CryptomatorVault.create(storage, password).use { vault ->
             val root = dir.resolve(vault.dirPath(""))

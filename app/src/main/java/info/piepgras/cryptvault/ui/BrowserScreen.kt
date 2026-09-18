@@ -166,7 +166,8 @@ fun BrowserScreen(
             when (e) {
                 is BrowserEvent.Message -> snackbar.showSnackbar(e.text)
                 is BrowserEvent.MessageRes -> snackbar.showSnackbar(e.format(resources))
-                is BrowserEvent.Launch -> runCatching { launch.launch(e.intent) }.onFailure { snackbar.showSnackbar(it.message ?: "") }
+                is BrowserEvent.Launch -> runCatching { launch.launch(e.intent) }
+                    .onFailure { snackbar.showSnackbar(resources.getString(R.string.msg_no_app)) }
                 is BrowserEvent.LaunchSender -> runCatching { launchSender.launch(IntentSenderRequest.Builder(e.sender).build()) }
                 is BrowserEvent.AskDeleteOriginals -> dialog = BrowserDialog.DeleteOriginals(e.sources)
             }
@@ -438,7 +439,7 @@ fun iconFor(item: Item): ImageVector = when {
 @Composable
 private fun FabEntry(icon: ImageVector, label: String, onClick: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 12.dp)) {
-        Surface(shape = RoundedCornerShape(8.dp), tonalElevation = 2.dp, shadowElevation = 2.dp) {
+        Surface(shape = RoundedCornerShape(8.dp), tonalElevation = 2.dp, shadowElevation = 2.dp, onClick = onClick) {
             Text(label, Modifier.padding(horizontal = 12.dp, vertical = 6.dp), style = MaterialTheme.typography.labelLarge)
         }
         Spacer(Modifier.width(12.dp))
