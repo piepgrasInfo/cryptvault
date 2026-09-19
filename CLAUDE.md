@@ -257,6 +257,8 @@ Re-read the **merged** manifest after any dependency change (`app/build/intermed
   reintroduced: `PluralsCandidate` (use `<plurals>`), `LocalContextGetResourceValueCall` (use
   `LocalResources.current`), `UseKtx`, `NewApi`.
 - When a task touches code, `git add`, commit, and push to `origin/master` at the end — do not
-  leave changes uncommitted. Then run `tools/sync_github_mirror.sh`, which fast-forwards the
+  leave changes uncommitted. Commits are authored as the developer (the repository's local git
+  identity, set 2026-09-19); an agent's commits add the `Co-Authored-By` trailer. Then run
+  `tools/sync_github_mirror.sh`, which fast-forwards the
   public clone in `github/` (gitignored; the developer pushes it to GitHub by hand) so the
   published source never lags the house remote.
