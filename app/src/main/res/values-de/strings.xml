@@ -205,6 +205,8 @@
     <string name="settings_crash_reporting_hint">Standardmäßig aus. Berichte gehen an den eigenen Server des Entwicklers und enthalten nie Dateinamen, Titel, Tags, Notizen oder Tresornamen.</string>
     <string name="about_title">Über</string>
     <string name="about_version">Version %1$s</string>
+    <string name="about_edition_play">Google-Play-Ausgabe</string>
+    <string name="about_edition_foss">Ausgabe ohne Google-Play-Dienste — F-Droid, GitHub, piepgras.info</string>
     <string name="about_body">Ein verschlüsselter Tresor für die Dateien und Notizen, die wichtig sind, im offenen Cryptomator-Format: in jeder App öffnen, in die eigene Cloud sichern und kleine Einträge in einem Container verschicken, den nur der Empfänger öffnen kann.</string>
     <string name="about_license_title">Freie Software</string>
     <string name="about_license_body">Crypt Vault ist freie Software unter der GNU General Public License, Version 3 oder später. Der Quelltext liegt unter https://github.com/piepgrasInfo/cryptvault.</string>

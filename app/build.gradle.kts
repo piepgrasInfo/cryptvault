@@ -48,6 +48,28 @@ android {
         }
     }
 
+    // Two distributions of the same app (BUILD_BRIEF.md §13, decided 2026-09-19). `play` is the
+    // Google Play build and the only one that may ever link Google Play services (the Drive
+    // backup target needs them). `foss` is the build anyone can install - F-Droid, GitHub
+    // Releases, piepgras.info - and carries its own applicationId, because Play App Signing
+    // re-signs the Play copy with Google's key: with one id the two could never replace each
+    // other, and switching would mean an uninstall, which takes the private vaults with it.
+    // Anything Google-dependent belongs in `src/play/`, never in `src/main/`.
+    flavorDimensions += "dist"
+    productFlavors {
+        create("play") {
+            dimension = "dist"
+            buildConfigField("String", "DISTRIBUTION", "\"play\"")
+            buildConfigField("boolean", "PLAY_SERVICES_ALLOWED", "true")
+        }
+        create("foss") {
+            dimension = "dist"
+            applicationIdSuffix = ".foss"
+            buildConfigField("String", "DISTRIBUTION", "\"foss\"")
+            buildConfigField("boolean", "PLAY_SERVICES_ALLOWED", "false")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -86,6 +108,12 @@ kotlin {
     compilerOptions {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
+}
+
+// Names the build outputs after the app rather than the module, so the two distributions are
+// told apart by their file names: cryptvault-foss-release.apk, cryptvault-play-release.aab.
+base {
+    archivesName = "cryptvault"
 }
 
 dependencies {
@@ -134,6 +162,11 @@ dependencies {
     implementation(libs.cryptolib)
     debugImplementation(libs.slf4j.simple)
     releaseImplementation(libs.slf4j.nop)
+
+    // Google-dependent backup providers go here and nowhere else: `playImplementation` for the
+    // Drive target's Credential Manager and play-services-auth (BUILD_BRIEF.md §6.1). Keeping
+    // the `foss` classpath free of com.google.android.gms is checked by DistributionTest and by
+    // reading the merged manifest of fossRelease.
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

@@ -24,11 +24,14 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # Both distributions, always. `:app:test` covers testPlayDebugUnitTest and
+      # testFossDebugUnitTest; the flavour tasks are flavoured since the `dist` dimension was
+      # added, so there is no testDebugUnitTest or lintDebug to call any more.
       - name: Unit tests
-        run: ./gradlew testDebugUnitTest
+        run: ./gradlew :app:test :shared:jvmTest
 
       - name: Lint
-        run: ./gradlew lintDebug
+        run: ./gradlew :app:lintPlayDebug :app:lintFossDebug
 
       - name: Assemble debug
-        run: ./gradlew assembleDebug
+        run: ./gradlew :app:assembleDebug

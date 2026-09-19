@@ -237,6 +237,8 @@
     <string name="settings_crash_reporting_hint">По умолчанию выключено. Отчёты уходят на собственный сервер разработчика и никогда не содержат имён файлов, заголовков, тегов, заметок или названий хранилищ.</string>
     <string name="about_title">О приложении</string>
     <string name="about_version">Версия %1$s</string>
+    <string name="about_edition_play">Издание для Google Play</string>
+    <string name="about_edition_foss">Издание без сервисов Google Play — F-Droid, GitHub, piepgras.info</string>
     <string name="about_body">Зашифрованное хранилище для важных файлов и заметок в открытом формате Cryptomator: открывайте их в любом приложении, сохраняйте в собственное облако и отправляйте небольшие элементы в контейнере, который откроет только получатель.</string>
     <string name="about_license_title">Свободное ПО</string>
     <string name="about_license_body">Crypt Vault — свободное программное обеспечение под лицензией GNU General Public License версии 3 или более поздней. Исходный код: https://github.com/piepgrasInfo/cryptvault.</string>

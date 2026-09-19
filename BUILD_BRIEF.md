@@ -279,8 +279,8 @@ The format is **Cryptomator vault format 8**, produced and consumed by
 | WebDAV (Nextcloud, ownCloud, Synology, Hetzner, …) | ~400 lines of Ktor: PROPFIND, PUT (`If-Match`), GET (`Range`), MKCOL, MOVE, DELETE; Nextcloud chunking v2 above 5 MB | user-entered base URL + app password | none |
 | Any folder | SAF tree URI through `DocumentFile`; no ETags, no delta, no server-side move → copy+delete | user-chosen | none |
 
-Google Drive requires Google Play services; a Play-services-free build hides the target
-(§13). OneDrive business tenants may need `Files.ReadWrite` and admin consent; v1 tries with the
+Google Drive requires Google Play services; the Play-services-free `foss` build does not offer
+the target at all — it is not compiled into it (§13, `dist/Distribution.kt`). OneDrive business tenants may need `Files.ReadWrite` and admin consent; v1 tries with the
 AppFolder scope, shows the tenant's error verbatim, and does not promise M365.
 
 ### 6.2 Abstraction
@@ -469,7 +469,7 @@ Sentry, WorkManager is added here):
 | `org.bouncycastle:bcprov-jdk18on` | 1.86 | MIT-style | pinned once for kage and PGPainless |
 | `com.dropbox.core:dropbox-android-sdk` | 8.0.2 | MIT | Dropbox |
 | `com.microsoft.identity.client:msal` | 8.4.2 | MIT | OneDrive sign-in (extra Maven repo, Lombok plugin) |
-| `com.google.android.gms:play-services-auth` (+ Credential Manager, `googleid`) | current | Android SDK licence | Google Drive authorisation; used under GPLv3's system-library reading `[ASSUMED]`, absent from a Play-services-free build |
+| `com.google.android.gms:play-services-auth` (+ Credential Manager, `googleid`) | current | Android SDK licence | Google Drive authorisation; used under GPLv3's system-library reading `[ASSUMED]`; `playImplementation` only — never on the `foss` classpath (§13) |
 | `androidx.biometric:biometric` | 1.1.0 | Apache-2.0 | biometric prompt |
 | `androidx.work:work-runtime-ktx` | 2.10.x | Apache-2.0 | jobs |
 | `androidx.documentfile:documentfile` | 1.1.x | Apache-2.0 | SAF trees |
@@ -685,6 +685,12 @@ the gate of the phase that owns them.
   graphic and screenshots; Bugsink DSN; release keystore and a signed `.aab`; the website entry with
   the `[[legal]]` blocks; public source hosting (§13); the closed test with 12 testers for 14 days;
   developer verification of the package and signing key; S13–S14.
+- The **`foss` distribution's** own release path (§13): `tools/build_foss_apk.sh` for the APK and
+  its SHA-256, the GitHub Release, the download on piepgras.info, and the F-Droid submission
+  (fastlane metadata is already the tree F-Droid reads; a clean checkout must build with neither
+  `providers.properties` nor `keystore.properties`). Both flavors' `.aab`/APK are built from the
+  same tag; one set of legal documents covers both, because the two declare the same permissions
+  and the same data flow.
 
 **Definition of done for v1**: a new user can install, create a vault, refuse every runtime
 permission, import a photo and a PDF, open both in other apps, write a note, lose the app to a
@@ -709,8 +715,21 @@ Open — need the developer:
   `tools/sync_github_mirror.sh`) and is pushed to <https://github.com/piepgrasInfo/cryptvault> with a deploy key
   (`../keystores/keyDeployGithub_cryptvault`). The URL is in About; the store listing takes it
   in Phase 6.
-- `[OPEN: Play-services-free build]` — whether to produce a variant without Google Play services
-  (drops the Drive target; enables F-Droid). Default: not in v1.
+- ~~`[OPEN: Play-services-free build]`~~ **Resolved 2026-09-19: yes, in v1.** One flavor
+  dimension `dist` with `play` (Google Play) and `foss`. `foss` takes
+  `applicationIdSuffix = ".foss"` so the two install side by side: Play App Signing re-signs the
+  Play copy with Google's key, so a shared applicationId could never be replaced by the other
+  build and switching channels would mean an uninstall — which takes the private vaults with it.
+  `foss` is distributed through **F-Droid (main repo), GitHub Releases and piepgras.info**. It
+  drops the Drive target and nothing else: same permissions, same legal documents, same opt-in
+  crash reporting (the developer's decision; expect F-Droid to apply its "Tracking" anti-feature
+  label, and note that the seam makes moving Sentry to `playImplementation` a two-line change).
+  **No in-app update check** in either build — F-Droid updates its own installs and the other two
+  channels are checked by hand; nothing in the app phones a server on its own schedule.
+  Open under it: whether to take F-Droid's **reproducible-build** route, which is what would let
+  the F-Droid copy and the piepgras.info copy carry the same signature instead of colliding
+  (`[OPEN: reproducible builds for F-Droid]`), and whether F-Droid's build server can supply the
+  **Java 25** the test JVM needs.
 - `[OPEN: house WebDAV server for Phase 4 testing]` (`docs/PROVIDER_SETUP.md` §5)
 - `[OPEN: US export self-classification stance]` (§11)
 - ~~`[OPEN: Bugsink DSN]`~~ Resolved 2026-09-19: set in `CrashReporting.kt` (project 7 on

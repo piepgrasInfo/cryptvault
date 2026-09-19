@@ -52,6 +52,7 @@ import info.piepgras.cryptvault.backup.BackupTarget
 import info.piepgras.cryptvault.backup.RestoreService
 import info.piepgras.cryptvault.backup.Retention
 import info.piepgras.cryptvault.backup.SnapshotInfo
+import info.piepgras.cryptvault.dist.Distribution
 import info.piepgras.cryptvault.security.sensitive
 import info.piepgras.cryptvault.vault.VaultRecord
 import info.piepgras.cryptvault.vault.WrongPasswordException
@@ -200,7 +201,9 @@ fun RestoreScreen(preselectTargetId: String?, preselectFolder: String?, onBack: 
                         ListItem(headlineContent = { Text(t.label) }, supportingContent = { Text(targetDescription(t)) }, modifier = Modifier.clickable { vm.chooseTarget(t) })
                     }
                     Row(Modifier.padding(16.dp, 8.dp)) {
-                        OutlinedButton(onClick = { showWebDav = true }) { Text(stringResource(R.string.backup_target_add_webdav)) }
+                        if (Distribution.offers(BackupTarget.Kind.WEBDAV)) {
+                            OutlinedButton(onClick = { showWebDav = true }) { Text(stringResource(R.string.backup_target_add_webdav)) }
+                        }
                     }
                 }
                 RestoreViewModel.Step.FOLDER -> {

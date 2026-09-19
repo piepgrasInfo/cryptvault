@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -62,6 +63,7 @@ import info.piepgras.cryptvault.R
 import info.piepgras.cryptvault.backup.BackupProgress
 import info.piepgras.cryptvault.backup.BackupTarget
 import info.piepgras.cryptvault.backup.Retention
+import info.piepgras.cryptvault.dist.Distribution
 import info.piepgras.cryptvault.items.Iso8601
 import info.piepgras.cryptvault.vault.BackupConfig
 import info.piepgras.cryptvault.vault.VaultRecord
@@ -219,10 +221,15 @@ fun BackupScreen(vaultId: String, onBack: () -> Unit, onRestoreFrom: (targetId: 
                     modifier = if (config == null) Modifier.clickable { chosenTarget = t.id } else Modifier,
                 )
             }
-            Row(Modifier.padding(16.dp, 4.dp)) {
-                OutlinedButton(onClick = { dialog = BackupDialog.WebDav }) { Text(stringResource(R.string.backup_target_add_webdav)) }
-                Spacer(Modifier.width(8.dp))
-                OutlinedButton(onClick = { pickFolder.launch(null) }) { Text(stringResource(R.string.backup_target_add_folder)) }
+            // Which targets exist is the build's business, not this screen's: the Play-services-free
+            // build has no Google Drive to offer (dist/Distribution.kt).
+            Row(Modifier.padding(16.dp, 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                for (kind in Distribution.backupTargets) when (kind) {
+                    BackupTarget.Kind.WEBDAV -> OutlinedButton(onClick = { dialog = BackupDialog.WebDav }) { Text(stringResource(R.string.backup_target_add_webdav)) }
+                    BackupTarget.Kind.FOLDER -> OutlinedButton(onClick = { pickFolder.launch(null) }) { Text(stringResource(R.string.backup_target_add_folder)) }
+                    // Not built yet; they await their developer registrations (BUILD_BRIEF.md §6.1).
+                    BackupTarget.Kind.DROPBOX, BackupTarget.Kind.ONEDRIVE, BackupTarget.Kind.DRIVE -> Unit
+                }
             }
             if (config == null && targets.isNotEmpty()) {
                 Button(onClick = { enableChosen() }, enabled = chosenTarget != null, modifier = Modifier.padding(16.dp, 8.dp)) { Text(stringResource(R.string.backup_turn_on)) }

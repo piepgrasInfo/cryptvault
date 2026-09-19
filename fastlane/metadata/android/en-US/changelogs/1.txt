@@ -1,0 +1,3 @@
+TODO (Phase 6): the first release's notes, max 500 characters.
+
+F-Droid and Play both read this file; F-Droid shows it as the version's "What's New".

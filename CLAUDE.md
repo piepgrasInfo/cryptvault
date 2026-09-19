@@ -12,7 +12,9 @@ recipient can open. (Productivity / tools (security)). **GPL-3.0-or-later**; see
 `NOTICE` — every dependency must be GPL-compatible and every ported file carries its origin.
 
 Kotlin, Jetpack Compose, package `info.piepgras.cryptvault`, minSdk 26 / targetSdk 37.
-Two Gradle modules:
+Shipped as two product flavors of one codebase: **`play`** for Google Play and **`foss`**
+(`info.piepgras.cryptvault.foss`) for F-Droid, GitHub Releases and piepgras.info — see
+**Distributions** under Architecture. Two Gradle modules:
 
 - **`:app`** — the Android app. The vault format adapter lives in `vault/` (`CryptomatorVault`,
   `VaultStorage`, `VaultConfigToken`) on top of `org.cryptomator:cryptolib`.
@@ -37,21 +39,26 @@ Keep it updated when making substantive changes.
 
 ## Build and test
 
+`:app` has two product flavors on the `dist` dimension — `play` and `foss` (see **Distributions**
+below) — so every variant task is flavoured. There is no `testDebugUnitTest` and no `lintDebug`.
+
 ```bash
-./gradlew :app:compileDebugKotlin --console=plain
-./gradlew :app:testDebugUnitTest --console=plain
-./gradlew :app:lintDebug --console=plain
-./gradlew :app:assembleDebug --console=plain
+./gradlew :app:compilePlayDebugKotlin :app:compileFossDebugKotlin --console=plain
+./gradlew :app:test --console=plain                              # both flavors' unit tests
+./gradlew :app:lintPlayDebug :app:lintFossDebug --console=plain
+./gradlew :app:assembleDebug --console=plain                     # both flavors
 ./gradlew :shared:jvmTest --console=plain
 ```
 
 Those five are the minimum verification for any change (CI runs all but the first on push/PR).
-`./gradlew :app:assembleRelease` additionally proves the R8 rules in `app/proguard-rules.pro`
-(unsigned when `keystore.properties` is absent); run it whenever a dependency is added.
-A single test class or method — method names are backtick-quoted sentences:
+`./gradlew :app:assembleRelease` additionally proves the R8 rules in `app/proguard-rules.pro` for
+both flavors (unsigned when `keystore.properties` is absent); run it whenever a dependency is
+added. A single test class or method needs a flavoured task — method names are backtick-quoted
+sentences:
 
 ```bash
-./gradlew :app:testDebugUnitTest --tests "info.piepgras.cryptvault.vault.CryptomatorVaultTest"
+./gradlew :app:testPlayDebugUnitTest --tests "info.piepgras.cryptvault.vault.CryptomatorVaultTest"
+./gradlew :app:testFossDebugUnitTest --tests "info.piepgras.cryptvault.dist.FossDistributionTest"
 ./gradlew :shared:jvmTest --tests "info.piepgras.cryptvault.recovery.RecoveryKeyTest"
 ```
 
@@ -64,14 +71,34 @@ Instrumented tests (`app/src/androidTest`) need an emulator. Sibling projects' A
 host, so `ANDROID_SERIAL` is mandatory or the task fans out onto them:
 
 ```bash
-ANDROID_SERIAL=emulator-5554 ./gradlew :app:connectedDebugAndroidTest --console=plain
+ANDROID_SERIAL=emulator-5554 ./gradlew :app:connectedPlayDebugAndroidTest --console=plain
+ANDROID_SERIAL=emulator-5554 ./gradlew :app:connectedFossDebugAndroidTest --console=plain
 ```
+
+The two flavors have different applicationIds, so they install side by side — and the `foss`
+one's provider authorities carry the suffix (`info.piepgras.cryptvault.foss.documents`), which
+the `adb shell content` probes below have to use when that is the flavor under test.
 
 ## Architecture
 
 The scaffold plus the Phase 0 foundation. Change this section as reality arrives, and do not
 let it drift:
 
+- **Distributions** (`dist/`): one flavor dimension, `dist`, with **`play`** (Google Play) and
+  **`foss`** (F-Droid, GitHub Releases, piepgras.info). `foss` carries
+  `applicationIdSuffix = ".foss"`, so the two install side by side — necessary, because Play App
+  Signing re-signs the Play copy with Google's key and a shared id could never be replaced by the
+  other build, making a channel switch an uninstall and an uninstall a loss of every private
+  vault. There is **no Google Play services dependency in either flavor today**; the flavor is
+  the seam that keeps `foss` that way when Google Drive arrives (BUILD_BRIEF.md §6.1). Same code,
+  same permissions, same legal documents, same crash-reporting opt-in; the only difference is
+  which backup targets exist. `Distribution` (in `main`) reads `BuildConfig.DISTRIBUTION` and
+  `PLAY_SERVICES_ALLOWED` and takes its target list from `FlavorTargets`, of which `src/play/`
+  and `src/foss/` hold one copy each — so a target the build must not offer is not compiled into
+  it rather than hidden by an `if`. `BackupScreen` and `RestoreScreen` build their "add target"
+  buttons from that list. **Anything that depends on Google goes in `src/play/`** — the library
+  in `playImplementation`, the manifest entry in `app/src/play/AndroidManifest.xml` — never in
+  `main`. `tools/build_foss_apk.sh` builds, names and hashes the APK the three channels publish.
 - **`MainActivity.kt`** — the single Activity (a `FragmentActivity`, because
   `androidx.biometric` needs one; `androidx.fragment` is pinned to 1.8.9 since the 1.2.5 that
   biometric drags in rejects Compose's activity-result request codes). Navigation Compose with
@@ -225,11 +252,20 @@ is BUILD_BRIEF.md §8; what is declared today:
 | `ACCESS_LOCAL_NETWORK` | a WebDAV server on the user's own network (home Nextcloud, NAS) on Android 17+, which blocks apps targeting API 37 from local addresses otherwise | Runtime permission that exists from API 37; `LocalNetwork` asks for it in the WebDAV form only when the host is a private, link-local, loopback or unqualified address, and a run refuses with a clear message when it is missing. The emulator's host `10.0.2.2` counts as local, which is how this was found. |
 | `MANAGE_DOCUMENTS` (on the provider element only) | guarding `VaultDocumentsProvider` so that only the system document picker and the Files app can call it | Signature-level permission the app never holds itself: the standard guard every DocumentsProvider must declare; nothing to request, nothing to show the user beyond the Permissions screen's "Documents" line. |
 
+**Both distributions declare exactly this set** — the `foss` build adds nothing and drops
+nothing, which is what lets one set of legal documents and one Permissions screen cover both.
 Nothing else is planned; `RUN_USER_INITIATED_JOBS` from the brief is not needed with the single
 WorkManager path. Never: storage, `READ_MEDIA_*`,
 `MANAGE_EXTERNAL_STORAGE`, `CAMERA`, `QUERY_ALL_PACKAGES`, `SCHEDULE_EXACT_ALARM`.
 
-Re-read the **merged** manifest after any dependency change (`app/build/intermediates/merged_manifest/`).
+Re-read the **merged** manifest after any dependency change
+(`app/build/intermediates/merged_manifest/<variant>/`) — **both flavors**, and check that the
+`foss` one still has no `com.google.android.gms` entry and no permission the `play` one lacks:
+
+```bash
+diff <(sed 's/\.foss//g' app/build/intermediates/merged_manifest/fossRelease/*/AndroidManifest.xml) \
+     app/build/intermediates/merged_manifest/playRelease/*/AndroidManifest.xml
+```
 
 ## Conventions
 
@@ -248,8 +284,8 @@ Re-read the **merged** manifest after any dependency change (`app/build/intermed
 - Unit tests use hand-written `Fake*` implementations plus `MainDispatcherRule` — no mocking
   library, no Robolectric. cryptolib runs on the plain JVM, so vault round trips are ordinary
   unit tests on a temp directory.
-- **Keep lint at 0 errors** and hold the warning count where it is: **18 warnings** after
-  Phase 4 — 17 version-currency notices (`AndroidGradlePluginVersion`, `GradleDependency`,
+- **Keep lint at 0 errors** and hold the warning count where it is: **18 warnings in each
+  flavor** (`lintPlayDebug` and `lintFossDebug` report the same 18) — 17 version-currency notices (`AndroidGradlePluginVersion`, `GradleDependency`,
   `NewerVersionAvailable`, drifting upward on their own as libraries move; two of them are
   OkHttp 4.12 → 5.x, kept at 4.12 because that is what Ktor 3.0.3 pulls in) and one
   `UnusedResources` on `R.color.brand`, which exists for the launcher icon and store assets.

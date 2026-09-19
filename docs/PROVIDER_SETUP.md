@@ -65,8 +65,16 @@ Console: https://console.cloud.google.com → new project `cryptvault`.
 - [ ] Publishing status: **In production** (the non-sensitive scope needs no verification review).
 - [ ] Record: nothing secret; the Android client is matched by package + SHA-1 at runtime. Keep the
       project ID in `PROVIDER_SETUP.md`'s log below.
-- Constraint to remember: Google Drive needs Google Play services on the device; a Play-services-free
-  build simply hides the Drive target (`BUILD_BRIEF.md` §13).
+- Constraint to remember: Google Drive needs Google Play services on the device. It is therefore
+  a **`play`-flavor-only** target — the library goes in `playImplementation`, the code in
+  `app/src/play/`, and `foss`'s `FlavorTargets` never lists it (`BUILD_BRIEF.md` §13). The OAuth
+  Android client is registered for `info.piepgras.cryptvault` only; the `.foss` applicationId
+  needs no Google registration at all, because it has nothing to authorise.
+- The other registrations and the `foss` flavor: Dropbox is keyed to the app key, not the package,
+  so one registration serves both flavors. MSAL's redirect URI is `msauth://<package>/<cert
+  hash>`, so if OneDrive is ever offered in `foss` too, the Entra registration needs a **second**
+  redirect URI for `info.piepgras.cryptvault.foss` and that build's signing key (and a third for
+  F-Droid's key, if F-Droid signs rather than republishing ours).
 
 ## 4. Dropbox App Console (same day; production approval: 1–2 weeks when it becomes due)
 

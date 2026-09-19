@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import info.piepgras.cryptvault.BuildConfig
 import info.piepgras.cryptvault.CrashReporting
 import info.piepgras.cryptvault.R
+import info.piepgras.cryptvault.dist.Distribution
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,6 +72,12 @@ fun AboutScreen(onBack: () -> Unit) {
         Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
             Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineSmall)
             Text(stringResource(R.string.about_version, BuildConfig.VERSION_NAME), style = MaterialTheme.typography.bodyMedium)
+            // Which of the two builds this is: the same app, but only one of them can ever carry
+            // Google-dependent backup targets, and a bug report has to say which one it came from.
+            Text(
+                stringResource(if (Distribution.playServicesAllowed) R.string.about_edition_play else R.string.about_edition_foss),
+                style = MaterialTheme.typography.bodySmall,
+            )
             Text(stringResource(R.string.about_body), Modifier.padding(top = 16.dp), style = MaterialTheme.typography.bodyMedium)
             Text(stringResource(R.string.about_license_title), Modifier.padding(top = 24.dp), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(R.string.about_license_body), Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyMedium)

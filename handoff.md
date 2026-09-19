@@ -475,6 +475,71 @@ forced push of `master` from `github/` (`--force-with-lease`); its CI re-ran on 
 
 Commit: the one this entry is part of (`git log -1 -- handoff.md`).
 
+### [2026-09-19] A Play-services-free distribution anyone can install
+
+`[OPEN: Play-services-free build]` in BUILD_BRIEF.md §13 is resolved: **yes, in v1**, as one
+flavor dimension `dist` with `play` and `foss`.
+
+- **The starting point was better than expected.** Resolving `releaseRuntimeClasspath` in full
+  showed **no `com.google.android.gms`, no Firebase, no Play Core anywhere** — the only
+  Google-authored artifacts are Guava, Gson, jsr305 and error_prone annotations, ordinary
+  libraries that need no Play services. Today's APK already runs on a device without them. The
+  flavor is therefore not a de-Googling but a seam that keeps it true when the Drive target
+  arrives (BUILD_BRIEF.md §6.1).
+- **`foss` carries `applicationIdSuffix = ".foss"`.** Play App Signing re-signs the Play copy
+  with Google's key, so the two builds can never replace one another whatever the id; with a
+  shared id a channel switch would mean an uninstall, and an uninstall takes every private vault
+  with it. Separate ids let both be installed at once, so a vault can be carried across with the
+  app's own backup or export. Remote backup folders do not depend on the applicationId, so a
+  backup made by one build restores into the other.
+- **The seam.** `dist/Distribution.kt` in `main` reads `BuildConfig.DISTRIBUTION` and
+  `PLAY_SERVICES_ALLOWED` and takes its target list from `FlavorTargets`, of which `src/play/`
+  and `src/foss/` hold one copy each — a target the build must not offer is not compiled into it
+  rather than hidden behind an `if`. `BackupScreen` and `RestoreScreen` build their "add target"
+  buttons from that list. Google-dependent libraries go in `playImplementation`, Google-dependent
+  manifest entries in `app/src/play/AndroidManifest.xml`.
+- **Everything else is identical**: same permissions, same data flow, same opt-in crash reporting
+  (the developer's decision — expect F-Droid to apply its "Tracking" anti-feature label; moving
+  Sentry to `playImplementation` later is a two-line change now that the seam exists), so one set
+  of legal documents covers both builds. About gains one line naming the edition.
+- **No in-app update check**, by decision: F-Droid updates its own installs and the two APK
+  channels are checked by hand. Nothing contacts a server on its own schedule.
+- **Channels**: F-Droid main repo, GitHub Releases, piepgras.info. `tools/build_foss_apk.sh`
+  builds, renames (`cryptvault-<version>-foss.apk`) and prints the SHA-256 to publish with it;
+  `base.archivesName` makes the build outputs self-describing (`cryptvault-foss-release.apk`).
+  `fastlane/metadata/android/*/changelogs/1.txt` added — F-Droid reads the tree Play already uses.
+- **Task names changed.** With a flavor dimension there is no `testDebugUnitTest` and no
+  `lintDebug`; the verification set is now `:app:compilePlayDebugKotlin
+  :app:compileFossDebugKotlin`, `:app:test` (both flavors), `:app:lintPlayDebug
+  :app:lintFossDebug`, `:app:assembleDebug` (both) and `:shared:jvmTest`. CLAUDE.md, README.md
+  and `.github/workflows/ci.yml` follow; CI would otherwise have failed on the first push.
+
+Verified:
+
+- `:app:compilePlayDebugKotlin :app:compileFossDebugKotlin` — BUILD SUCCESSFUL.
+- `:app:test` — 55 tests playDebug, 56 fossDebug, 0 failures (the new `DistributionTest` runs in
+  both, `PlayDistributionTest` and `FossDistributionTest` in one each); `:shared:jvmTest` 47, 0
+  failures.
+- `:app:lintPlayDebug :app:lintFossDebug` — **0 errors, 18 warnings each**, the same 18 as before
+  (3 `AndroidGradlePluginVersion`, 3 `GradleDependency`, 11 `NewerVersionAvailable`, 1
+  `UnusedResources`). The baseline is unchanged and now holds per flavor.
+- `:app:assembleRelease` — both R8 builds pass; `cryptvault-play-release-unsigned.apk` and
+  `cryptvault-foss-release-unsigned.apk`, 6.1 MB each.
+- **Merged manifests of `fossRelease` and `playRelease` are identical** once the `.foss` suffix is
+  normalised away, and the `foss` one contains no `com.google.android.gms` entry — so the
+  Play-services-free build declares nothing extra and drops nothing.
+- **A pristine checkout builds**: `git ls-files -c -o --exclude-standard` copied to a temporary
+  directory, with neither `providers.properties` nor `keystore.properties` nor
+  `local.properties` (only `ANDROID_HOME`), builds `:app:assembleFossRelease` — the precondition
+  for F-Droid building from source.
+
+Still open, and now written into BUILD_BRIEF.md §13: whether to take F-Droid's
+**reproducible-build** route, which is what would give the F-Droid copy and the piepgras.info copy
+one signature instead of two colliding ones; and whether F-Droid's build server can supply the
+**Java 25** the cryptofs interop test needs.
+
+Commit: the one this entry is part of (`git log -1 -- handoff.md`).
+
 **Open before first release** (see also `RELEASE_CHECKLIST.md` once generated by the
 `app-generate-checklist` skill):
 
@@ -493,3 +558,6 @@ Commit: the one this entry is part of (`git log -1 -- handoff.md`).
       account deletion. None of these can be inferred from this repository.
 - [ ] Every `[OPEN]` in BUILD_BRIEF.md §13, above all the display name (CryptVault vs Crypt Vault)
       and the public source mirror the GPL requires before the first external tester.
+- [ ] The `foss` channels: F-Droid submission (fdroiddata merge request), the GitHub Release and
+      the piepgras.info download, each with the APK's SHA-256; decide the reproducible-build
+      question so the three channels do not ship two different signatures.
