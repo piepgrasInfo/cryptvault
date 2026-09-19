@@ -699,19 +699,21 @@ document the app shows matches what the app does.
 
 Open — need the developer:
 
-- `[OPEN: display name]` — the interview chose **CryptVault** (one word; `spec.json`, strings,
-  store title), while the website entry the developer wrote says **Crypt Vault**. One of the two
-  has to give before the store listing and the legal documents are generated; the slug
-  `crypt-vault` stays either way.
+- ~~`[OPEN: display name]`~~ **Resolved 2026-09-19: "Crypt Vault"** (two words) is the display
+  name — `app_name`, store title, legal documents. The package `info.piepgras.cryptvault`, the
+  repository name, code identifiers and the `CryptVault/` folder on backup targets keep the
+  one-word form; the slug stays `crypt-vault`.
 - `[OPEN: what the later one-time purchase unlocks]` (§10)
-- `[OPEN: public source hosting]` — the GPL obliges source availability to every recipient of the
-  APK, including closed testers; a public mirror (GitHub/Codeberg) of `origin/master` and the URL
-  for About and the store listing are needed before the first external tester.
+- `[OPEN: public source hosting]` — **Decided 2026-09-19: GitHub.** A separate repository lives in
+  the project folder (`github/`, a clone with full history, kept in step by
+  `tools/sync_github_mirror.sh`) and is what gets pushed to GitHub. Still open: the GitHub URL
+  itself, which About and the store listing need before the first external tester.
 - `[OPEN: Play-services-free build]` — whether to produce a variant without Google Play services
   (drops the Drive target; enables F-Droid). Default: not in v1.
 - `[OPEN: house WebDAV server for Phase 4 testing]` (`docs/PROVIDER_SETUP.md` §5)
 - `[OPEN: US export self-classification stance]` (§11)
-- `[OPEN: Bugsink DSN]` (as in every sibling)
+- ~~`[OPEN: Bugsink DSN]`~~ Resolved 2026-09-19: set in `CrashReporting.kt` (project 7 on
+  `piepgras.bugsink.com`).
 - `[OPEN: hybrid PQC APK signing]` — Android 17 offers it; needs a fresh classical key; decide
   before the first Play upload because the signing key is permanent.
 

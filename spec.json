@@ -22,7 +22,7 @@
   "template_project": "/home/martin/AndroidStudioProjects/existentialdreadrunner",
   "app_type": "Productivity / tools (security)",
   "one_liner": "An encrypted vault for the files and notes that matter, in the open Cryptomator format: open them in any app, back them up to your own cloud, mail them in a container only the recipient can open.",
-  "app_name": "CryptVault",
+  "app_name": "Crypt Vault",
   "project_name": "CryptVault",
   "package": "info.piepgras.cryptvault",
   "project_dir": "/home/martin/AndroidStudioProjects/cryptvault",

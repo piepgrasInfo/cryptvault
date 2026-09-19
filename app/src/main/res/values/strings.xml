@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">CryptVault</string>
+    <string name="app_name">Crypt Vault</string>
 
     <!-- Common actions -->
     <string name="action_ok">OK</string>
@@ -28,7 +28,7 @@
 
     <!-- Startup gates -->
     <string name="gate_legal_title">Before you start</string>
-    <string name="gate_legal_body">CryptVault keeps your files in an encrypted vault on this device. Only your password can open it. If you lose the password and the recovery key, the data is gone for good; nobody, including the developer, can get it back.\n\nThe app has no account and no server. Nothing leaves the phone except what you back up to your own cloud storage, still encrypted, and what you share or send yourself.\n\nBy continuing you accept the terms of service and acknowledge the privacy policy, both available under Settings › About.</string>
+    <string name="gate_legal_body">Crypt Vault keeps your files in an encrypted vault on this device. Only your password can open it. If you lose the password and the recovery key, the data is gone for good; nobody, including the developer, can get it back.\n\nThe app has no account and no server. Nothing leaves the phone except what you back up to your own cloud storage, still encrypted, and what you share or send yourself.\n\nBy continuing you accept the terms of service and acknowledge the privacy policy, both available under Settings › About.</string>
     <string name="gate_legal_accept">I understand</string>
     <string name="gate_legal_decline">Quit</string>
     <string name="gate_crash_title">Crash reports</string>
@@ -81,7 +81,7 @@
     <!-- Unlock -->
     <string name="unlock_action">Unlock</string>
     <string name="unlock_wrong_password">Wrong password.</string>
-    <string name="unlock_format_error">This is not a vault CryptVault can open: %1$s</string>
+    <string name="unlock_format_error">This is not a vault Crypt Vault can open: %1$s</string>
     <string name="unlock_io_error">Could not open the vault: %1$s</string>
 
     <!-- Browser -->
@@ -159,7 +159,7 @@
     </plurals>
     <string name="msg_no_app">No app on this phone can open this file.</string>
     <string name="open_with_notice_title">Opening in another app</string>
-    <string name="open_with_notice_body">The file is decrypted into a temporary copy and handed to the app you choose. That app may keep its own copy; CryptVault cannot take it back. The temporary copy is removed when the vault locks.</string>
+    <string name="open_with_notice_body">The file is decrypted into a temporary copy and handed to the app you choose. That app may keep its own copy; Crypt Vault cannot take it back. The temporary copy is removed when the vault locks.</string>
 
     <!-- Item detail -->
     <string name="item_title_label">Title</string>
@@ -217,7 +217,7 @@
     <string name="about_version">Version %1$s</string>
     <string name="about_body">An encrypted vault for the files and notes that matter, in the open Cryptomator format: open them in any app, back them up to your own cloud, and mail small items in a container only the recipient can open.</string>
     <string name="about_license_title">Free software</string>
-    <string name="about_license_body">CryptVault is free software under the GNU General Public License, version 3 or later. The source code is available from the developer.</string>
+    <string name="about_license_body">Crypt Vault is free software under the GNU General Public License, version 3 or later. The source code is available from the developer.</string>
     <string name="about_components_title">Built with</string>
     <string name="about_components_body">Cryptomator cryptolib (AGPL-3.0) for the vault format; the recovery-key word list and encoding ported from Cryptomator desktop (GPL-3.0); Kotlin, Jetpack Compose and AndroidX (Apache-2.0); Sentry SDK (MIT), used only if you switch crash reports on.</string>
     <string name="about_developer">Developer: %1$s · %2$s</string>
@@ -234,9 +234,9 @@
     <string name="perm_foreground_title">Background work</string>
     <string name="perm_foreground_body">Lets a backup or restore you started keep running with a progress notification when you leave the app. Used for nothing else; automatic backups after changes run quietly without it.</string>
     <string name="perm_local_network_title">Local network</string>
-    <string name="perm_local_network_body">Asked for only when you connect a WebDAV server on your own network, such as a Nextcloud on a NAS at home, and only on Android 17 or newer, where the system otherwise blocks apps from local addresses. Used for that server and nothing else; CryptVault never scans the network.</string>
+    <string name="perm_local_network_body">Asked for only when you connect a WebDAV server on your own network, such as a Nextcloud on a NAS at home, and only on Android 17 or newer, where the system otherwise blocks apps from local addresses. Used for that server and nothing else; Crypt Vault never scans the network.</string>
     <string name="perm_documents_title">Storage root for other apps</string>
-    <string name="perm_documents_body">Unlocked vaults appear as a storage location in the system file picker and the Files app, so other apps can open and save files in them. Only the system\'s own file tools may talk to this part of CryptVault; files are decrypted on the fly and nothing is written to disk in the clear. Locking a vault removes it from the picker.</string>
+    <string name="perm_documents_body">Unlocked vaults appear as a storage location in the system file picker and the Files app, so other apps can open and save files in them. Only the system\'s own file tools may talk to this part of Crypt Vault; files are decrypted on the fly and nothing is written to disk in the clear. Locking a vault removes it from the picker.</string>
     <string name="permissions_not_requested_title">What the app does not ask for</string>
     <string name="permissions_not_requested_body">No access to your photos, files or storage in general: files come in through the system picker, the photo picker or sharing, one by one, only when you choose them. No camera permission: taking a photo uses the camera app. No location, contacts or microphone.</string>
     <string name="action_done">Done</string>
@@ -318,7 +318,7 @@
     <string name="backup_foreign_take_over">Take over</string>
     <string name="backup_msg_enabled">Backup is on. The first run has started.</string>
     <string name="backup_webdav_title">Connect a WebDAV server</string>
-    <string name="backup_webdav_help">Nextcloud: create an app password under Settings → Security; the URL ends in /remote.php/dav/files/&lt;user&gt;/. CryptVault creates a folder “CryptVault” there.</string>
+    <string name="backup_webdav_help">Nextcloud: create an app password under Settings → Security; the URL ends in /remote.php/dav/files/&lt;user&gt;/. Crypt Vault creates a folder “CryptVault” there.</string>
     <string name="backup_webdav_url">Server URL</string>
     <string name="backup_webdav_user">User name</string>
     <string name="backup_webdav_password">App password</string>
@@ -331,7 +331,7 @@
     <string name="restore_help">A restore creates a new vault on this device; nothing existing is touched. Only the vault\'s own password can open it.</string>
     <string name="restore_step_target">Where is the backup?</string>
     <string name="restore_step_folder">Which vault?</string>
-    <string name="restore_folders_none">No CryptVault backups found at this target.</string>
+    <string name="restore_folders_none">No Crypt Vault backups found at this target.</string>
     <string name="restore_step_password">Password of that vault</string>
     <string name="restore_step_snapshot">Which snapshot?</string>
     <plurals name="restore_snapshot_line">
@@ -346,7 +346,7 @@
     <string name="vault_settings_backup">Backup</string>
     <string name="vault_settings_backup_off">Off</string>
     <string name="vault_settings_backup_on">On — %1$s</string>
-    <string name="backup_webdav_local_denied">This server is on your local network. Android needs your permission for that; allow “Local network” for CryptVault in the system settings.</string>
+    <string name="backup_webdav_local_denied">This server is on your local network. Android needs your permission for that; allow “Local network” for Crypt Vault in the system settings.</string>
     <!-- Share as container (BUILD_BRIEF.md §7) -->
     <string name="share_dialog_title">Share encrypted</string>
     <string name="share_dialog_help">The files go into one container that only the passphrase opens. Send the passphrase another way — a message, a call — never in the same mail.</string>
@@ -372,7 +372,7 @@
     <!-- Receiving a container -->
     <string name="receive_title">Open received container</string>
     <string name="receive_detecting">Looking at the file…</string>
-    <string name="receive_not_container">This is not a container CryptVault can open (ZIP with AES, age or OpenPGP).</string>
+    <string name="receive_not_container">This is not a container Crypt Vault can open (ZIP with AES, age or OpenPGP).</string>
     <string name="receive_kind">%1$s container: %2$s</string>
     <string name="receive_pass_prompt">Enter the passphrase you received separately.</string>
     <string name="receive_open">Open</string>
@@ -388,8 +388,8 @@
         <item quantity="other">%1$d items, about %2$s</item>
     </plurals>
     <plurals name="share_default_title_n">
-        <item quantity="one">%d item from CryptVault</item>
-        <item quantity="other">%d items from CryptVault</item>
+        <item quantity="one">%d item from Crypt Vault</item>
+        <item quantity="other">%d items from Crypt Vault</item>
     </plurals>
     <plurals name="receive_done_n">
         <item quantity="one">Imported %1$d item into %2$s.</item>

@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">CryptVault</string>
+    <string name="app_name">Crypt Vault</string>
 
     <string name="action_ok">OK</string>
     <string name="action_cancel">Abbrechen</string>
@@ -26,7 +26,7 @@
     <string name="action_delete_originals">Originale löschen</string>
 
     <string name="gate_legal_title">Bevor es losgeht</string>
-    <string name="gate_legal_body">CryptVault bewahrt deine Dateien in einem verschlüsselten Tresor auf diesem Gerät auf. Nur dein Passwort öffnet ihn. Gehen Passwort und Wiederherstellungsschlüssel verloren, sind die Daten endgültig weg; niemand, auch nicht der Entwickler, kann sie zurückholen.\n\nDie App hat kein Konto und keinen Server. Nichts verlässt das Telefon außer dem, was du in deinen eigenen Cloud-Speicher sicherst – weiterhin verschlüsselt – und dem, was du selbst teilst oder verschickst.\n\nMit „Weiter“ akzeptierst du die Nutzungsbedingungen und nimmst die Datenschutzerklärung zur Kenntnis, beide unter Einstellungen › Über.</string>
+    <string name="gate_legal_body">Crypt Vault bewahrt deine Dateien in einem verschlüsselten Tresor auf diesem Gerät auf. Nur dein Passwort öffnet ihn. Gehen Passwort und Wiederherstellungsschlüssel verloren, sind die Daten endgültig weg; niemand, auch nicht der Entwickler, kann sie zurückholen.\n\nDie App hat kein Konto und keinen Server. Nichts verlässt das Telefon außer dem, was du in deinen eigenen Cloud-Speicher sicherst – weiterhin verschlüsselt – und dem, was du selbst teilst oder verschickst.\n\nMit „Weiter“ akzeptierst du die Nutzungsbedingungen und nimmst die Datenschutzerklärung zur Kenntnis, beide unter Einstellungen › Über.</string>
     <string name="gate_legal_accept">Verstanden</string>
     <string name="gate_legal_decline">Beenden</string>
     <string name="gate_crash_title">Absturzberichte</string>
@@ -76,7 +76,7 @@
 
     <string name="unlock_action">Entsperren</string>
     <string name="unlock_wrong_password">Falsches Passwort.</string>
-    <string name="unlock_format_error">Diesen Tresor kann CryptVault nicht öffnen: %1$s</string>
+    <string name="unlock_format_error">Diesen Tresor kann Crypt Vault nicht öffnen: %1$s</string>
     <string name="unlock_io_error">Der Tresor ließ sich nicht öffnen: %1$s</string>
 
     <string name="fab_add">Hinzufügen</string>
@@ -153,7 +153,7 @@
     </plurals>
     <string name="msg_no_app">Keine App auf diesem Telefon kann diese Datei öffnen.</string>
     <string name="open_with_notice_title">Öffnen in einer anderen App</string>
-    <string name="open_with_notice_body">Die Datei wird in eine temporäre Kopie entschlüsselt und der App übergeben, die du wählst. Diese App kann eine eigene Kopie behalten; CryptVault kann sie nicht zurückholen. Die temporäre Kopie wird entfernt, wenn der Tresor sperrt.</string>
+    <string name="open_with_notice_body">Die Datei wird in eine temporäre Kopie entschlüsselt und der App übergeben, die du wählst. Diese App kann eine eigene Kopie behalten; Crypt Vault kann sie nicht zurückholen. Die temporäre Kopie wird entfernt, wenn der Tresor sperrt.</string>
 
     <string name="item_title_label">Titel</string>
     <string name="item_tags_label">Tags</string>
@@ -207,7 +207,7 @@
     <string name="about_version">Version %1$s</string>
     <string name="about_body">Ein verschlüsselter Tresor für die Dateien und Notizen, die wichtig sind, im offenen Cryptomator-Format: in jeder App öffnen, in die eigene Cloud sichern und kleine Einträge in einem Container verschicken, den nur der Empfänger öffnen kann.</string>
     <string name="about_license_title">Freie Software</string>
-    <string name="about_license_body">CryptVault ist freie Software unter der GNU General Public License, Version 3 oder später. Der Quelltext ist beim Entwickler erhältlich.</string>
+    <string name="about_license_body">Crypt Vault ist freie Software unter der GNU General Public License, Version 3 oder später. Der Quelltext ist beim Entwickler erhältlich.</string>
     <string name="about_components_title">Gebaut mit</string>
     <string name="about_components_body">Cryptomator cryptolib (AGPL-3.0) für das Tresorformat; Wortliste und Kodierung des Wiederherstellungsschlüssels portiert aus Cryptomator Desktop (GPL-3.0); Kotlin, Jetpack Compose und AndroidX (Apache-2.0); Sentry SDK (MIT), nur genutzt, wenn du Absturzberichte einschaltest.</string>
     <string name="about_developer">Entwickler: %1$s · %2$s</string>
@@ -224,9 +224,9 @@
     <string name="perm_foreground_title">Hintergrundarbeit</string>
     <string name="perm_foreground_body">Erlaubt einem von Ihnen gestarteten Backup oder einer Wiederherstellung, mit einer Fortschrittsbenachrichtigung weiterzulaufen, wenn Sie die App verlassen. Für nichts anderes verwendet; automatische Backups nach Änderungen laufen still auch ohne.</string>
     <string name="perm_local_network_title">Lokales Netzwerk</string>
-    <string name="perm_local_network_body">Wird nur erfragt, wenn Sie einen WebDAV-Server im eigenen Netz verbinden, etwa eine Nextcloud auf einem NAS zu Hause, und nur ab Android 17, wo das System Apps sonst von lokalen Adressen fernhält. Nur für diesen Server verwendet; CryptVault durchsucht das Netzwerk nie.</string>
+    <string name="perm_local_network_body">Wird nur erfragt, wenn Sie einen WebDAV-Server im eigenen Netz verbinden, etwa eine Nextcloud auf einem NAS zu Hause, und nur ab Android 17, wo das System Apps sonst von lokalen Adressen fernhält. Nur für diesen Server verwendet; Crypt Vault durchsucht das Netzwerk nie.</string>
     <string name="perm_documents_title">Speicherort für andere Apps</string>
-    <string name="perm_documents_body">Entsperrte Tresore erscheinen als Speicherort in der Systemdateiauswahl und in der Files-App, sodass andere Apps Dateien darin öffnen und speichern können. Nur die eigenen Dateiwerkzeuge des Systems dürfen mit diesem Teil von CryptVault sprechen; Dateien werden im Fluss entschlüsselt, nichts landet im Klartext auf der Platte. Sperren entfernt den Tresor aus der Auswahl.</string>
+    <string name="perm_documents_body">Entsperrte Tresore erscheinen als Speicherort in der Systemdateiauswahl und in der Files-App, sodass andere Apps Dateien darin öffnen und speichern können. Nur die eigenen Dateiwerkzeuge des Systems dürfen mit diesem Teil von Crypt Vault sprechen; Dateien werden im Fluss entschlüsselt, nichts landet im Klartext auf der Platte. Sperren entfernt den Tresor aus der Auswahl.</string>
     <string name="permissions_not_requested_title">Was die App nicht verlangt</string>
     <string name="permissions_not_requested_body">Keinen Zugriff auf deine Fotos, Dateien oder den Speicher im Allgemeinen: Dateien kommen einzeln über die Systemauswahl, die Fotoauswahl oder das Teilen herein, nur wenn du sie wählst. Keine Kameraberechtigung: Ein Foto nimmt die Kamera-App auf. Kein Standort, keine Kontakte, kein Mikrofon.</string>
     <string name="action_done">Fertig</string>
@@ -308,7 +308,7 @@
     <string name="backup_foreign_take_over">Übernehmen</string>
     <string name="backup_msg_enabled">Backup ist eingeschaltet. Der erste Lauf hat begonnen.</string>
     <string name="backup_webdav_title">WebDAV-Server verbinden</string>
-    <string name="backup_webdav_help">Nextcloud: Unter Einstellungen → Sicherheit ein App-Passwort anlegen; die URL endet auf /remote.php/dav/files/&lt;Benutzer&gt;/. CryptVault legt dort einen Ordner „CryptVault“ an.</string>
+    <string name="backup_webdav_help">Nextcloud: Unter Einstellungen → Sicherheit ein App-Passwort anlegen; die URL endet auf /remote.php/dav/files/&lt;Benutzer&gt;/. Crypt Vault legt dort einen Ordner „CryptVault“ an.</string>
     <string name="backup_webdav_url">Server-URL</string>
     <string name="backup_webdav_user">Benutzername</string>
     <string name="backup_webdav_password">App-Passwort</string>
@@ -321,7 +321,7 @@
     <string name="restore_help">Eine Wiederherstellung legt einen neuen Tresor auf diesem Gerät an; Vorhandenes bleibt unberührt. Nur das Passwort des Tresors kann ihn öffnen.</string>
     <string name="restore_step_target">Wo liegt das Backup?</string>
     <string name="restore_step_folder">Welcher Tresor?</string>
-    <string name="restore_folders_none">Auf diesem Ziel wurden keine CryptVault-Backups gefunden.</string>
+    <string name="restore_folders_none">Auf diesem Ziel wurden keine Crypt Vault-Backups gefunden.</string>
     <string name="restore_step_password">Passwort dieses Tresors</string>
     <string name="restore_step_snapshot">Welcher Snapshot?</string>
     <plurals name="restore_snapshot_line">
@@ -336,7 +336,7 @@
     <string name="vault_settings_backup">Backup</string>
     <string name="vault_settings_backup_off">Aus</string>
     <string name="vault_settings_backup_on">An – %1$s</string>
-    <string name="backup_webdav_local_denied">Dieser Server liegt in Ihrem lokalen Netzwerk. Android braucht dafür Ihre Erlaubnis; gestatten Sie CryptVault „Lokales Netzwerk“ in den Systemeinstellungen.</string>
+    <string name="backup_webdav_local_denied">Dieser Server liegt in Ihrem lokalen Netzwerk. Android braucht dafür Ihre Erlaubnis; gestatten Sie Crypt Vault „Lokales Netzwerk“ in den Systemeinstellungen.</string>
     <!-- Share as container (BUILD_BRIEF.md §7) -->
     <string name="share_dialog_title">Verschlüsselt teilen</string>
     <string name="share_dialog_help">Die Dateien kommen in einen Container, den nur die Passphrase öffnet. Übermitteln Sie die Passphrase auf einem anderen Weg – Nachricht, Anruf – nie in derselben Mail.</string>
@@ -362,7 +362,7 @@
     <!-- Receiving a container -->
     <string name="receive_title">Empfangenen Container öffnen</string>
     <string name="receive_detecting">Datei wird geprüft …</string>
-    <string name="receive_not_container">Das ist kein Container, den CryptVault öffnen kann (ZIP mit AES, age oder OpenPGP).</string>
+    <string name="receive_not_container">Das ist kein Container, den Crypt Vault öffnen kann (ZIP mit AES, age oder OpenPGP).</string>
     <string name="receive_kind">%1$s-Container: %2$s</string>
     <string name="receive_pass_prompt">Geben Sie die getrennt erhaltene Passphrase ein.</string>
     <string name="receive_open">Öffnen</string>
@@ -378,8 +378,8 @@
         <item quantity="other">%1$d Elemente, etwa %2$s</item>
     </plurals>
     <plurals name="share_default_title_n">
-        <item quantity="one">%d Element aus CryptVault</item>
-        <item quantity="other">%d Elemente aus CryptVault</item>
+        <item quantity="one">%d Element aus Crypt Vault</item>
+        <item quantity="other">%d Elemente aus Crypt Vault</item>
     </plurals>
     <plurals name="receive_done_n">
         <item quantity="one">%1$d Element in %2$s importiert.</item>

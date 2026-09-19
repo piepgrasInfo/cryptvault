@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**CryptVault** — An encrypted vault for the files and notes that matter, in the open Cryptomator
+**Crypt Vault** (display name, decided 2026-09-19; the package, the repository, code identifiers
+and the `CryptVault/` folder on backup targets keep the one-word form) — An encrypted vault for
+the files and notes that matter, in the open Cryptomator
 format: open them in any app, back them up to your own cloud, mail them in a container only the
 recipient can open. (Productivity / tools (security)). **GPL-3.0-or-later**; see `LICENSE` and
 `NOTICE` — every dependency must be GPL-compatible and every ported file carries its origin.
@@ -255,4 +257,6 @@ Re-read the **merged** manifest after any dependency change (`app/build/intermed
   reintroduced: `PluralsCandidate` (use `<plurals>`), `LocalContextGetResourceValueCall` (use
   `LocalResources.current`), `UseKtx`, `NewApi`.
 - When a task touches code, `git add`, commit, and push to `origin/master` at the end — do not
-  leave changes uncommitted.
+  leave changes uncommitted. Then run `tools/sync_github_mirror.sh`, which fast-forwards the
+  public clone in `github/` (gitignored; the developer pushes it to GitHub by hand) so the
+  published source never lags the house remote.

@@ -1,4 +1,4 @@
-# CryptVault
+# Crypt Vault
 
 An Android app: an encrypted vault for the files and notes that matter, in the open Cryptomator
 format. Open items in any app, back the vault up to your own cloud (Dropbox, OneDrive, Google
@@ -36,3 +36,18 @@ Needs an Android SDK in `local.properties` (`sdk.dir=…`) and a Java 25 JDK for
 GPL-3.0-or-later. `NOTICE` lists the third-party components, above all Cryptomator's
 `cryptolib` (AGPL-3.0) and the recovery-key code and word list ported from Cryptomator desktop
 (GPL-3.0).
+
+## Public source on GitHub
+
+The GPL obliges source availability to everyone who receives the app. The repository that is
+pushed to GitHub is a full clone living in `github/` inside this project folder (ignored by this
+repository's git). `tools/sync_github_mirror.sh` creates it on first use and fast-forwards it to
+the current `master` afterwards; pushing is deliberate and manual:
+
+```bash
+tools/sync_github_mirror.sh
+git -C github remote add origin git@github.com:<owner>/cryptvault.git   # once
+git -C github push -u origin master
+```
+
+Run the sync after every push to the house remote so the two never drift.

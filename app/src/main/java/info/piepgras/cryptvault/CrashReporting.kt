@@ -23,7 +23,7 @@ object CrashReporting {
     // Kept out of the manifest on purpose: with the DSN in the manifest the SDK could find it and
     // start itself from its own ContentProvider before the user has had any chance to refuse, if
     // io.sentry.auto-init were ever accidentally re-enabled.
-    private const val DSN = "TODO_BUGSINK_DSN"
+    private const val DSN = "https://cce46b90ae614dd6a8bd7ea025468238@piepgras.bugsink.com/7"
 
     private const val PREFS = "crash_reporting"
     private const val KEY_ENABLED = "enabled"

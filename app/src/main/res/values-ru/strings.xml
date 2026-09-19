@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">CryptVault</string>
+    <string name="app_name">Crypt Vault</string>
 
     <string name="action_ok">ОК</string>
     <string name="action_cancel">Отмена</string>
@@ -26,7 +26,7 @@
     <string name="action_delete_originals">Удалить оригиналы</string>
 
     <string name="gate_legal_title">Перед началом</string>
-    <string name="gate_legal_body">CryptVault хранит ваши файлы в зашифрованном хранилище на этом устройстве. Открыть его может только ваш пароль. Если потеряны и пароль, и ключ восстановления, данные утрачены навсегда; никто, включая разработчика, не сможет их вернуть.\n\nУ приложения нет учётной записи и сервера. Телефон ничего не покидает, кроме того, что вы сохраняете в собственное облачное хранилище — по-прежнему в зашифрованном виде — и того, чем вы сами делитесь или что отправляете.\n\nПродолжая, вы принимаете условия использования и ознакомлены с политикой конфиденциальности; обе доступны в разделе Настройки › О приложении.</string>
+    <string name="gate_legal_body">Crypt Vault хранит ваши файлы в зашифрованном хранилище на этом устройстве. Открыть его может только ваш пароль. Если потеряны и пароль, и ключ восстановления, данные утрачены навсегда; никто, включая разработчика, не сможет их вернуть.\n\nУ приложения нет учётной записи и сервера. Телефон ничего не покидает, кроме того, что вы сохраняете в собственное облачное хранилище — по-прежнему в зашифрованном виде — и того, чем вы сами делитесь или что отправляете.\n\nПродолжая, вы принимаете условия использования и ознакомлены с политикой конфиденциальности; обе доступны в разделе Настройки › О приложении.</string>
     <string name="gate_legal_accept">Понятно</string>
     <string name="gate_legal_decline">Выйти</string>
     <string name="gate_crash_title">Отчёты о сбоях</string>
@@ -80,7 +80,7 @@
 
     <string name="unlock_action">Разблокировать</string>
     <string name="unlock_wrong_password">Неверный пароль.</string>
-    <string name="unlock_format_error">CryptVault не может открыть это хранилище: %1$s</string>
+    <string name="unlock_format_error">Crypt Vault не может открыть это хранилище: %1$s</string>
     <string name="unlock_io_error">Не удалось открыть хранилище: %1$s</string>
 
     <string name="fab_add">Добавить</string>
@@ -179,7 +179,7 @@
     </plurals>
     <string name="msg_no_app">Ни одно приложение на этом телефоне не может открыть этот файл.</string>
     <string name="open_with_notice_title">Открытие в другом приложении</string>
-    <string name="open_with_notice_body">Файл расшифровывается во временную копию и передаётся выбранному приложению. Оно может сохранить собственную копию; CryptVault не сможет её забрать. Временная копия удаляется при блокировке хранилища.</string>
+    <string name="open_with_notice_body">Файл расшифровывается во временную копию и передаётся выбранному приложению. Оно может сохранить собственную копию; Crypt Vault не сможет её забрать. Временная копия удаляется при блокировке хранилища.</string>
 
     <string name="item_title_label">Заголовок</string>
     <string name="item_tags_label">Теги</string>
@@ -239,7 +239,7 @@
     <string name="about_version">Версия %1$s</string>
     <string name="about_body">Зашифрованное хранилище для важных файлов и заметок в открытом формате Cryptomator: открывайте их в любом приложении, сохраняйте в собственное облако и отправляйте небольшие элементы в контейнере, который откроет только получатель.</string>
     <string name="about_license_title">Свободное ПО</string>
-    <string name="about_license_body">CryptVault — свободное программное обеспечение под лицензией GNU General Public License версии 3 или более поздней. Исходный код доступен у разработчика.</string>
+    <string name="about_license_body">Crypt Vault — свободное программное обеспечение под лицензией GNU General Public License версии 3 или более поздней. Исходный код доступен у разработчика.</string>
     <string name="about_components_title">Создано с помощью</string>
     <string name="about_components_body">Cryptomator cryptolib (AGPL-3.0) для формата хранилища; список слов и кодирование ключа восстановления перенесены из Cryptomator для компьютера (GPL-3.0); Kotlin, Jetpack Compose и AndroidX (Apache-2.0); Sentry SDK (MIT), используется только если вы включите отчёты о сбоях.</string>
     <string name="about_developer">Разработчик: %1$s · %2$s</string>
@@ -256,9 +256,9 @@
     <string name="perm_foreground_title">Фоновая работа</string>
     <string name="perm_foreground_body">Позволяет запущенному вами резервному копированию или восстановлению продолжаться с уведомлением о ходе, когда вы выходите из приложения. Больше ни для чего не используется; автоматические копии после изменений выполняются тихо и без этого.</string>
     <string name="perm_local_network_title">Локальная сеть</string>
-    <string name="perm_local_network_body">Запрашивается только при подключении WebDAV-сервера в вашей собственной сети, например Nextcloud на домашнем NAS, и только на Android 17 и новее, где система иначе не пускает приложения к локальным адресам. Используется только для этого сервера; CryptVault никогда не сканирует сеть.</string>
+    <string name="perm_local_network_body">Запрашивается только при подключении WebDAV-сервера в вашей собственной сети, например Nextcloud на домашнем NAS, и только на Android 17 и новее, где система иначе не пускает приложения к локальным адресам. Используется только для этого сервера; Crypt Vault никогда не сканирует сеть.</string>
     <string name="perm_documents_title">Хранилище для других приложений</string>
-    <string name="perm_documents_body">Разблокированные хранилища появляются как место хранения в системном выборе файлов и в приложении «Файлы», чтобы другие приложения могли открывать и сохранять в них файлы. С этой частью CryptVault могут общаться только собственные файловые инструменты системы; файлы расшифровываются на лету, и ничего не записывается на диск в открытом виде. Блокировка убирает хранилище из выбора.</string>
+    <string name="perm_documents_body">Разблокированные хранилища появляются как место хранения в системном выборе файлов и в приложении «Файлы», чтобы другие приложения могли открывать и сохранять в них файлы. С этой частью Crypt Vault могут общаться только собственные файловые инструменты системы; файлы расшифровываются на лету, и ничего не записывается на диск в открытом виде. Блокировка убирает хранилище из выбора.</string>
     <string name="permissions_not_requested_title">Чего приложение не запрашивает</string>
     <string name="permissions_not_requested_body">Нет доступа к вашим фото, файлам или хранилищу в целом: файлы поступают по одному через системный выбор файлов, выбор фото или отправку — только когда вы их выбираете. Нет разрешения на камеру: фото делает приложение камеры. Нет доступа к местоположению, контактам и микрофону.</string>
     <string name="action_done">Готово</string>
@@ -344,7 +344,7 @@
     <string name="backup_foreign_take_over">Взять управление</string>
     <string name="backup_msg_enabled">Резервное копирование включено. Первый запуск начался.</string>
     <string name="backup_webdav_title">Подключить WebDAV-сервер</string>
-    <string name="backup_webdav_help">Nextcloud: создайте пароль приложения в Настройки → Безопасность; адрес заканчивается на /remote.php/dav/files/&lt;пользователь&gt;/. CryptVault создаст там папку «CryptVault».</string>
+    <string name="backup_webdav_help">Nextcloud: создайте пароль приложения в Настройки → Безопасность; адрес заканчивается на /remote.php/dav/files/&lt;пользователь&gt;/. Crypt Vault создаст там папку «CryptVault».</string>
     <string name="backup_webdav_url">Адрес сервера</string>
     <string name="backup_webdav_user">Имя пользователя</string>
     <string name="backup_webdav_password">Пароль приложения</string>
@@ -357,7 +357,7 @@
     <string name="restore_help">Восстановление создаёт новое хранилище на этом устройстве; существующее не затрагивается. Открыть его можно только паролем самого хранилища.</string>
     <string name="restore_step_target">Где находится копия?</string>
     <string name="restore_step_folder">Какое хранилище?</string>
-    <string name="restore_folders_none">В этом месте копии CryptVault не найдены.</string>
+    <string name="restore_folders_none">В этом месте копии Crypt Vault не найдены.</string>
     <string name="restore_step_password">Пароль этого хранилища</string>
     <string name="restore_step_snapshot">Какой снимок?</string>
     <plurals name="restore_snapshot_line">
@@ -374,7 +374,7 @@
     <string name="vault_settings_backup">Резервное копирование</string>
     <string name="vault_settings_backup_off">Выключено</string>
     <string name="vault_settings_backup_on">Включено — %1$s</string>
-    <string name="backup_webdav_local_denied">Этот сервер находится в вашей локальной сети. Android требует на это разрешения; разрешите CryptVault «Локальная сеть» в настройках системы.</string>
+    <string name="backup_webdav_local_denied">Этот сервер находится в вашей локальной сети. Android требует на это разрешения; разрешите Crypt Vault «Локальная сеть» в настройках системы.</string>
     <!-- Share as container (BUILD_BRIEF.md §7) -->
     <string name="share_dialog_title">Поделиться в зашифрованном виде</string>
     <string name="share_dialog_help">Файлы упаковываются в контейнер, который открывается только парольной фразой. Передайте фразу другим путём — сообщением, звонком — но никогда в том же письме.</string>
@@ -400,7 +400,7 @@
     <!-- Receiving a container -->
     <string name="receive_title">Открыть полученный контейнер</string>
     <string name="receive_detecting">Проверка файла…</string>
-    <string name="receive_not_container">Это не контейнер, который может открыть CryptVault (ZIP с AES, age или OpenPGP).</string>
+    <string name="receive_not_container">Это не контейнер, который может открыть Crypt Vault (ZIP с AES, age или OpenPGP).</string>
     <string name="receive_kind">Контейнер %1$s: %2$s</string>
     <string name="receive_pass_prompt">Введите парольную фразу, полученную отдельно.</string>
     <string name="receive_open">Открыть</string>
@@ -418,10 +418,10 @@
         <item quantity="other">%1$d элемента, около %2$s</item>
     </plurals>
     <plurals name="share_default_title_n">
-        <item quantity="one">%d элемент из CryptVault</item>
-        <item quantity="few">%d элемента из CryptVault</item>
-        <item quantity="many">%d элементов из CryptVault</item>
-        <item quantity="other">%d элемента из CryptVault</item>
+        <item quantity="one">%d элемент из Crypt Vault</item>
+        <item quantity="few">%d элемента из Crypt Vault</item>
+        <item quantity="many">%d элементов из Crypt Vault</item>
+        <item quantity="other">%d элемента из Crypt Vault</item>
     </plurals>
     <plurals name="receive_done_n">
         <item quantity="one">Импортирован %1$d элемент в %2$s.</item>

@@ -19,3 +19,6 @@ keystore.properties
 *.aab
 /captures/
 /providers.properties
+
+# The public GitHub repository: a full clone kept in step by tools/sync_github_mirror.sh.
+/github/
