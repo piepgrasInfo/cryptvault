@@ -454,8 +454,9 @@ Commit: the one this entry is part of (`git log -1 -- handoff.md`).
 ### [2026-09-19] GitHub deploy key and the public URL
 
 - Repository: <https://github.com/piepgrasInfo/cryptvault>. An ed25519 deploy key was generated at
-  `../keystores/keyDeployGithup_cryptvault_` (`.pub` beside it; no passphrase, mode 0600, owned by
-  the agent's user — `sudo chown martin` it to push from the developer's own shell). The `github/`
+  `../keystores/keyDeployGithub_cryptvault` (`.pub` beside it; no passphrase, mode 0600). The developer renamed it from
+  `keyDeployGithup_cryptvault_` and took ownership, so pushes to GitHub run from the developer's
+  shell; the agent's user cannot read the key, by design. The `github/`
   clone has `origin` set to the repository and `core.sshCommand` pinned to that key with
   `IdentitiesOnly`; nothing was pushed — the public key must be registered on GitHub first
   (Settings → Deploy keys, "Allow write access").

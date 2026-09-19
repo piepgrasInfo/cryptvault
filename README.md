@@ -41,7 +41,7 @@ GPL-3.0-or-later. `NOTICE` lists the third-party components, above all Cryptomat
 
 The GPL obliges source availability to everyone who receives the app. The public repository is
 <https://github.com/piepgrasInfo/cryptvault>: a full clone living in `github/` inside this project folder (ignored by this
-repository's git), pushed with the deploy key `../keystores/keyDeployGithup_cryptvault_`
+repository's git), pushed with the deploy key `../keystores/keyDeployGithub_cryptvault`
 (`core.sshCommand` in that clone points at it). `tools/sync_github_mirror.sh` creates it on first use and fast-forwards it to
 the current `master` afterwards; pushing is deliberate and manual:
 
