@@ -217,7 +217,7 @@
     <string name="about_version">Version %1$s</string>
     <string name="about_body">An encrypted vault for the files and notes that matter, in the open Cryptomator format: open them in any app, back them up to your own cloud, and mail small items in a container only the recipient can open.</string>
     <string name="about_license_title">Free software</string>
-    <string name="about_license_body">Crypt Vault is free software under the GNU General Public License, version 3 or later. The source code is available from the developer.</string>
+    <string name="about_license_body">Crypt Vault is free software under the GNU General Public License, version 3 or later. The source code is at https://github.com/piepgrasInfo/cryptvault.</string>
     <string name="about_components_title">Built with</string>
     <string name="about_components_body">Cryptomator cryptolib (AGPL-3.0) for the vault format; the recovery-key word list and encoding ported from Cryptomator desktop (GPL-3.0); Kotlin, Jetpack Compose and AndroidX (Apache-2.0); Sentry SDK (MIT), used only if you switch crash reports on.</string>
     <string name="about_developer">Developer: %1$s · %2$s</string>

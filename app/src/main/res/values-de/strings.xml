@@ -207,7 +207,7 @@
     <string name="about_version">Version %1$s</string>
     <string name="about_body">Ein verschlüsselter Tresor für die Dateien und Notizen, die wichtig sind, im offenen Cryptomator-Format: in jeder App öffnen, in die eigene Cloud sichern und kleine Einträge in einem Container verschicken, den nur der Empfänger öffnen kann.</string>
     <string name="about_license_title">Freie Software</string>
-    <string name="about_license_body">Crypt Vault ist freie Software unter der GNU General Public License, Version 3 oder später. Der Quelltext ist beim Entwickler erhältlich.</string>
+    <string name="about_license_body">Crypt Vault ist freie Software unter der GNU General Public License, Version 3 oder später. Der Quelltext liegt unter https://github.com/piepgrasInfo/cryptvault.</string>
     <string name="about_components_title">Gebaut mit</string>
     <string name="about_components_body">Cryptomator cryptolib (AGPL-3.0) für das Tresorformat; Wortliste und Kodierung des Wiederherstellungsschlüssels portiert aus Cryptomator Desktop (GPL-3.0); Kotlin, Jetpack Compose und AndroidX (Apache-2.0); Sentry SDK (MIT), nur genutzt, wenn du Absturzberichte einschaltest.</string>
     <string name="about_developer">Entwickler: %1$s · %2$s</string>

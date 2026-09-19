@@ -706,8 +706,9 @@ Open — need the developer:
 - `[OPEN: what the later one-time purchase unlocks]` (§10)
 - `[OPEN: public source hosting]` — **Decided 2026-09-19: GitHub.** A separate repository lives in
   the project folder (`github/`, a clone with full history, kept in step by
-  `tools/sync_github_mirror.sh`) and is what gets pushed to GitHub. Still open: the GitHub URL
-  itself, which About and the store listing need before the first external tester.
+  `tools/sync_github_mirror.sh`) and is pushed to <https://github.com/piepgrasInfo/cryptvault> with a deploy key
+  (`../keystores/keyDeployGithup_cryptvault_`). The URL is in About; the store listing takes it
+  in Phase 6.
 - `[OPEN: Play-services-free build]` — whether to produce a variant without Google Play services
   (drops the Drive target; enables F-Droid). Default: not in v1.
 - `[OPEN: house WebDAV server for Phase 4 testing]` (`docs/PROVIDER_SETUP.md` §5)

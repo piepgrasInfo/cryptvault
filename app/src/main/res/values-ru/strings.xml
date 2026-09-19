@@ -239,7 +239,7 @@
     <string name="about_version">Версия %1$s</string>
     <string name="about_body">Зашифрованное хранилище для важных файлов и заметок в открытом формате Cryptomator: открывайте их в любом приложении, сохраняйте в собственное облако и отправляйте небольшие элементы в контейнере, который откроет только получатель.</string>
     <string name="about_license_title">Свободное ПО</string>
-    <string name="about_license_body">Crypt Vault — свободное программное обеспечение под лицензией GNU General Public License версии 3 или более поздней. Исходный код доступен у разработчика.</string>
+    <string name="about_license_body">Crypt Vault — свободное программное обеспечение под лицензией GNU General Public License версии 3 или более поздней. Исходный код: https://github.com/piepgrasInfo/cryptvault.</string>
     <string name="about_components_title">Создано с помощью</string>
     <string name="about_components_body">Cryptomator cryptolib (AGPL-3.0) для формата хранилища; список слов и кодирование ключа восстановления перенесены из Cryptomator для компьютера (GPL-3.0); Kotlin, Jetpack Compose и AndroidX (Apache-2.0); Sentry SDK (MIT), используется только если вы включите отчёты о сбоях.</string>
     <string name="about_developer">Разработчик: %1$s · %2$s</string>
