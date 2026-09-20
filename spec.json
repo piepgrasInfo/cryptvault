@@ -16,7 +16,7 @@
     "serialization",
     "shared-module"
   ],
-  "theme_color": "#1E3A8A",
+  "theme_color": "#0D47A1",
   "crash_reporting_dsn": "",
   "git_remote": "git@192.168.5.5:/foundation/backup/git/cryptvault",
   "template_project": "/home/martin/AndroidStudioProjects/existentialdreadrunner",

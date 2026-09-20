@@ -11,9 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = BrandLight,
-    secondary = BrandGrey,
-    tertiary = Accent,
+    primary = BrandDark,
+    secondary = BrandGreyDark,
+    tertiary = AccentDark,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -23,8 +23,10 @@ private val LightColorScheme = lightColorScheme(
 )
 
 /**
- * Dynamic colour is off: the navy brand colour is the app's identity on a security app's
- * screens (BUILD_BRIEF.md §1), and a wallpaper palette would silently replace it.
+ * Dynamic colour is off. The palette in `Color.kt` is a house rule shared with Flip Cards
+ * and Work Time Tracker, and a wallpaper palette would silently replace it on Android 12+ —
+ * most devices — leaving the shared blue visible only on the launcher icon and the store
+ * listing. Re-enabling it is a decision about the whole family of apps, not about this file.
  */
 @Composable
 fun CryptVaultTheme(

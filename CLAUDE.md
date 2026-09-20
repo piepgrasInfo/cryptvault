@@ -290,6 +290,25 @@ diff <(sed 's/\.foss//g' app/build/intermediates/merged_manifest/fossRelease/*/A
 ## Conventions
 
 - Every string must exist in `values`, `values-de`, `values-ru`.
+- **The colour scheme is a house rule for the productivity apps, not this app's own choice.**
+  It comes from Work Time Tracker's icon and feature graphic, and Flip Cards carries the same
+  one; changing a value here means changing it in the sibling apps too, so don't re-pick one to
+  suit a screen:
+
+  | Role | Light | Dark |
+  |---|---|---|
+  | primary | `#0D47A1` | `#90CAF9` |
+  | secondary | `#455A64` | `#B0BEC5` |
+  | tertiary | `#00695C` | `#80CBC4` |
+
+  `#0D47A1` is the bottom stop of the launcher icon's gradient, which is how it got here
+  (BUILD_BRIEF.md §13 row 22, revised 2026-09-21 from navy `#1E3A8A`). The wider family the art
+  is drawn from: gradient `#42A5F5` → `#1E88E5` → `#0D47A1`, lights `#90CAF9` / `#E3F2FD` /
+  `#D7E9FB`. It lives in `ui/theme/Color.kt`, `res/values/colors.xml`, `spec.json`'s
+  `theme_color`, `art/ic_launcher.svg` and BUILD_BRIEF.md §1 — all five move together, and
+  `art/feature_graphic.svg` joins them when Phase 6 draws it. **Dynamic colour stays off**
+  (`CryptVaultTheme(dynamicColor = false)`): a wallpaper palette would replace the shared one on
+  Android 12+ and leave it visible only on the launcher icon and the store listing.
 - **Legal documents live in `legal/`** — each as `.md` plus a generated `.html`
   (`python3 scripts/render_legal_docs.py`, which also copies the Markdown into
   `app/src/main/assets/legal/` for the in-app screens). They describe what the app actually
@@ -308,9 +327,9 @@ diff <(sed 's/\.foss//g' app/build/intermediates/merged_manifest/fossRelease/*/A
   flavor** (`lintPlayDebug` and `lintFossDebug` report the same 18) — 17 version-currency notices (`AndroidGradlePluginVersion`, `GradleDependency`,
   `NewerVersionAvailable`, drifting upward on their own as libraries move; two of them are
   OkHttp 4.12 → 5.x, kept at 4.12 because that is what Ktor 3.0.3 pulls in) and one
-  `UnusedResources` on `R.color.brand` (`#1E3A8A`), which exists for store assets. The launcher
-  icon does not use it — it carries the house gradient `#1E88E5`/`#0D47A1` — so the token is still
-  awaiting the developer's word on whether it follows the icon (handoff.md 2026-09-20).
+  `UnusedResources` on `R.color.brand` (`#0D47A1`), which exists for store assets and for
+  anything outside Compose that needs the brand colour; the value it holds is live, as
+  `ui/theme/Color.kt`'s `Brand` and so the light scheme's `primary`.
   Anything else in the report is a real finding. Categories cleared on the way and not to be
   reintroduced: `PluralsCandidate` (use `<plurals>`), `LocalContextGetResourceValueCall` (use
   `LocalResources.current`), `UseKtx`, `NewApi`.

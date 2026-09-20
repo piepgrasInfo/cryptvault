@@ -1,4 +1,5 @@
 <resources>
-    <!-- Keep in step with ui/theme/Color.kt and the launcher icon background. -->
-    <color name="brand">#1E3A8A</color>
+    <!-- Keep in step with ui/theme/Color.kt, spec.json's theme_color and the launcher icon
+         background in art/ic_launcher.svg. The shared productivity palette — see CLAUDE.md. -->
+    <color name="brand">#0D47A1</color>
 </resources>

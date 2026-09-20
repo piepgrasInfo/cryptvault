@@ -58,7 +58,7 @@ starts from.
 | Audience | Adults and general audience; not directed at children |
 | Price | v1 is free: no ads, no purchases. A one-time purchase comes later (§10) |
 | Licence | GPL-3.0-or-later, source published (§13 for where) |
-| Brand colour | Navy `#1E3A8A` |
+| Brand colour | `#0D47A1`, the shared productivity-app palette (revised 2026-09-21; was navy `#1E3A8A` — §13 row 22) |
 | Icon | A cog as a heavy vault door, slightly ajar, a keyhole in the centre of the cog |
 | Website entry | `website/content/apps/crypt-vault.toml`, slug `crypt-vault` (the developer already renamed the "Data Vault" placeholder; it currently says "Crypt Vault" — see §13) |
 
@@ -807,7 +807,7 @@ The 28 questions the brief was refined through, with the developer's answers. An
 | 19 | Monetization and audience? | Free core, one-time purchase later |
 | 20 | Source availability and licence? | Open source, GPL-3.0/AGPL |
 | 21 | Vault format: Cryptomator format 8 via cryptolib, or own? | Cryptomator vault format 8 via cryptolib |
-| 22 | Brand colour? | Navy `#1E3A8A` |
+| 22 | Brand colour? | ~~Navy `#1E3A8A`~~ → **`#0D47A1`**, revised 2026-09-21. The launcher icon took Flip Cards' and Work Time Tracker's background gradient, whose bottom stop this is, and their palette is a house rule for the productivity apps rather than a per-app choice; secondary `#455A64`/`#B0BEC5` and tertiary `#00695C`/`#80CBC4` came with it, replacing the Android Studio template defaults. Decided before any feature graphic or screenshot existed, so nothing had to be redrawn (handoff.md 2026-09-21) |
 | 23 | Icon concept? | *(custom)* "Cog as heavy vault door, slightly ajar. keyhole in the center of the cog" |
 | 24 | Play account and closed-testing gate? | Same personal account as Flip Cards; the 12-testers/14-days gate applies |
 | 25 | How may the agent use Cryptomator Android (GPL-3.0)? | Reference and port small pieces with attribution; house style stays |
