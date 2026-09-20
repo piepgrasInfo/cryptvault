@@ -54,6 +54,8 @@
          biometric wrap lives in the Keystore and never transfers, and the app's own state is
          a registry that a restore would leave pointing at vaults that are not there. CryptVault's
          own backup (BUILD_BRIEF.md §6) is the way a vault survives a phone. -->
+    <!-- No android:roundIcon: it is only read below API 26 and minSdk is 26, so every
+         launcher takes @mipmap/ic_launcher's adaptive form and applies its own mask. -->
     <application
         android:name=".CryptVaultApp"
         android:allowBackup="false"
@@ -62,7 +64,6 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:resizeableActivity="true"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:theme="@style/Theme.CryptVault"
         android:supportsRtl="true">
