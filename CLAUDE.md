@@ -189,9 +189,12 @@ let it drift:
   `adb shell run-as info.piepgras.cryptvault touch cache/allow-screenshots`) turns FLAG_SECURE
   off so emulator screenshots work. `SensitiveClipboard` flags clips sensitive and clears them
   after 60 s.
-- **The launcher icon** (`art/ic_launcher.svg`): a cog read as a vault door on a blue gradient,
-  one 108x108 canvas carrying both adaptive layers as `<g id="background">` and
-  `<g id="foreground">`, the disc at Android's 66dp keyline circle. It is the **source of truth**
+- **The launcher icon** (`art/ic_launcher.svg`): a cog read as a vault door on the **house blue
+  gradient** — `#1E88E5` at the top to `#0D47A1` at the bottom, the same one Flip Cards and Work
+  Time Tracker use, so the three productivity apps sit together in a launcher; take it from their
+  `art/ic_launcher.svg` rather than re-deriving it. One 108x108 canvas carries both adaptive
+  layers as `<g id="background">` and `<g id="foreground">`, the disc at Android's 66dp keyline
+  circle. It is the **source of truth**
   — `app/src/main/res/mipmap-*`, the three `art/` Play assets and the `fastlane/…/images/icon.png`
   copies are all generated from it by the `app-launcher-icon-creator` skill; edit the SVG, never
   them. Three things the regeneration has to carry, all recorded in handoff.md 2026-09-20:
@@ -202,7 +205,10 @@ let it drift:
   `python3 scripts/shape_legacy_launcher_icons.py` afterwards, which gives the legacy PNGs the
   squircle silhouette. Those legacy PNGs stay even though no launcher here uses them: F-Droid and
   other store tooling pull a raster icon out of the APK. There is no `android:roundIcon` in the
-  manifest, for the same minSdk reason.
+  manifest, for the same minSdk reason. **The generator's export scan walks into `github/`** and
+  overwrites the mirror clone's copies in place, which is not how that clone is ever meant to
+  move: run `git -C github checkout -- .` after every regeneration and let
+  `tools/sync_github_mirror.sh` fast-forward it at the end.
 - **Emulator lessons** (this host): AVDs live in `/home/martin/.android/avd`; run the emulator
   with `ANDROID_AVD_HOME` pointing there and a per-project ini (`Medium_Phone_5560-CryptVault.ini`
   → `CryptVault.avd`, port 5560). The Play image needs `-partition-size 16384` for the 2 GB
@@ -303,8 +309,8 @@ diff <(sed 's/\.foss//g' app/build/intermediates/merged_manifest/fossRelease/*/A
   `NewerVersionAvailable`, drifting upward on their own as libraries move; two of them are
   OkHttp 4.12 → 5.x, kept at 4.12 because that is what Ktor 3.0.3 pulls in) and one
   `UnusedResources` on `R.color.brand` (`#1E3A8A`), which exists for store assets. The launcher
-  icon no longer uses it — it is `#127EFD`/`#03256B` — so the token is still awaiting the
-  developer's word on whether it follows the icon (handoff.md 2026-09-20).
+  icon does not use it — it carries the house gradient `#1E88E5`/`#0D47A1` — so the token is still
+  awaiting the developer's word on whether it follows the icon (handoff.md 2026-09-20).
   Anything else in the report is a real finding. Categories cleared on the way and not to be
   reintroduced: `PluralsCandidate` (use `<plurals>`), `LocalContextGetResourceValueCall` (use
   `LocalResources.current`), `UseKtx`, `NewApi`.

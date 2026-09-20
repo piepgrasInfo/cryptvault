@@ -6,6 +6,10 @@
                              which is Android's keyline circle, so the circular and
                              squircle masks both leave the blue rim visible.
 
+     The background gradient is the house one, byte for byte the same as Flip
+     Cards' and Work Time Tracker's: #1E88E5 at the top to #0D47A1 at the
+     bottom, so the three productivity apps sit together in a launcher.
+
      Source of truth for the whole icon set: app/src/main/res/mipmap-*, the three
      art/ Play listing assets and the fastlane copies are all generated from this
      file by the app-launcher-icon-creator skill. Edit here, never there.
@@ -16,14 +20,14 @@
      instead, and is regenerated with the generator's keep-monochrome flag. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="108" height="108" viewBox="0 0 108 108">
   <defs>
-    <linearGradient id="vaultSky" gradientUnits="userSpaceOnUse" x1="54" y1="108" x2="54" y2="0">
-      <stop offset="0" stop-color="#03256B"/>
-      <stop offset="1" stop-color="#127EFD"/>
+    <linearGradient id="bgGradient" x1="0" y1="0" x2="0" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1E88E5"/>
+      <stop offset="1" stop-color="#0D47A1"/>
     </linearGradient>
   </defs>
 
   <g id="background">
-    <rect x="0" y="0" width="108" height="108" fill="url(#vaultSky)"/>
+    <rect x="0" y="0" width="108" height="108" fill="url(#bgGradient)"/>
   </g>
 
   <g id="foreground">
