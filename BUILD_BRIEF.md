@@ -477,9 +477,11 @@ Sentry, WorkManager is added here):
 | EFF long wordlist (resource) | 2016 | CC-BY-3.0 | passphrases (attributed in `NOTICE`) |
 | Cryptomator `4096words_en.txt` (resource) | — | GPL-3.0 | recovery keys (attributed in `NOTICE`) |
 
-Toolchain pins follow the siblings (AGP 9.3.1, Compose BOM 2026.06.01, Gradle 9.7.0, JDK 25 —
-which satisfies the Dropbox SDK's Java 21 build requirement — Kotlin/Compose compiler 2.4.10,
-minSdk 26 / target 37 / compile 37, Room absent). Bump deliberately and together. No native
+Toolchain pins follow the siblings (AGP 9.4.1, Compose BOM 2026.09.00, Gradle 9.7.1, JDK 25 —
+which satisfies the Dropbox SDK's Java 21 build requirement — Kotlin/Compose compiler 2.4.20,
+minSdk 26 / target 37 / compile 37, Room absent). Bump deliberately and together; the whole
+family moved to this tree on 2026-09-24. AGP 9.4.1 is past what Android Studio 2026.1.3 can
+sync — see the Toolchain section of `CLAUDE.md` before "fixing" a sync error. No native
 libraries are added, so the 16 KB page-size requirement is met by construction; re-check the
 merged APK if any dependency ever brings an `.so`.
 

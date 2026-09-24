@@ -1,12 +1,12 @@
 [versions]
 # AGP 9+ compiles Kotlin itself (built-in Kotlin support), so the
 # org.jetbrains.kotlin.android plugin is not applied separately.
-agp = "9.3.1"
+agp = "9.4.1"
 # The Compose compiler plugin version must match the Kotlin compiler version
 # AGP's built-in Kotlin support uses.
-kotlinComposeCompiler = "2.4.10"
-composeBom = "2026.06.01"
-coreKtx = "1.19.0"
+kotlinComposeCompiler = "2.4.20"
+composeBom = "2026.09.00"
+coreKtx = "1.19.1"
 activityCompose = "1.13.0"
 lifecycle = "2.11.0"
 coroutines = "1.11.0"
@@ -16,8 +16,8 @@ androidxTestRunner = "1.7.0"
 androidxEspresso = "3.7.0"
 # Crash reporting. sentry-android-core only, deliberately not the umbrella
 # io.sentry:sentry-android artifact: that pulls in NDK support and session replay.
-sentry = "8.53.0"
-navigationCompose = "2.8.5"
+sentry = "8.58.0"
+navigationCompose = "2.10.2"
 ktor = "3.0.3"
 # OkHttp is what ktor-client-okhttp already pulls in; the WebDAV backup target uses it directly
 # (blocking streams suit the RemoteStore interface). Apache-2.0. MockWebServer for its tests.
@@ -33,7 +33,7 @@ kage = "0.7.0"
 pgpainless = "2.0.4"
 bouncycastle = "1.86"
 serialization = "1.11.0"
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 # The vault format. 2.2.2, never 2.2.1: the official Android app marks 2.2.1 as broken for
 # file creation (buildsystem/dependencies.gradle in cryptomator/android). AGPL-3.0, see NOTICE.
 cryptolib = "2.2.2"

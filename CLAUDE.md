@@ -37,6 +37,23 @@ companions: `docs/VAULT_LAYOUT.md` (normative on-disk and remote layout), `docs/
 `### [YYYY-MM-DD] …` section describing what changed, test results, and the commit hash.
 Keep it updated when making substantive changes.
 
+## Toolchain
+
+Gradle 9.7.1 wrapper, JDK 25 daemon toolchain (`gradle/gradle-daemon-jvm.properties`). Versions
+live in `gradle/libs.versions.toml` — AGP 9.4.1, Kotlin 2.4.20 (and the Compose compiler plugin
+with it), Compose BOM 2026.09.00, core-ktx 1.19.1. This is the same tree as every sibling app on
+this machine; move them together rather than bumping one project alone.
+
+**AGP 9.4.1 needs a newer Android Studio than 2026.1.3.** That release caps at the AGP 9.3.x
+line — it reports `latest supported version is AGP 9.3.0` and passes
+`-Dandroid.studio.latest.known.compatible.agp.version=9.3.0` into every sync — so it refuses to
+sync with `The project is using an incompatible version (AGP 9.4.1) of the Android Gradle
+plugin`. This is **deliberate and the IDE is what moves**, by the owner's decision on 2026-09-24:
+do not "fix" a failing sync by downgrading AGP. The command line does not consult that property,
+so `assembleDebug`/`test`/`lint` stay green while the IDE cannot open the project — a clean CLI
+build is *not* evidence that an AGP bump is safe. AGP 9.4 itself needs Gradle 9.6+ and JDK 17+,
+both already satisfied.
+
 ## Build and test
 
 `:app` has two product flavors on the `dist` dimension — `play` and `foss` (see **Distributions**

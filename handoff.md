@@ -692,3 +692,41 @@ Commit: the one this entry is part of (`git log -1 -- handoff.md`).
 - [ ] The `foss` channels: F-Droid submission (fdroiddata merge request), the GitHub Release and
       the piepgras.info download, each with the APK's SHA-256; decide the reproducible-build
       question so the three channels do not ship two different signatures.
+
+### [2026-09-24] The build tree moved onto EverydayHero's version
+
+Every app on this machine now sits on one build tree. EverydayHero had been moved
+onto it alone (its F8 currency sweep, 2026-09-24); this run brought the eight siblings up to the
+same pins so no project is a version behind another.
+
+**What moved** — `gradle/libs.versions.toml` and the Gradle wrapper only; no source change:
+
+| | from | to |
+| --- | --- | --- |
+| Gradle wrapper | 9.7.0 | 9.7.1 |
+| AGP | 9.3.1 | 9.4.1 |
+| Kotlin / Compose compiler | 2.4.10 | 2.4.20 |
+| Compose BOM | 2026.06.01 | 2026.09.00 |
+| core-ktx | 1.19.0 | 1.19.1 |
+| Sentry | 8.53.0 | 8.58.0 |
+| navigation-compose | 2.8.5 | 2.10.2 |
+
+The wrapper files (`gradle-wrapper.jar`, `gradle-wrapper.properties`, `gradlew`) were taken
+byte-for-byte from EverydayHero's 9.7.1 wrapper, so all nine projects now carry the identical
+scripts. `gradle-daemon-jvm.properties` (JDK 25 via foojay), `gradle.properties`,
+`settings.gradle.kts`, `compileSdk`/`targetSdk` 37 and `minSdk` are untouched.
+
+**Deliberately left alone:** every version key that is *not* part of the shared tree — the vault and container stack (cryptolib 2.2.2, cryptofs 2.10.0, zip4j, kage, PGPainless, Bouncy Castle 1.86), Ktor 3.0.3, OkHttp 4.12.0, WorkManager 2.11.2, biometric, fragment, exifinterface, zxcvbn and slf4j.
+They are this project's own dependencies, they were not what the sweep was about, and the
+`NewerVersionAvailable` rows lint still reports for them are a separate decision.
+
+**The AGP catch.** AGP 9.4.1 is past what Android Studio 2026.1.3 can sync: it caps at the 9.3.x
+line and refuses the project with *"The project is using an incompatible version (AGP 9.4.1) of
+the Android Gradle plugin"*. The owner's decision on 2026-09-24 was to keep 9.4.1 and update
+Studio rather than walk the plugin back. Until Studio is updated **this project builds from the
+command line only** — and note that the CLI never reads
+`android.studio.latest.known.compatible.agp.version`, so a green `assembleDebug` proves nothing
+about the IDE. Written into `CLAUDE.md` as an invariant so a later session does not "fix" it.
+
+**Verified** (`--console=plain`, clean rebuild — the toolchain bump invalidated every cached
+task): both flavors built and tested: `:app:assemblePlayDebug`, `:app:assembleFossDebug`, `:app:testPlayDebugUnitTest` (55), `:app:testFossDebugUnitTest` (56), `:app:compilePlayDebugAndroidTestKotlin` and `:shared:jvmTest` (47) all pass. `:app:lintPlayDebug` **0 errors, 10 warnings** — 18 before the bump. What is left is 7 `NewerVersionAvailable` on the libraries above, 2 `GradleDependency`, 1 `UnusedResources`. The toolchain line in `BUILD_BRIEF.md` was updated to match.
