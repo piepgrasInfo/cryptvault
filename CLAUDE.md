@@ -226,9 +226,9 @@ let it drift:
   overwrites the mirror clone's copies in place, which is not how that clone is ever meant to
   move: run `git -C github checkout -- .` after every regeneration and let
   `tools/sync_github_mirror.sh` fast-forward it at the end.
-- **Emulator lessons** (this host): AVDs live in `/home/martin/.android/avd`; run the emulator
-  with `ANDROID_AVD_HOME` pointing there and a per-project ini (`Medium_Phone_5560-CryptVault.ini`
-  → `CryptVault.avd`, port 5560). The Play image needs `-partition-size 16384` for the 2 GB
+- **Emulator lessons**: sibling projects share the development machine, so run the emulator
+  with `ANDROID_AVD_HOME` pointing at the developer's AVD home and a per-project AVD
+  (`CryptVault.avd`, console port 5560) rather than the shared default one. The Play image needs `-partition-size 16384` for the 2 GB
   tests and accepts adb only after the "Allow USB debugging" prompt, which the emulator console's
   `event mouse` can tap without a window. Gboard's first-run stylus tutorial swallows `input
   text` until cancelled; Escape does not hide the keyboard, Back does. The shell holds
@@ -340,9 +340,10 @@ diff <(sed 's/\.foss//g' app/build/intermediates/merged_manifest/fossRelease/*/A
 - Unit tests use hand-written `Fake*` implementations plus `MainDispatcherRule` — no mocking
   library, no Robolectric. cryptolib runs on the plain JVM, so vault round trips are ordinary
   unit tests on a temp directory.
-- **Keep lint at 0 errors** and hold the warning count where it is: **18 warnings in each
-  flavor** (`lintPlayDebug` and `lintFossDebug` report the same 18) — 17 version-currency notices (`AndroidGradlePluginVersion`, `GradleDependency`,
-  `NewerVersionAvailable`, drifting upward on their own as libraries move; two of them are
+- **Keep lint at 0 errors** and hold the warning count where it is: **10 warnings in `play`,
+  11 in `foss`** (since the 2026-09-24 toolchain move; 18 before) — version-currency notices
+  (`GradleDependency`, `NewerVersionAvailable`, plus one `AndroidGradlePluginVersion` that lint
+  reports for `foss` only; they drift on their own as libraries move, and two of them are
   OkHttp 4.12 → 5.x, kept at 4.12 because that is what Ktor 3.0.3 pulls in) and one
   `UnusedResources` on `R.color.brand` (`#0D47A1`), which exists for store assets and for
   anything outside Compose that needs the brand colour; the value it holds is live, as
@@ -354,5 +355,8 @@ diff <(sed 's/\.foss//g' app/build/intermediates/merged_manifest/fossRelease/*/A
   leave changes uncommitted. Commits are authored as the developer (the repository's local git
   identity, set 2026-09-19); an agent's commits add the `Co-Authored-By` trailer. Then run
   `tools/sync_github_mirror.sh`, which fast-forwards the
-  public clone in `github/` (gitignored; the developer pushes it to GitHub by hand) so the
-  published source never lags the house remote.
+  public clone in `github/` (gitignored; the developer pushes it to GitHub by hand with a deploy
+  key that lives outside the repository) so the published source never lags the house remote.
+  **Nothing host-specific goes into tracked files**: no home-directory paths, no key file names,
+  no internal addresses, no per-machine AVD names — the repository is public. Machine facts
+  belong in the developer's own notes.

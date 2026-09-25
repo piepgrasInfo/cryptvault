@@ -32,6 +32,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "DROPBOX_APP_KEY", provider("DROPBOX_APP_KEY"))
         buildConfigField("String", "MSAL_CLIENT_ID", provider("MSAL_CLIENT_ID"))
+        buildConfigField("String", "BUGSINK_DSN", provider("BUGSINK_DSN"))
     }
 
     signingConfigs {

@@ -16,14 +16,21 @@ import androidx.core.content.edit
  */
 object CrashReporting {
 
-    // A DSN is not a secret in any useful sense - it ships inside every copy of the APK and can
-    // be read out of one in a minute - so it lives here rather than pretending otherwise in a
-    // gitignored file. It authorises sending *to* the project, nothing else.
+    // The DSN comes from the gitignored providers.properties (BuildConfig.BUGSINK_DSN), like the
+    // provider keys: the repository is public, and the DSN names the reporting server and
+    // authorises sending to it. It is not a secret in any strong sense - it ships inside every
+    // APK built with it and can be read out of one - so this keeps it out of the indexed source,
+    // no more; the guard against abuse is on the server. A build without it (an F-Droid build
+    // from the public source) has no crash reporting: [isAvailable] is false, the opt-in question
+    // is never asked and the SDK never starts.
     //
     // Kept out of the manifest on purpose: with the DSN in the manifest the SDK could find it and
     // start itself from its own ContentProvider before the user has had any chance to refuse, if
     // io.sentry.auto-init were ever accidentally re-enabled.
-    private const val DSN = "https://cce46b90ae614dd6a8bd7ea025468238@piepgras.bugsink.com/7"
+    private val DSN: String get() = BuildConfig.BUGSINK_DSN.trim()
+
+    /** False when this build carries no DSN; nothing crash-related is shown or started then. */
+    val isAvailable: Boolean get() = DSN.isNotEmpty()
 
     private const val PREFS = "crash_reporting"
     private const val KEY_ENABLED = "enabled"
@@ -49,7 +56,7 @@ object CrashReporting {
     }
 
     fun init(context: Context) {
-        if (initialized) return
+        if (initialized || !isAvailable) return
         SentryAndroid.init(context) { options ->
             options.dsn = DSN
 

@@ -435,8 +435,9 @@ Commit: the one this entry is part of (`git log -1 -- handoff.md`).
   en/de/ru say so; the package `info.piepgras.cryptvault`, the repository, code identifiers and
   the `CryptVault/` folder on backup targets keep the one-word form (renaming that folder would
   orphan existing backups). `spec.json`, README, NOTICE, CLAUDE.md and BUILD_BRIEF.md §13 updated.
-- **Bugsink DSN** set in `CrashReporting.kt` (project 7 on `piepgras.bugsink.com`); reporting
-  stays opt-in and off by default, the SDK cannot start before the user answers.
+- **Bugsink DSN** set (in `CrashReporting.kt` at the time; since 2026-09-25 it comes from the
+  gitignored `providers.properties`); reporting stays opt-in and off by default, the SDK cannot
+  start before the user answers.
 - **Public source**: `tools/sync_github_mirror.sh` creates and fast-forwards a full clone in
   `github/` (gitignored) that the developer pushes to GitHub; the script refuses to run if a
   credential file were ever tracked. The GitHub URL for About and the store listing is still
@@ -453,13 +454,10 @@ Commit: the one this entry is part of (`git log -1 -- handoff.md`).
 
 ### [2026-09-19] GitHub deploy key and the public URL
 
-- Repository: <https://github.com/piepgrasInfo/cryptvault>. An ed25519 deploy key was generated at
-  `../keystores/keyDeployGithub_cryptvault` (`.pub` beside it; no passphrase, mode 0600). The developer renamed it from
-  `keyDeployGithup_cryptvault_` and took ownership, so pushes to GitHub run from the developer's
-  shell; the agent's user cannot read the key, by design. The `github/`
-  clone has `origin` set to the repository and `core.sshCommand` pinned to that key with
-  `IdentitiesOnly`; nothing was pushed — the public key must be registered on GitHub first
-  (Settings → Deploy keys, "Allow write access").
+- Repository: <https://github.com/piepgrasInfo/cryptvault>. An ed25519 deploy key was generated
+  outside the repository and registered on GitHub with write access; it is owned by the developer,
+  so pushes to GitHub run from the developer's shell. The `github/` clone has `origin` set to the
+  repository and `core.sshCommand` pinned to that key with `IdentitiesOnly`.
 - The About text in en/de/ru now names the URL; README and BUILD_BRIEF.md §13 updated.
 
 Commit: the one this entry is part of (`git log -1 -- handoff.md`).
@@ -668,6 +666,40 @@ Verified: `:app:compilePlayDebugKotlin :app:compileFossDebugKotlin`, `:app:test`
 still **0 errors / 18 warnings in each flavor**; a repo-wide grep finds no `#1E3A8A`, `#93A8F0`,
 `#625B71` or `#7D5260` left outside this log and the brief's struck-through row. Not seen on a
 device: the new scheme was verified by value, not by screenshot.
+
+Commit: the one this entry is part of (`git log -1 -- handoff.md`).
+
+### [2026-09-25] The public repository carries nothing host-specific
+
+The repository is public, so every tracked file is. A sweep removed what only belongs on the
+development machine or in the developer's notes:
+
+- **Key file names and paths** (the GitHub deploy key) from README, BUILD_BRIEF.md §13 and two
+  handoff entries; the key itself was never tracked. **Home-directory paths and the internal
+  address of the house remote** from `spec.json` (`git_remote`, `template_project` now empty,
+  `project_dir` is `.`) and BUILD_BRIEF.md Phase 0; **per-host AVD names** from CLAUDE.md's
+  emulator notes. The README's mirror recipe became a plain statement of where the source is;
+  the recipe stays in CLAUDE.md, which now also says that nothing host-specific goes into
+  tracked files.
+- **The Bugsink DSN** left `CrashReporting.kt` for the gitignored `providers.properties`
+  (`BUGSINK_DSN` → `BuildConfig.BUGSINK_DSN`, alongside the provider keys;
+  `providers.properties.example` documents it). `CrashReporting.isAvailable` is false when it is
+  blank: then the opt-in dialog is skipped, the Settings switch is hidden and the SDK never
+  starts. The DSN still ships inside every APK the developer builds and can be read out of one,
+  so this keeps it out of the indexed source rather than making it secret; the guard against
+  abuse remains on the Bugsink side. A build from the public source without the file — an
+  F-Droid build — has no crash reporting at all, which suits that channel.
+- The Android emulator's host alias `10.0.2.2` stays: it is the platform's documented loopback,
+  not a local detail.
+- Still visible on GitHub: two older commit messages name the deploy key *file* (a name, not a
+  key). Removing them means rewriting history again; left to the developer's call.
+
+Verified: `:app:compilePlayDebugKotlin :app:compileFossDebugKotlin :shared:jvmTest :app:test
+:app:lintPlayDebug :app:lintFossDebug` — green, 47 + 55 + 56 tests, lint 0 errors with 10 (play) /
+11 (foss) warnings, all version notices plus the known unused colour; CLAUDE.md's stale "18 each"
+baseline corrected to these. `git grep` for home paths, key names, the internal remote address,
+AVD names and the DSN over every tracked file returns nothing. The developer's builds keep the
+DSN through the local, gitignored `providers.properties`.
 
 Commit: the one this entry is part of (`git log -1 -- handoff.md`).
 

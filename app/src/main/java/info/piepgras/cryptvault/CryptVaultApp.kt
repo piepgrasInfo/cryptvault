@@ -44,7 +44,7 @@ class CryptVaultApp : Application() {
     override fun onCreate() {
         super.onCreate()
         // Crash reporting stays off until the user has opted in; see CrashReporting.
-        if (CrashReporting.isEnabled(this)) CrashReporting.init(this)
+        if (CrashReporting.isAvailable && CrashReporting.isEnabled(this)) CrashReporting.init(this)
         container = Container(this)
         container.lockManager.start()
         // Every unlock or lock changes the roots the DocumentsProvider offers.

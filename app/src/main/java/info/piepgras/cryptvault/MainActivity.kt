@@ -114,7 +114,8 @@ class MainActivity : FragmentActivity() {
     @Composable
     private fun Gates(content: @Composable () -> Unit) {
         var legalAccepted by remember { mutableStateOf(AppPrefs.legalAccepted(this)) }
-        var crashAsked by remember { mutableStateOf(CrashReporting.hasBeenAsked(this)) }
+        // A build without a crash-reporting endpoint has nothing to ask.
+        var crashAsked by remember { mutableStateOf(!CrashReporting.isAvailable || CrashReporting.hasBeenAsked(this)) }
         when {
             !legalAccepted -> AlertDialog(
                 onDismissRequest = { },

@@ -74,17 +74,12 @@ GPL-3.0-or-later. `NOTICE` lists the third-party components, above all Cryptomat
 `cryptolib` (AGPL-3.0) and the recovery-key code and word list ported from Cryptomator desktop
 (GPL-3.0).
 
-## Public source on GitHub
+## Source
 
-The GPL obliges source availability to everyone who receives the app. The public repository is
-<https://github.com/piepgrasInfo/cryptvault>: a full clone living in `github/` inside this project folder (ignored by this
-repository's git), pushed with the deploy key `../keystores/keyDeployGithub_cryptvault`
-(`core.sshCommand` in that clone points at it). `tools/sync_github_mirror.sh` creates it on first use and fast-forwards it to
-the current `master` afterwards; pushing is deliberate and manual:
-
-```bash
-tools/sync_github_mirror.sh
-git -C github push -u origin master
-```
-
-Run the sync after every push to the house remote so the two never drift.
+The GPL obliges source availability to everyone who receives the app. This repository,
+<https://github.com/piepgrasInfo/cryptvault>, is the public copy of the developer's primary
+repository and carries the full history; it is updated by the developer after every change, so
+what you read here is what the published builds were made from. Build-time identifiers that are
+per developer registration (backup provider keys, the crash-reporting endpoint) are read from a
+gitignored `providers.properties` — copy `providers.properties.example` and fill in your own; an
+empty value switches the corresponding feature off in your build.

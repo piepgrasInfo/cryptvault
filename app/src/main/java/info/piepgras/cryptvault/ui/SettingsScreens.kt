@@ -46,12 +46,14 @@ fun SettingsScreen(onBack: () -> Unit, onAbout: () -> Unit, onPermissions: () ->
         },
     ) { padding ->
         Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState())) {
-            ListItem(
-                headlineContent = { Text(stringResource(R.string.settings_crash_reporting)) },
-                supportingContent = { Text(stringResource(R.string.settings_crash_reporting_hint)) },
-                trailingContent = { Switch(checked = crash, onCheckedChange = { crash = it; CrashReporting.setEnabled(context, it) }) },
-            )
-            HorizontalDivider()
+            if (CrashReporting.isAvailable) {
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.settings_crash_reporting)) },
+                    supportingContent = { Text(stringResource(R.string.settings_crash_reporting_hint)) },
+                    trailingContent = { Switch(checked = crash, onCheckedChange = { crash = it; CrashReporting.setEnabled(context, it) }) },
+                )
+                HorizontalDivider()
+            }
             ListItem(headlineContent = { Text(stringResource(R.string.permissions_title)) }, modifier = Modifier.clickable(onClick = onPermissions))
             ListItem(headlineContent = { Text(stringResource(R.string.about_title)) }, supportingContent = { Text(stringResource(R.string.about_version, BuildConfig.VERSION_NAME)) }, modifier = Modifier.clickable(onClick = onAbout))
         }

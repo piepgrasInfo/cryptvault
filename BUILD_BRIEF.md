@@ -610,9 +610,10 @@ the gate of the phase that owns them.
 
 ### Phase 0 — Foundation
 
-- **Repoint the remote**: `origin` currently points at `…/git/skills`; set it to
-  `git@192.168.5.5:/foundation/backup/git/cryptvault`, prove it with `git ls-remote`, and only
-  then push anything. If the remote does not exist, stop and ask.
+- **Repoint the remote**: `origin` currently points at a sibling project's repository; set it to
+  the house remote for this project (its address is in the developer's notes, not in this file),
+  prove it with `git ls-remote`, and only then push anything. If the remote does not exist, stop
+  and ask.
 - Scaffold with `app-generate-android-project` from the committed `spec.json`; keep the scaffold as
   its own commit. Add `:shared` (the capability is in the spec) with the first real rule and test
   (`RecoveryKey` encode/decode round trip against a known vector).
@@ -715,8 +716,7 @@ Open — need the developer:
 - `[OPEN: public source hosting]` — **Decided 2026-09-19: GitHub.** A separate repository lives in
   the project folder (`github/`, a clone with full history, kept in step by
   `tools/sync_github_mirror.sh`) and is pushed to <https://github.com/piepgrasInfo/cryptvault> with a deploy key
-  (`../keystores/keyDeployGithub_cryptvault`). The URL is in About; the store listing takes it
-  in Phase 6.
+  kept outside the repository. The URL is in About; the store listing takes it in Phase 6.
 - ~~`[OPEN: Play-services-free build]`~~ **Resolved 2026-09-19: yes, in v1.** One flavor
   dimension `dist` with `play` (Google Play) and `foss`. `foss` takes
   `applicationIdSuffix = ".foss"` so the two install side by side: Play App Signing re-signs the
@@ -734,8 +734,10 @@ Open — need the developer:
   **Java 25** the test JVM needs.
 - `[OPEN: house WebDAV server for Phase 4 testing]` (`docs/PROVIDER_SETUP.md` §5)
 - `[OPEN: US export self-classification stance]` (§11)
-- ~~`[OPEN: Bugsink DSN]`~~ Resolved 2026-09-19: set in `CrashReporting.kt` (project 7 on
-  `piepgras.bugsink.com`).
+- ~~`[OPEN: Bugsink DSN]`~~ Resolved 2026-09-19; moved 2026-09-25 from `CrashReporting.kt` into the
+  gitignored `providers.properties` (`BUGSINK_DSN` → `BuildConfig`) when the repository went
+  public. A build without it has no crash reporting at all — no opt-in prompt, no Settings
+  switch — which is what an F-Droid build from the public source gets.
 - `[OPEN: hybrid PQC APK signing]` — Android 17 offers it; needs a fresh classical key; decide
   before the first Play upload because the signing key is permanent.
 
